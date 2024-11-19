@@ -1,7 +1,7 @@
 all: serv
 
 serv: *.c
-	cc  *.c -o serv
+	cc -g3  *.c -o serv
 clean:
 	rm -rf serv
 re: clean all
