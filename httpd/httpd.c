@@ -116,10 +116,45 @@ char *cli_read(int c)
         return buf;
 }
 
+void http_request(int c, char *contenttype, char *response)
+{
+    char buf[512];
+    int length;
+    
+    memset(&buf, 0, 512);
+    length = strlen(response);
+    snprintf(buf, 511,
+        "Content-Type: %s\n"
+        "Content-Length: %d\n"
+        "\n%s\n", contenttype, length, response);
+    
+    length = strlen(buf);
+    write(c, &buf, length);
+
+    return ;
+}
+
+void http_headers(int c, int code)
+{
+    char buf[512];
+    int buf_length;
+
+    memset(&buf, 0, 512);
+    snprintf(buf, 511,
+        "HTTP/1.0 %d OK\n"
+        "Server: httpd.c\n"
+        "X-Frame-Options: SAMEORIGIN\n", code );
+    
+    buf_length = strlen(buf);
+    write(c, buf, buf_length);
+    return ;
+}
+
 void cli_conn(int s, int c)
 {
     httpreq *req;
     char *p;
+    char *response;
 
     p = cli_read(c);
     if (!p)
@@ -135,7 +170,24 @@ void cli_conn(int s, int c)
         close(c);
         return ;
     }
-    printf("method: '%s'\nUrl: '%s'\n", req->method, req->url);
+    if (!strcmp(req->method, "GET") && !strncmp(req->url, "/img/", 5))
+    {
+
+    }
+    if (!strcmp(req->method, "GET") && !strcmp(req->url, "/app/webpage"))
+    {
+        response = "<HTML>Hello world</HTML>";
+        http_headers(c, 200); /* 200 = everything is okay */
+        http_request(c, "text/html", response);
+    }
+    else
+    {
+        response = "File not found";
+        http_headers(c, 404); /* 404 = on file was found */
+        http_request(c, "text/plain", response);
+    }
+    free(req);
+    close(c);
     return ;
 }
 
