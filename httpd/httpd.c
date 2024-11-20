@@ -7,7 +7,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
-
+#include <fcntl.h>
 #define LISTENADDR "0.0.0.0"
 
 /* Structures */
@@ -16,6 +16,13 @@ struct sHttpRequest {
   char url[128];
 };
 typedef struct sHttpRequest httpreq;
+
+struct sFile {
+    char filename[64];
+    char *fc; /* fc = file content */
+    int size;
+};
+typedef struct sFile File;
 
 /* GLOBAL */
 char *error;
@@ -150,11 +157,89 @@ void http_headers(int c, int code)
     return ;
 }
 
+File *readfile(char *filename)
+{
+    char buf[512];
+    int n, x, fd;
+    File *f;
+
+    fd = open(filename, O_RDONLY);
+    if (fd < 0)
+        return 0;
+
+    f = malloc(sizeof(File));
+    if (!f)
+    {
+        close(fd);
+        return 0;
+    }
+    strncpy(f->filename, filename, 63);
+    f->fc = malloc(512);
+
+    x = 0; /* bytes read */
+    while (1337)
+    {
+        memset(buf, 0, 512);
+        n = read(fd, buf, 512);
+        if (!n)
+            break ;
+        else if (x == -1)
+        {
+            close(fd);
+            free(f);
+            free(f->fc);
+
+            return 0;
+        }
+        strncpy(buf, (f->fc)+x, n);
+        x += n;
+        f->fc = realloc(f->fc, (512)+x);
+    }
+    f->size = x;
+    close(fd);
+
+    return f;
+}
+
+/* 0 = everything is ok, 1 - error */
+int sendfile(int c, char *contenttype, File *file)
+{
+    char buf[512];
+    char *p;
+    int n, x;
+    
+    if (!file)
+        return 0;
+    memset(&buf, 0, 512);
+    snprintf(buf, 511,
+        "Content-Type: %s\n"
+        "Content-Length: %d\n\n",
+             contenttype, file->size);
+    
+    n = file->size;
+    p = file->fc; /* again, fc = file content */
+    while (42)
+    {
+        x = write(c, p, (n < 512)?n:512);
+        if (x < 0)
+            return 0;
+
+        n -= x;
+        if (n < 1)
+            break ;
+        else
+            p += x;
+    }
+    return 1;
+}
+
 void cli_conn(int s, int c)
 {
     httpreq *req;
     char *p;
     char *response;
+    char str[96];
+    File *f;
 
     p = cli_read(c);
     if (!p)
@@ -172,11 +257,29 @@ void cli_conn(int s, int c)
     }
     if (!strcmp(req->method, "GET") && !strncmp(req->url, "/img/", 5))
     {
-
+        memset(str, 0, 96);
+        snprintf(str, 96,".%s", req->url);
+        f = readfile(str);
+        printf("opening %s with size: %d\n", f->filename, f->size);
+        if (!f)
+        {
+            response = "File not found";
+            http_headers(c, 404); /* 404 = on file was found */
+            http_request(c, "text/plain", response);
+        }
+        else
+        {
+            http_headers(c, 200);
+            if (!sendfile(c, "image/png", f))
+            {
+                response = "HTTP server error";
+                http_request(c, "text/plain", response);
+            }
+        }
     }
-    if (!strcmp(req->method, "GET") && !strcmp(req->url, "/app/webpage"))
+    else if (!strcmp(req->method, "GET") && !strcmp(req->url, "/app/webpage"))
     {
-        response = "<HTML>Hello world</HTML>";
+        response = "<html> Hello World</html>";
         http_headers(c, 200); /* 200 = everything is okay */
         http_request(c, "text/html", response);
     }
