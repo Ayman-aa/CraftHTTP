@@ -191,9 +191,9 @@ File *readfile(char *filename)
 
             return 0;
         }
-        strncpy(buf, (f->fc)+x, n);
+        memcpy((f->fc)+x, buf, n);
         x += n;
-        f->fc = realloc(f->fc, (512)+x);
+        f->fc = realloc(f->fc, (512+x));
     }
     f->size = x;
     close(fd);
@@ -212,10 +212,12 @@ int sendfile(int c, char *contenttype, File *file)
         return 0;
     memset(&buf, 0, 512);
     snprintf(buf, 511,
-        "Content-Type: %s\n"
-        "Content-Length: %d\n\n",
+        "Content-Type: %s\r\n"
+        "Content-Length: %d\r\n"
+        "\r\n",
              contenttype, file->size);
     
+    write(c, buf, strlen(buf));
     n = file->size;
     p = file->fc; /* again, fc = file content */
     while (42)
@@ -257,6 +259,12 @@ void cli_conn(int s, int c)
     }
     if (!strcmp(req->method, "GET") && !strncmp(req->url, "/img/", 5))
     {
+        if (strstr(req->url, ".."))
+        {
+            response = "Access denied";
+            http_headers(c, 300); /* 300 family = access denied */
+            http_request(c, "text/plain", response);
+        }
         memset(str, 0, 96);
         snprintf(str, 96,".%s", req->url);
         f = readfile(str);
