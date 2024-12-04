@@ -303,7 +303,7 @@ void cli_conn(int s, int c)
     return ;
 }
 
-uint64_t main ( int ac, char *av[])
+int main ( int ac, char *av[])
 {
   int s, c;
   char *port;
