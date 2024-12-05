@@ -5,19 +5,12 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <netdb.h>
+#include <unistd.h>
+#include <cstring>
 using namespace std;
-class ServerConfiguration
-{
-    public:
-        int port;
-        string host;
-        string bodySize;
-        size_t maxBodySize;
-        vector<string> names;
-        map<string, string> errorPages;
-        map<string, Location> locations;
-        
-};
 
 struct Location
 {
@@ -30,4 +23,16 @@ struct Location
     vector<string> index;
     map<string, string> cgi;
 };
+class ServerConfiguration
+{
+    public:
+        string port;
+        string host;
+        string bodySize;
+        size_t maxBodySize;
+        vector<string> names;
+        map<string, string> errorPages;
+        map<string, Location> locations;
+};
+
 #endif
