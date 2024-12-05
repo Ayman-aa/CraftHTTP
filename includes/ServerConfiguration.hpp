@@ -15,8 +15,19 @@ class ServerConfiguration
         size_t maxBodySize;
         vector<string> names;
         map<string, string> errorPages;
-        map<string, string> locations;
+        map<string, Location> locations;
         
 };
 
+struct Location
+{
+    bool autoindex = false;
+    string root;
+    string path;
+    string redirection_return;
+    string upload_path;
+    vector<string> allow_methods;
+    vector<string> index;
+    map<string, string> cgi;
+};
 #endif
