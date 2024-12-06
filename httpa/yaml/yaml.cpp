@@ -6,7 +6,7 @@ using namespace std;
 
 namespace YAML {
 	/* Node class constructor */
-	Node::Node(const std::string& identifier, void* data): m_identifier(identifier) {
+	Node::Node(const string& identifier, void* data): m_identifier(identifier) {
 		if (data != NULL)
 			m_data = data;
 		else
@@ -19,10 +19,10 @@ namespace YAML {
 		m_children.insert(node->getID(), node);
 		return true;
 	}
-	Node* Node::getChild(const std::string& identifier) {
+	Node* Node::getChild(const string& identifier) {
 		return m_children.find(identifier);
 	}
-	std::string Node::getID() const {
+	string Node::getID() const {
 		return m_identifier;
 	}
 	void Node::setData(void *data) {
@@ -30,12 +30,12 @@ namespace YAML {
 	}
 
 	/* yaml class */
-	yaml::yaml(const std::string& filePath) {
+	yaml::yaml(const string& filePath) {
 		try {
 			load(filePath);
 		}
-		catch(std::exception& e) {
-			std::cout << e.what() << std::endl;
+		catch(exception& e) {
+			cout << e.what() << endl;
 		}
 	}
 	yaml::~yaml(){}
@@ -49,7 +49,7 @@ namespace YAML {
 	* @param line The current line of the YAML file as a string.
  	* @return int The indentation level (number of leading tabs).
  	*/
-	int yaml::getIndentLevel(const std::string& line) {
+	int yaml::getIndentLevel(const string& line) {
 		int IndentLevel = 0; /* must be tabs nor space */
 		char tab = '\t';
 		
@@ -62,8 +62,8 @@ namespace YAML {
 		return IndentLevel;
 	}
 
-	void yaml::load(const std::string& filePath) {
-		std::string line;
+	void yaml::load(const string& filePath) {
+		string line;
 		/* file parsing
 		 * TO-DO:
 		 * 1. Open file.
@@ -72,15 +72,15 @@ namespace YAML {
 		 * 4. Create node hierarchy.
 		 * 5. Handle different YAML structures.
 		 */
-		std::ifstream file(filePath.c_str());
+		ifstream file(filePath.c_str());
 		if (!file.is_open()) {
 			file.close();
-			throw std::runtime_error("failed to open file: " + filePath);
+			throw runtime_error("failed to open file: " + filePath);
 		}
-		while (std::getline(file, line)) {
+		while (getline(file, line)) {
 			if (line.empty())
 				continue ;
-			std::cout << "line: " << line <<  " Level: " << yaml::getIndentLevel(line) << std::endl;
+			cout << "line: " << line <<  " Level: " << yaml::getIndentLevel(line) << endl;
 		}
 		file.close();	
 	}
