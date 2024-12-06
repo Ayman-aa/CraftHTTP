@@ -5,6 +5,7 @@
 #define MAX_CHARS_IN_LINE 512
 
 #include <vector>
+#include <unistd.h> /* close(), ... */
 #include <string>
 #include <fstream> /* for file handling */
 #include "SmartPtr.hpp"
@@ -14,7 +15,7 @@ namespace YAML {
 	class Node {
 		private:
 			std::string m_identifier; /* Nodes key */
-			/* SmartPtr<void> m_data;    */
+			/* int isChild; */
 			void *m_data;
 			CustomMap m_children;	/* */
 		public:
@@ -48,6 +49,10 @@ namespace YAML {
 			/* constructor */
 			yaml(const std::string& filePath);
 			~yaml();
+			/* simple line syntax check */
+			bool verifyLineFormat(const std::string& line);
+			/* calculate indentation of the current line */
+			int getIndentLevel(const std::string& line);
 			/* file parsing */
 			void load(const std::string& filePath);
 			/* Node access */

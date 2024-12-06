@@ -6,7 +6,7 @@ using namespace std;
 
 namespace YAML {
 	/* Node class constructor */
-	Node::Node(const std::string& identifier, void* data = NULL): m_identifier {
+	Node::Node(const std::string& identifier, void* data): m_identifier(identifier) {
 		if (data != NULL)
 			m_data = data;
 		else
@@ -22,8 +22,8 @@ namespace YAML {
 	Node* Node::getChild(const std::string& identifier) {
 		return m_children.find(identifier);
 	}
-	std::string Node::getID() {
-		return identifier;
+	std::string Node::getID() const {
+		return m_identifier;
 	}
 	void Node::setData(void *data) {
 		this->m_data = data;
@@ -31,10 +31,39 @@ namespace YAML {
 
 	/* yaml class */
 	yaml::yaml(const std::string& filePath) {
-		if (!load(filePath))
-			throw std::runtime_error("Error: Yaml parser object failed during parsing the given file.");
+		try {
+			load(filePath);
+		}
+		catch(std::exception& e) {
+			std::cout << e.what() << std::endl;
+		}
 	}
-	void load(const std::string& filePath) {
+	yaml::~yaml(){}
+
+	/**
+	* @brief Calculates the level of indentation for the current line in the YAML file.
+ 	* 
+ 	* This function determines the number of leading spaces or tabs in the given line,
+	* which indicates the hierarchical level of the current node in the YAML structure.
+	*
+	* @param line The current line of the YAML file as a string.
+ 	* @return int The indentation level (number of leading tabs).
+ 	*/
+	int yaml::getIndentLevel(const std::string& line) {
+		int IndentLevel = 0; /* must be tabs nor space */
+		char tab = '\t';
+		
+		for (size_t i = 0; i < line.length(); i++) {
+			if (line[i] == tab)
+				IndentLevel++;
+			else 
+				break;
+		}
+		return IndentLevel;
+	}
+
+	void yaml::load(const std::string& filePath) {
+		std::string line;
 		/* file parsing
 		 * TO-DO:
 		 * 1. Open file.
@@ -45,9 +74,14 @@ namespace YAML {
 		 */
 		std::ifstream file(filePath.c_str());
 		if (!file.is_open()) {
-			close(file);
-			throw std::runtime_error("failed to open file");
+			file.close();
+			throw std::runtime_error("failed to open file: " + filePath);
 		}
-		
-	}	
+		while (std::getline(file, line)) {
+			if (line.empty())
+				continue ;
+			std::cout << "line: " << line <<  " Level: " << yaml::getIndentLevel(line) << std::endl;
+		}
+		file.close();	
+	}
 }
