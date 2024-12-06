@@ -8,9 +8,9 @@ namespace YAML {
 	/* Node class constructor */
 	Node::Node(const std::string& identifier, void* data = NULL): m_identifier {
 		if (data != NULL)
-			m_data = SmartPtr<void>(data);
+			m_data = data;
 		else
-			m_data = SmartPtr<void>(NULL);
+			m_data = NULL;
 	}
 	/* Node manipulation */
 	bool Node::append(Node* node) {
@@ -48,6 +48,6 @@ namespace YAML {
 			close(file);
 			throw std::runtime_error("failed to open file");
 		}
-
+		
 	}	
 }

@@ -14,7 +14,8 @@ namespace YAML {
 	class Node {
 		private:
 			std::string m_identifier; /* Nodes key */
-			SmartPtr<void> m_data;   /* */
+			/* SmartPtr<void> m_data;    */
+			void *m_data;
 			CustomMap m_children;	/* */
 		public:
 			/* best explanation found on reddit of AKostur:
@@ -34,7 +35,7 @@ namespace YAML {
 			/* Data Handling */
 			template <typename T>
 			T* getData() {
-				return static_cast<T*>(m_data.operator*());
+				return static_cast<T*>(m_data);
 			}
 			void setData(void *data);
 			

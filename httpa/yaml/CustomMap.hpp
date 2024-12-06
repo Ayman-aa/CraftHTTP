@@ -4,6 +4,9 @@
 
 #include <vector>
 #include <cstdlib>
+#include "yaml.hpp"
+
+class Node{};
 
 class CustomMap{
 	private:
