@@ -1,6 +1,7 @@
 #include "includes/ServerConfiguration.hpp"
 #include <iostream>
 #include <string>
+#include <vector>
 #include <map>
 #include <sys/types.h>
 #include <sys/socket.h>
@@ -9,6 +10,7 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
+#include <fcntl.h>
 
 using namespace std;
 
@@ -34,7 +36,7 @@ void handle_client(int client_fd, const ServerConfiguration& server) {
     }
 
     // Read file content
-    ifstream file(file_path);
+    ifstream file(file_path.c_str());
     if (!file) {
         // File not found, send 404 response
         string response = "HTTP/1.1 404 Not Found\r\nContent-Length: 13\r\n\r\n404 Not Found";
@@ -54,15 +56,15 @@ void handle_client(int client_fd, const ServerConfiguration& server) {
 int main()
 {
     ServerConfiguration server;
-    server.port = "8080";
+    server.ports.push_back("8080");
+    server.ports.push_back("8081");
     server.host = "127.0.0.1";
     server.locations["/"].root = "/home/aaamam/Desktop/CraftHTTP"; // Correct root directory
 
-    cout << "Server port: " << server.port << endl;
     cout << "Server host: " << server.host << endl;
     cout << "Root of location /: " << server.locations["/"].root << endl;
 
-    int socketfd;
+    vector<int> sockets;
     struct addrinfo hints, *response;
     int ok = 1;
 
@@ -71,56 +73,82 @@ int main()
     hints.ai_socktype = SOCK_STREAM;
     hints.ai_flags = AI_PASSIVE;
 
-    if (getaddrinfo(server.host.c_str(), server.port.c_str(), &hints, &response) != 0)
-    {
-        perror("getaddrinfo");
-        return 1;
-    }
-
-    if ((socketfd = socket(response->ai_family, response->ai_socktype, response->ai_protocol)) == -1)
-    {
-        perror("socket");
-        return 1;
-    }
-
-    if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &ok, sizeof(int)) == -1)
-    {
-        perror("setsockopt");
-        return 1;
-    }
-
-    if (bind(socketfd, response->ai_addr, response->ai_addrlen) == -1)
-    {
-        perror("bind");
-        return 1;
-    }
-
-    freeaddrinfo(response);
-
-    if (listen(socketfd, 10) == -1)
-    {
-        perror("listen");
-        return 1;
-    }
-
-    cout << "Server is listening on port " << server.port << endl;
-
-    while (true) {
-        struct sockaddr_storage client_addr;
-        socklen_t addr_size = sizeof(client_addr);
-        int client_fd = accept(socketfd, (struct sockaddr *)&client_addr, &addr_size);
-        
-        if (client_fd == -1) {
-            perror("accept");
-            continue;
+    for (size_t i = 0; i < server.ports.size(); ++i) {
+        if (getaddrinfo(server.host.c_str(), server.ports[i].c_str(), &hints, &response) != 0) {
+            perror("getaddrinfo");
+            return 1;
         }
 
-        cout << "Client connected" << endl;
-        handle_client(client_fd, server);
-        cout << "Client disconnected" << endl;
+        int socketfd = socket(response->ai_family, response->ai_socktype, response->ai_protocol);
+        if (socketfd == -1) {
+            perror("socket");
+            return 1;
+        }
+
+        if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &ok, sizeof(int)) == -1) {
+            perror("setsockopt");
+            return 1;
+        }
+
+        if (bind(socketfd, response->ai_addr, response->ai_addrlen) == -1) {
+            perror("bind");
+            return 1;
+        }
+
+        freeaddrinfo(response);
+
+        if (listen(socketfd, 10) == -1) {
+            perror("listen");
+            return 1;
+        }
+
+        // Set socket to non-blocking mode
+        fcntl(socketfd, F_SETFL, O_NONBLOCK);
+
+        sockets.push_back(socketfd);
+        cout << "Server is listening on port " << server.ports[i] << endl;
     }
 
-    close(socketfd);
+    fd_set master_set, read_set;
+    FD_ZERO(&master_set);
+    int max_fd = -1;
+
+    for (size_t i = 0; i < sockets.size(); ++i) {
+        FD_SET(sockets[i], &master_set);
+        if (sockets[i] > max_fd) {
+            max_fd = sockets[i];
+        }
+    }
+
+    while (true) {
+        read_set = master_set;
+        if (select(max_fd + 1, &read_set, NULL, NULL, NULL) == -1) {
+            perror("select");
+            return 1;
+        }
+
+        for (size_t i = 0; i < sockets.size(); ++i) {
+            if (FD_ISSET(sockets[i], &read_set)) {
+                struct sockaddr_storage client_addr;
+                socklen_t addr_size = sizeof(client_addr);
+                int client_fd = accept(sockets[i], (struct sockaddr *)&client_addr, &addr_size);
+
+                if (client_fd == -1) {
+                    perror("accept");
+                    continue;
+                }
+
+                cout << "Client connected on port " << server.ports[i] << endl;
+                handle_client(client_fd, server);
+                cout << "Client disconnected" << endl;
+            }
+        }
+    }
+
+    for (size_t i = 0; i < sockets.size(); ++i) {
+        close(sockets[i]);
+    }
+
     cout << "Server closed" << endl;
 
     return 0;

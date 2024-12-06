@@ -3,17 +3,9 @@
 
 #include "ServerConfiguration.hpp"
 
-class ConfigurationParser
+class ConfigurationParser : public ServerConfiguration
 {
-    private:
-        void configurationInitiation(string configFile);
-        void parse_file(ifstream &file);
-        
-        ConfigurationParser();
-    public:
-        ConfigurationParser(string configFile);
-        ~ConfigurationParser();
-        ServerConfiguration getConfiguration(const char *filename);
+    
 };
 
 #endif
