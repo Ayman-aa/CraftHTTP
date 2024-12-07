@@ -1,12 +1,14 @@
-server1:
-	 port: 8080
+server:
+	port:			 8080
 	port: 8081
 	host: 127.0.0.1
+	error_pages:
+		-404  "/error_pages/404.html"
 	server_name: server1
 	allow_methodes:
 		- GET
 		- POST
 		- DELETE
 	root: ./
-server2:
+ server2:
 	port: 9090

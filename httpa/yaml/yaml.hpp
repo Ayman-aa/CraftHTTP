@@ -5,11 +5,24 @@
 #define MAX_CHARS_IN_LINE 512
 
 #include <vector>
+#include <sstream>
+#include <stdexcept>
 #include <unistd.h> /* close(), ... */
 #include <string>
 #include <fstream> /* for file handling */
 #include "SmartPtr.hpp"
 #include "CustomMap.hpp"
+
+enum EntryType {
+	INVALID,
+    KEY_VALUE,       // Requires value
+    CONTAINER        // Prepares for children
+};
+
+struct LineValidationResult {
+    bool isValid;
+    EntryType type; /* return {false, CONTAINER};  */
+};
 
 namespace YAML {
 	class Node {
@@ -49,8 +62,11 @@ namespace YAML {
 			/* constructor */
 			yaml(const std::string& filePath);
 			~yaml();
+			/* is an valide root level line format, and other levels */
+			bool isValidRootLevel(const std::string& line);
+			LineValidationResult isValidSecondLevel(const std::string& line);
 			/* simple line syntax check */
-			bool verifyLineFormat(const std::string& line);
+			bool verifyLineFormat(const std::string& line, int indentLevel);
 			/* calculate indentation of the current line */
 			int getIndentLevel(const std::string& line);
 			/* file parsing */
