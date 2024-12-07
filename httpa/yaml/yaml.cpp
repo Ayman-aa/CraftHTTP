@@ -67,7 +67,7 @@ namespace YAML {
 		if (firstNoSpace != string::npos && lastNoSpace  != string::npos)
 			value = value.substr(firstNoSpace, lastNoSpace - firstNoSpace + 1);
 		cout << "key: " << key << " | value: " << value<< endl;
-		return (LineValidationResult){true, KEY_VALUE};
+		return (LineValidationResult){true, KEY_VALUE}; 
 	}
 
 	bool yaml::verifyLineFormat(const string& line, int indentLevel) {
