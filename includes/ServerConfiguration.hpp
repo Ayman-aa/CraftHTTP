@@ -16,7 +16,7 @@ using namespace std;
 struct Location
 {
     // Location parameters
-    bool autoindex = false; // default value
+    bool autoindex;
     string root;
     string path;
     string redirection_return;
@@ -44,7 +44,6 @@ class ServerConfiguration
         string getErrorPage(string code);
         string getLocations(string path);
         ServerConfiguration getServerConfiguration(const string &host, string &port, string &ip);
-
 };
 
 #endif

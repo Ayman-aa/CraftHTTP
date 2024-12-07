@@ -11,6 +11,7 @@
 #include <fstream>
 #include <sstream>
 #include <fcntl.h>
+#include <sys/epoll.h>
 
 using namespace std;
 
@@ -31,7 +32,7 @@ void handle_client(int client_fd, const ServerConfiguration& server) {
 
     // Determine file path
     string file_path = server.locations.at("/").root + path;
-    if (file_path.back() == '/') {
+    if (file_path[file_path.size() - 1] == '/') {
         file_path += "index.html"; // Serve index.html for directory requests
     }
 
@@ -46,7 +47,9 @@ void handle_client(int client_fd, const ServerConfiguration& server) {
         stringstream file_content;
         file_content << file.rdbuf();
         string content = file_content.str();
-        string response = "HTTP/1.1 200 OK\r\nContent-Length: " + to_string(content.size()) + "\r\n\r\n" + content;
+        stringstream ss;
+        ss << content.size();
+        string response = "HTTP/1.1 200 OK\r\nContent-Length: " + ss.str() + "\r\n\r\n" + content;
         send(client_fd, response.c_str(), response.size(), 0);
     }
 
@@ -65,6 +68,7 @@ int main()
     cout << "Root of location /: " << server.locations["/"].root << endl;
 
     vector<int> sockets;
+    map<int, string> fd_to_port;
     struct addrinfo hints, *response;
     int ok = 1;
 
@@ -103,42 +107,61 @@ int main()
         }
 
         // Set socket to non-blocking mode
-        fcntl(socketfd, F_SETFL, O_NONBLOCK);
-
-        sockets.push_back(socketfd);
-        cout << "Server is listening on port " << server.ports[i] << endl;
-    }
-
-    fd_set master_set, read_set;
-    FD_ZERO(&master_set);
-    int max_fd = -1;
-
-    for (size_t i = 0; i < sockets.size(); ++i) {
-        FD_SET(sockets[i], &master_set);
-        if (sockets[i] > max_fd) {
-            max_fd = sockets[i];
+        int flags = fcntl(socketfd, F_GETFL, 0);
+        if (flags == -1) {
+            perror("fcntl");
+            return 1;
         }
-    }
-
-    while (true) {
-        read_set = master_set;
-        if (select(max_fd + 1, &read_set, NULL, NULL, NULL) == -1) {
-            perror("select");
+        if (fcntl(socketfd, F_SETFL, flags | O_NONBLOCK) == -1) {
+            perror("fcntl");
             return 1;
         }
 
-        for (size_t i = 0; i < sockets.size(); ++i) {
-            if (FD_ISSET(sockets[i], &read_set)) {
+        sockets.push_back(socketfd);
+        fd_to_port[socketfd] = server.ports[i];
+        cout << "Server is listening on port " << server.ports[i] << endl;
+    }
+
+    // Create epoll instance
+    int epoll_fd = epoll_create1(0);
+    if (epoll_fd == -1) {
+        perror("epoll_create1");
+        return 1;
+    }
+
+    // Add sockets to epoll instance
+    struct epoll_event event;
+    for (size_t i = 0; i < sockets.size(); ++i) {
+        event.events = EPOLLIN;
+        event.data.fd = sockets[i];
+        if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, sockets[i], &event) == -1) {
+            perror("epoll_ctl");
+            return 1;
+        }
+    }
+
+    // Event loop
+    const int MAX_EVENTS = 10;
+    struct epoll_event events[MAX_EVENTS];
+    while (true) {
+        int num_events = epoll_wait(epoll_fd, events, MAX_EVENTS, -1);
+        if (num_events == -1) {
+            perror("epoll_wait");
+            return 1;
+        }
+
+        for (int i = 0; i < num_events; ++i) {
+            if (events[i].events & EPOLLIN) {
                 struct sockaddr_storage client_addr;
                 socklen_t addr_size = sizeof(client_addr);
-                int client_fd = accept(sockets[i], (struct sockaddr *)&client_addr, &addr_size);
+                int client_fd = accept(events[i].data.fd, (struct sockaddr *)&client_addr, &addr_size);
 
                 if (client_fd == -1) {
                     perror("accept");
                     continue;
                 }
 
-                cout << "Client connected on port " << server.ports[i] << endl;
+                cout << "Client connected on port " << fd_to_port[events[i].data.fd] << endl;
                 handle_client(client_fd, server);
                 cout << "Client disconnected" << endl;
             }
@@ -149,6 +172,7 @@ int main()
         close(sockets[i]);
     }
 
+    close(epoll_fd);
     cout << "Server closed" << endl;
 
     return 0;

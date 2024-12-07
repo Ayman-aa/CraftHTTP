@@ -1,5 +1,6 @@
 server:
-  listen: 127.0.0.2:8080
+  listen: 127.0.0.2
+  port: 8080                             
   max_client_body_size: 21021654564
   server_names: example1.com
   error_page:
