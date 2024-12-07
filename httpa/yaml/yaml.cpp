@@ -63,7 +63,7 @@ namespace YAML {
 		string value = line.substr(colonPosition+1);
 		size_t firstNoSpace = value.find_first_not_of(" \t");
 		size_t lastNoSpace = value.find_last_not_of(" \t");
-		if (value.empty()) return (LineValidationResult){true, CONTAINER};
+		if (value.empty() || firstNoSpace == string::npos) return (LineValidationResult){true, CONTAINER};
 		if (firstNoSpace != string::npos && lastNoSpace  != string::npos)
 			value = value.substr(firstNoSpace, lastNoSpace - firstNoSpace + 1);
 		cout << "key: " << key << " | value: " << value<< endl;
