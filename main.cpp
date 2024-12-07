@@ -106,24 +106,14 @@ int main()
             return 1;
         }
 
-        // Set socket to non-blocking mode
-        int flags = fcntl(socketfd, F_GETFL, 0);
-        if (flags == -1) {
-            perror("fcntl");
-            return 1;
-        }
-        if (fcntl(socketfd, F_SETFL, flags | O_NONBLOCK) == -1) {
-            perror("fcntl");
-            return 1;
-        }
-
         sockets.push_back(socketfd);
         fd_to_port[socketfd] = server.ports[i];
         cout << "Server is listening on port " << server.ports[i] << endl;
     }
 
     // Create epoll instance
-    int epoll_fd = epoll_create1(0);
+    int noRole = 1337; // ma3ando tashi dawr just a chill dude
+    int epoll_fd = epoll_create(noRole);
     if (epoll_fd == -1) {
         perror("epoll_create1");
         return 1;
