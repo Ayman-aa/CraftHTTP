@@ -1,10 +1,10 @@
 #!/bin/bash
 
 # URL of the server to test
-URL="http://127.0.0.1:8081"
+URL="http://127.0.0.1:8081/movie.mp4"
 
 # Number of requests to send
-NUM_REQUESTS=100000
+NUM_REQUESTS=100
 
 # Loop to send requests
 for i in $(seq 1 $NUM_REQUESTS); do
