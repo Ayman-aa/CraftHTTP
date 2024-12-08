@@ -138,7 +138,6 @@ namespace YAML {
 				oss << currentLineNumber;
 				throw runtime_error("error: syntax error at line " + oss.str());
 			}
-			//cout << "line: " << line <<  " Level: " << currentIndentLevel << endl;
 		}
 		file.close();	
 	}
