@@ -1,9 +1,9 @@
 /* -- main.cpp -- */
 
 # include <iostream>
-# include "yaml/yaml.hpp"
+# include <cstdio>
+# include "config/configParser.hpp"
 
-using namespace std;
 
 /* global var */
 const char *filePath;
@@ -22,6 +22,7 @@ int main(int ac, char *av[])
 	else
 		filePath = av[1];
 	fprintf(stdout, "filePath: %s\n", filePath);
-
-	YAML::yaml fileParser(filePath);
+	string fp = filePath;
+	ConfigurationParser fileParser(fp);
+	return 0;
 }

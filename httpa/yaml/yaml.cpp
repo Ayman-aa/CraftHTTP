@@ -125,7 +125,6 @@ namespace YAML {
 		 */
 		ifstream file(filePath.c_str());
 		if (!file.is_open()) {
-			file.close();
 			throw runtime_error("failed to open file: " + filePath);
 		}
 		while (getline(file, line)) {
