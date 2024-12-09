@@ -3,17 +3,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="robots" content="nofollow,noarchive,noindex">
-  <title>{{ code }} - {{ message }}</title>
+  <title>404 - Not found</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <!-- {{ if or (eq code 408) (eq code 425) (eq code 429) (eq code 500) (eq code 502) (eq code 503) (eq code 504) }} -->
-  <meta http-equiv="refresh" content="30">
-  <!-- {{ end }} -->
-  <meta name="title" content="{{ code }}: {{ message | escape }}">
-  <meta name="description" content="{{ description | escape }}">
-  <meta property="og:title" content="{{ code }}: {{ message | escape }}">
-  <meta property="og:description" content="{{ description | escape }}">
-  <meta property="twitter:title" content="{{ code }}: {{ message | escape }}">
-  <meta property="twitter:description" content="{{ description | escape }}">
   <style>
     :root {
       --color-primary: #eee;
@@ -119,59 +110,11 @@
 <main>
   <article>
     <div id="error_text">
-      <h1 class="source">{{ code }}: <span data-l10n>{{ message }}</span></h1>
+      <h1 class="source">404 - <span data-l10n>Not found</span></h1>
       <h1 class="target"></h1>
     </div>
 
-    <!-- {{- if show_details -}} -->
-    <table id="details" class="hidden">
-      <!-- {{- if host -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Host</span>:</td>
-        <td class="value">{{ host }}</td>
-      </tr>
-      <!-- {{- end }}{{ if original_uri -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Original URI</span>:</td>
-        <td class="value">{{ original_uri }}</td>
-      </tr>
-      <!-- {{- end }}{{ if forwarded_for -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Forwarded for</span>:</td>
-        <td class="value">{{ forwarded_for }}</td>
-      </tr>
-      <!-- {{- end }}{{ if namespace -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Namespace</span>:</td>
-        <td class="value">{{ namespace }}</td>
-      </tr>
-      <!-- {{- end }}{{ if ingress_name -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Ingress name</span>:</td>
-        <td class="value">{{ ingress_name }}</td>
-      </tr>
-      <!-- {{- end }}{{ if service_name -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Service name</span>:</td>
-        <td class="value">{{ service_name }}</td>
-      </tr>
-      <!-- {{- end }}{{ if service_port -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Service port</span>:</td>
-        <td class="value">{{ service_port }}</td>
-      </tr>
-      <!-- {{- end }}{{ if request_id -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Request ID</span>:</td>
-        <td class="value">{{ request_id }}</td>
-      </tr>
-      <!-- {{- end -}} -->
-      <tr>
-        <td class="name"><span data-l10n>Timestamp</span>:</td>
-        <td class="value">{{ nowUnix }}</td>
-      </tr>
-    </table>
-    <!-- {{- end -}} -->
+  
   </article>
 </main>
 
