@@ -9,6 +9,7 @@
 struct key_value {
 	string key;
 	string value;
+	string currentParsedValue;
 };
 
 class ConfigurationParser : public ServerConfiguration
@@ -25,6 +26,7 @@ class ConfigurationParser : public ServerConfiguration
 		bool isValidSecondLevel(string& line);
 		void syntaxError(int currentLineNumber);
 
-		string& extractHostKey(key_value k_v);
+		bool extractHostKey(key_value k_v);
+		bool isValidIPSegment(const string& segment);
 };
 #endif /* ayeh ayeh, configParser.hpp */

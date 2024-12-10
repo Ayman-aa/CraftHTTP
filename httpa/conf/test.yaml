@@ -1,7 +1,2 @@
 server:
-	host: 127.0.0.1  4
-	ports: 8080,8089,5050, 45
-	server_names: 48k483x.fr
-	client_max_body_size: 2800000
-	error_pages:
-		- 404: error_pages/404.html
+	host: 255.0.0.1

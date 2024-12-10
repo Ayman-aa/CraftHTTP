@@ -23,6 +23,8 @@ void ConfigurationParser::load(ifstream& file) {
 			
 			if (line.find("host:") != string::npos) {
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
+				if (extractHostKey(kv)) this->host = kv.currentParsedValue;
+				else syntaxError(currentLineNumber);
 			}
 			else if (line.find("ports:") != string::npos) {
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
@@ -58,11 +60,31 @@ int ConfigurationParser::getIndentLevel(const string& line) {
 	return IndentLevel;
 }
 
-string& extractHostKey(key_value& k_v) {
-	if (k_v.key == "host") return false;
-	i
+bool ConfigurationParser::isValidIPSegment(const string& segment) {
+	if (kv.key != "host") return false;
+	if (segment.empty()) return false;
+
+	for (size_t i = 0; i < segment.length(); i++)
+		if (!isdigit(segment[i])) return false;
+	
+	int value = 0;
+	istringstream iss(segment);
+	iss >> value;
+	return (value >= 0 && value <= 255);
 }
 
+bool ConfigurationParser::extractHostKey(key_value k_v) {
+	int currentCountOfSubnets = 0;
+	string parsed, input = k_v.value;
+	stringstream input_ss(input);
+	while (getline(input_ss, parsed, '.') && ++currentCountOfSubnets) {
+		cout << "Parsed Ya Zebi: " << parsed << endl;
+		if (!isValidIPSegment(parsed)) return false;
+		if (currentCountOfSubnets > 4) return false;
+	}
+	k_v.currentParsedValue = k_v.value;
+	return true;
+}
 bool ConfigurationParser::verifyLineFormat(string& line, int indentLevel) {
 	if (line.empty())
 		return true;

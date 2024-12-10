@@ -8,9 +8,11 @@
 int main(int ac, char *av[]) {
 	using namespace std;
 
-	if (ac != 2) {
-		fprintf(stderr, "Usage: %s 'Host address you want to check'\n", av[0]);
+	if (argc != 2) {
+		cerr << "Usage: " << argv[0] 
+		   << " 'IP Address to validate'" << endl;
 		return 1;
+						    
 	}
 	string avv = av[1];
 	string parsed,input=avv;
