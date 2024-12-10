@@ -8,6 +8,7 @@
 #include <iostream>
 #include <string>
 #include <fstream>
+#include <sstream>
 #include <vector>
 #include <map>
 #include <sys/types.h>
@@ -15,6 +16,7 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <cstring>
+#include <cctype>
 
 using namespace std;
 

@@ -23,6 +23,12 @@ int main(int ac, char *av[])
 		filePath = av[1];
 	fprintf(stdout, "filePath: %s\n", filePath);
 	string fp = filePath;
-	ConfigurationParser fileParser(fp);
+
+	try {
+		ConfigurationParser fileParser(fp);
+	}
+	catch (exception& e) {
+		cout << e.what() << endl;
+	}
 	return 0;
 }

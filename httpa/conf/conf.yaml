@@ -1,6 +1,5 @@
 server:
-  listen: 127.0.0.2:8080
-  max_client_body_size: 21021654564
+	host: 127.0.0.1
   server_names: example1.com
   error_page:
     - 302: error_pages/302.html

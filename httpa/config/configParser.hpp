@@ -9,11 +9,10 @@
 struct key_value {
 	string key;
 	string value;
-} kv;
+};
 
 class ConfigurationParser : public ServerConfiguration
 {
-	private: 
 	public:
 		/* init constructor */
 		ConfigurationParser(string& filePath);
@@ -23,9 +22,9 @@ class ConfigurationParser : public ServerConfiguration
 		int getIndentLevel(const string& line);
 		bool isValidRootLevel(string& line);
 		bool verifyLineFormat(string& line, int indentLevel);
-		bool isValidSecondLevel(string& line, string& key, string& value);
-		void syntaxError(int currentLineNumber);\
+		bool isValidSecondLevel(string& line);
+		void syntaxError(int currentLineNumber);
 
-		/* getters Setters for key value struct */
+		string& extractHostKey(key_value k_v);
 };
 #endif /* ayeh ayeh, configParser.hpp */
