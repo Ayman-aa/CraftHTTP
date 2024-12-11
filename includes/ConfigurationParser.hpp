@@ -7,5 +7,5 @@ class ConfigurationParser : public ServerConfiguration
 {
     
 };
-
+typedef ConfigurationParser ClusterConfiguration;
 #endif
