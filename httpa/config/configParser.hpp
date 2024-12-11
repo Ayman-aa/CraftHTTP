@@ -26,7 +26,12 @@ class ConfigurationParser : public ServerConfiguration
 		bool isValidSecondLevel(string& line);
 		void syntaxError(int currentLineNumber);
 
-		bool extractHostKey(key_value k_v);
+		bool extractHostKey(key_value& k_v);
 		bool isValidIPSegment(const string& segment);
+
+		bool extractPortValue(key_value& k_v);
+		bool isValidPortSegment(const string& segment);
+
+		bool extractServerNamesValue(key_value& k_v);
 };
 #endif /* ayeh ayeh, configParser.hpp */

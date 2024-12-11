@@ -28,6 +28,5 @@ int main(int ac, char *av[]) {
 				 else cout << "Correct: " << parsed << endl;
 			 }
 		}
-//		
 	}
 }

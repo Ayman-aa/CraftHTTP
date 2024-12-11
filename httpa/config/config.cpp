@@ -23,14 +23,28 @@ void ConfigurationParser::load(ifstream& file) {
 			
 			if (line.find("host:") != string::npos) {
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
-				if (extractHostKey(kv)) this->host = kv.currentParsedValue;
+				if (extractHostKey(kv))  {
+					if (!this->host.empty()) break ;
+					this->host = kv.currentParsedValue;
+				}
 				else syntaxError(currentLineNumber);
 			}
 			else if (line.find("ports:") != string::npos) {
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
+				if (this->ports.empty() && extractPortValue(kv)) {
+					for (size_t i = 0; i < this->ports.size(); i++)
+						cout << "ports[" << i << "]: " << "'" << this->ports[i] << "'" << ",";
+					cout << endl;
+				}
+				else syntaxError(currentLineNumber);
 			}
 			else if (line.find("server_names:") != string::npos) {
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
+				if (extractServerNamesValue(kv)) {
+					for (size_t i = 0; i < this->serverNames.size(); i++)
+						cout << "server name[" << i << "]: " << "'" << this->serverNames[i] << "'" << endl;;
+				}
+				else syntaxError(currentLineNumber);
 			}
 			else if (line.find("error_pages:") != string::npos) {
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
@@ -60,6 +74,45 @@ int ConfigurationParser::getIndentLevel(const string& line) {
 	return IndentLevel;
 }
 
+bool ConfigurationParser::extractServerNamesValue(key_value& k_v) {
+	if (k_v.value.empty()) return false;
+	string parsed, input = k_v.value;
+	stringstream input_ss(input);
+
+	while (getline(input_ss, parsed, ' ')) {
+		if (parsed.empty()) return false;
+		this->serverNames.push_back(parsed);
+	}
+	return true;
+}
+
+bool ConfigurationParser::isValidPortSegment(const string& segment) {
+	if (kv.key != "ports") return false;
+	if (segment.empty()) return false;
+
+	for (size_t i = 0; i < segment.length(); i++) {
+		if (!isdigit(segment[i])) return false;
+	}
+
+	int value = 0;
+	istringstream iss(segment);
+	iss >> value;
+
+	return (value >= 1024 && value <= 65535);
+}
+
+bool ConfigurationParser::extractPortValue(key_value& k_v) {
+	/* 1024 -> 65535 : Registred ports. */
+	string parsed, input = k_v.value;
+	stringstream input_ss(input);
+	
+	while (getline(input_ss, parsed, ',')) {
+		if (!isValidPortSegment(parsed)) return false;
+		this->ports.push_back(parsed);
+	}
+	return true;
+}
+
 bool ConfigurationParser::isValidIPSegment(const string& segment) {
 	if (kv.key != "host") return false;
 	if (segment.empty()) return false;
@@ -73,12 +126,11 @@ bool ConfigurationParser::isValidIPSegment(const string& segment) {
 	return (value >= 0 && value <= 255);
 }
 
-bool ConfigurationParser::extractHostKey(key_value k_v) {
+bool ConfigurationParser::extractHostKey(key_value& k_v) { 
 	int currentCountOfSubnets = 0;
 	string parsed, input = k_v.value;
 	stringstream input_ss(input);
 	while (getline(input_ss, parsed, '.') && ++currentCountOfSubnets) {
-		cout << "Parsed Ya Zebi: " << parsed << endl;
 		if (!isValidIPSegment(parsed)) return false;
 		if (currentCountOfSubnets > 4) return false;
 	}
