@@ -16,7 +16,6 @@ int main(int ac, char *av[]) {
 	}
 	string avv = av[1];
 	string parsed,input=avv;
-	stringstream input_stringstream(input);
 
 	for (int i = 0; i < 4; i++) {	
 		if (getline(input_stringstream,parsed,'.')) {

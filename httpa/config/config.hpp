@@ -41,7 +41,7 @@ class ServerConfiguration
         vector<string> ports;
         string host;
         string bodySize;
-        size_t maxBodySize;
+        ssize_t maxBodySize;
         vector<string> serverNames;
         map<string, string> errorPages;
         map<string, Location> locations;
