@@ -44,8 +44,7 @@ class ConfigurationParser : public ServerConfiguration
 
 		bool extractClientMaxBodySizeValue(key_value& k_v);
 
-		bool extractErrorPages(fstream& file);
+		bool extractErrorPages(ifstream& file, int& currentLineNumber);
 
-		
 };
 #endif /* ayeh ayeh, configParser.hpp */

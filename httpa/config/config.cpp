@@ -21,6 +21,7 @@ void ConfigurationParser::load(ifstream& file) {
 		while (getline(file, line) && ++currentLineNumber) {
 			int currentIndentLevel = getIndentLevel(line);
 			clear_kv(kv);
+			cout << "Line jdid li rje3 houw li fih host: " << line << endl;
 
 			if (LineIsCommentOrEmpty(line)) continue ;
 			if (currentIndentLevel != 1) syntaxError(currentLineNumber);
@@ -52,8 +53,10 @@ void ConfigurationParser::load(ifstream& file) {
 				else syntaxError(currentLineNumber);
 			}
 			else if (line.find("error_pages:") != string::npos) {
-				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
-
+				if (!extractErrorPages(file, currentLineNumber)) syntaxError(currentLineNumber);
+				cout << "Line li kantsnah yrje3 ah: " << line << endl;
+				for (map<int, string>::iterator it = this->errorPages.begin(); it != this->errorPages.end(); it++)
+					cout << "errorPage[" << it->first << "] = " << it->second << endl;
 			}
 			else if (line.find("client_max_body_size:") != string::npos) {
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
@@ -85,12 +88,39 @@ int ConfigurationParser::getIndentLevel(const string& line) {
 	return IndentLevel;
 }
 
-bool ConfigurationParser::extractErrorPages(fstream& file) {
+bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumber) {
 	string line;
-	while (getline(file, line)) {
+	bool foundValidErrorPage = false;
+
+	while (getline(file, line) && ++currentLineNumber) {
+		if (LineIsCommentOrEmpty(line)) continue ;
+
 		int CurrentIndentLevel = getIndentLevel(line);
-		if (CurrentIndentLevel != 2) return false;
+		if (CurrentIndentLevel != 2) {
+			/* Move back one line */
+			cout << "line wesst rj3a: " << line << endl;
+			cout << "current line num fl error != 2" << currentLineNumber <<endl;
+			file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
+			currentLineNumber--;
+			/* return false if we haven't found at least we valid error page */
+			return foundValidErrorPage;
+		}
+		clear_kv(kv);
+		if (!verifyLineFormat(line, 1))
+			return false;
+		for (size_t i = 0; i < kv.key.length(); i++) {
+			if (!isdigit(kv.key[i])) return false;
+		}
+		int value = 0;
+		istringstream iss(kv.key);
+		iss >> value;
+		if (value < 400 || value > 599) return false;
+
+		this->errorPages[value] = kv.value;
+		cout << "safy ha7na storina asadi9" << endl;
+		foundValidErrorPage = true;
 	}
+	return foundValidErrorPage;
 }
 
 bool ConfigurationParser::extractClientMaxBodySizeValue(key_value& k_v) {

@@ -43,7 +43,7 @@ class ServerConfiguration
         string bodySize;
         ssize_t maxBodySize;
         vector<string> serverNames;
-        map<string, string> errorPages;
+        map<int, string> errorPages;
         map<string, Location> locations;
         // Getters
         string getErrorPage(string code);

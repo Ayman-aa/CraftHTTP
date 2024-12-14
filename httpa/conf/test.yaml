@@ -1,5 +1,4 @@
 server:
-	host: 127.0.0.255
 
 															
 					    
@@ -8,5 +7,6 @@ server:
 	server_names: 48k483x .fr frost.fr
 	client_max_body_size: 2800000
 	error_pages:
-		404: error_pages/404.html
-		504:
+		04: error_pages/404.html
+	host: 127.0.0.1
+	location: 40.40.404.0
