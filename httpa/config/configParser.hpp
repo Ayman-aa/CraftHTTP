@@ -46,5 +46,6 @@ class ConfigurationParser : public ServerConfiguration
 
 		bool extractErrorPages(ifstream& file, int& currentLineNumber);
 
+		bool extractLocationInfos(ifstream& file, int& currentLineNumber);
 };
 #endif /* ayeh ayeh, configParser.hpp */

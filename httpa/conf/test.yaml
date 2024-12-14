@@ -7,6 +7,16 @@ server:
 	server_names: 48k483x .fr frost.fr
 	client_max_body_size: 2800000
 	error_pages:
-		04: error_pages/404.html
+		404: error_pages/404.html
+		404: error_p/404.html
+
 	host: 127.0.0.1
-	location: 40.40.404.0
+	location: /root
+			autoindex: on
+			allowed_methods: GET,POST,DELETE
+			root: ./www
+			cgi_path:
+				php: /usr/bin/php
+				py: /usr/bin/python3
+				rb: /usr/bin/ruby
+

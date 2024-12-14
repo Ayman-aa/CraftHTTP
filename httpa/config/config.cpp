@@ -65,6 +65,9 @@ void ConfigurationParser::load(ifstream& file) {
 				}
 				else syntaxError(currentLineNumber);
 			}
+			else if (line.find("location:") != string::npos){
+				cout << "L7ma9 ya zebi daba" << endl;
+			}
 			else syntaxError(currentLineNumber);
 		}
 	}
@@ -87,6 +90,11 @@ int ConfigurationParser::getIndentLevel(const string& line) {
 	}
 	return IndentLevel;
 }
+
+bool extractLocationInfos(ifstream& file, int& currentLineNumber) {
+	
+}
+
 
 bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumber) {
 	string line;
