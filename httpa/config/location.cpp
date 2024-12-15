@@ -35,8 +35,39 @@ void ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
 			if (!extractAllowedMethods(kv, location)) syntaxError(currentLineNumber);
 			printLocation(location);
 		}
+		else if (line.find("index:")) {
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
+			if (!extractIndexValues(kv, location)) syntaxError(currentLineNumber);
+			printLocation(location);
+		}
 		else syntaxError(currentLineNumber);
 	}
+}
+
+bool ConfigurationParser::isValidIndex(const string& index) {
+	const vector<string> invalidChars = {"&", "|", ";", "$"};
+
+	if (index.find(' ') != string::npos) return false;
+	if (index.find("../") != string::npos) return false;
+	if (index.find('/') != string::npos) return false;
+
+	for (size_t i = 0; i < 3 ; i++)
+		if (index.find(invalidChars[i]) != string::npos) return false;
+	return true;
+}
+
+bool ConfigurationParser::extractIndexValues(key_value& k_v, Location& location) {
+	if (k_v.value.empty()) return false;
+	if (k_v.key != "index") return false;
+
+	string parsed, input = k_v.value;
+	istringstream iss(input);
+
+	while (getline(iss, parsed, ',')) {
+		if (!isValidIndex(parsed)) return false;
+		location.index.push_back(parsed);
+	}
+	return true;
 }
 
 bool ConfigurationParser::isValidMethod(const string& method) {

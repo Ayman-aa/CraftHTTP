@@ -55,5 +55,8 @@ class ConfigurationParser : public ServerConfiguration
 
 		bool extractAllowedMethods(key_value& k_v, Location& location);
 		bool isValidMethod(const string& method);
+
+		bool extractIndexValues(key_value& k_v, Location& location);
+		bool isValidIndex(const string& index);
 };
 #endif /* ayeh ayeh, configParser.hpp */
