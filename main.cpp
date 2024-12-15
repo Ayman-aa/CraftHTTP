@@ -11,8 +11,8 @@ int main() {
     server.errorPages["404"] = "/home/aymanisme/CraftHTTP/errorPages/404.html";
     server.errorPages["405"] = "/home/aymanisme/CraftHTTP/errorPages/405.html";
 
-    std::cout << "Server host: " << server.host << std::endl;
-    std::cout << "Root of location /: " << server.locations["/"].root << std::endl;
+     cout << "Server host: " << server.host <<  endl;
+     cout << "Root of location /: " << server.locations["/"].root <<  endl;
 
     Server serverInstance(server);
     serverInstance.run();

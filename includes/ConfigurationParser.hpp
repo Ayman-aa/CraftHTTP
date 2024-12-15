@@ -3,7 +3,7 @@
 
 #include "ServerConfiguration.hpp"
 
-class ConfigurationParser : public ServerConfiguration
+class ConfigurationParser
 {
     
 };
