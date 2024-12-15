@@ -11,12 +11,15 @@ server:
 		404: error_p/404.html
 
 	host: 127.0.0.1
+
 	location: /root
-			autoindex: on
-			allowed_methods: GET,POST,DELETE
-			root: ./www
-			cgi_path:
-				php: /usr/bin/php
-				py: /usr/bin/python3
-				rb: /usr/bin/ruby
+		autoindex: on
+		allowed_methods: GET,POST,DELETE
+		index: i.html h hello.py
+		redirection_return: 301 /location_path
+		root: ./www
+		cgi_path:
+			php: /usr/bin/php
+			py: /usr/bin/python3
+			rb: /usr/bin/ruby
 

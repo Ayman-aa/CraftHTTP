@@ -15,6 +15,8 @@ struct key_value {
 	bool isCommentOrEmptyLine;
 };
 
+extern key_value kv;
+
 class ConfigurationParser : public ServerConfiguration
 {
 	public:
@@ -46,6 +48,7 @@ class ConfigurationParser : public ServerConfiguration
 
 		bool extractErrorPages(ifstream& file, int& currentLineNumber);
 
+		bool servLocationLine(key_value& kv);
 		bool extractLocationInfos(ifstream& file, int& currentLineNumber);
 };
 #endif /* ayeh ayeh, configParser.hpp */
