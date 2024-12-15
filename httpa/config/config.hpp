@@ -11,6 +11,7 @@
 #include <sstream>
 #include <vector>
 #include <map>
+#include <set>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>

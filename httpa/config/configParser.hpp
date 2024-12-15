@@ -48,7 +48,12 @@ class ConfigurationParser : public ServerConfiguration
 
 		bool extractErrorPages(ifstream& file, int& currentLineNumber);
 
-		bool servLocationLine(key_value& kv);
-		bool extractLocationInfos(ifstream& file, int& currentLineNumber);
+		void extractLocationInfos(ifstream& file, int& currentLineNumber);
+		bool servLocationLine(key_value& k_v);
+
+		bool extractAutoIndexValue(key_value& k_v, Location& location);
+
+		bool extractAllowedMethods(key_value& k_v, Location& location);
+		bool isValidMethod(const string& method);
 };
 #endif /* ayeh ayeh, configParser.hpp */

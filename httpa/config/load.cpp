@@ -68,6 +68,7 @@ void ConfigurationParser::load(ifstream& file) {
 			else if (line.find("location:") != string::npos){
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
 				if (!servLocationLine(kv)) syntaxError(currentLineNumber);
+				extractLocationInfos(file, currentLineNumber);
 			}
 			else syntaxError(currentLineNumber);
 		}

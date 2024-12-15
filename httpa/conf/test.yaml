@@ -14,7 +14,7 @@ server:
 
 	location: /root
 		autoindex: on
-		allowed_methods: GET,POST,DELETE
+		allowed_methods: GET,POST,DELETE 
 		index: i.html h hello.py
 		redirection_return: 301 /location_path
 		root: ./www
