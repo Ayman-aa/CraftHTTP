@@ -153,7 +153,7 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
 	 		colonCount++;
 	}
 	cout << "ColonCount: " << colonCount << endl;
-	if (colonCount != 1) return false;
+	if (colonCount != 1 && (line.find("return:") == string::npos)) return false;
 
 	/* na5do pos of colona */
 	size_t colonPosition = line.find(':');
@@ -168,6 +168,7 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
 	size_t firstNoSpace = kv.value.find_first_not_of(" \t");
 	size_t lastNoSpace = kv.value.find_last_not_of(" \t");
 	if ((kv.value.empty() || firstNoSpace == string::npos) && kv.key == "error_pages") return true;
+	if ((kv.value.empty() || firstNoSpace == string::npos) && kv.key == "cgi_path") return true;
 	if (kv.value.empty() || firstNoSpace == string::npos) return false;
 	if (firstNoSpace != string::npos && lastNoSpace  != string::npos)
 		kv.value = kv.value.substr(firstNoSpace, lastNoSpace - firstNoSpace + 1);

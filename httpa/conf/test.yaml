@@ -9,14 +9,15 @@ server:
 	error_pages:
 		404: error_pages/404.html
 		404: error_p/404.html
+		#error_pddages:
 
 	host: 127.0.0.1
 
 	location: /root
-		autoindex: on
+		#autoindex: on
 		allowed_methods: GET,POST,DELETE 
 		index: i.html,h,hello.py
-		redirection_return: 301 /location_path
+		return: http://google.com
 		root: ./www
 		cgi_path:
 			php: /usr/bin/php

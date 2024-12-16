@@ -18,6 +18,8 @@ void ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
 	string line;
 	Location location;
 
+	location.autoindex = false;
+
 	while (getline(file, line) && ++currentLineNumber) {
 		int currentIndentLevel = getIndentLevel(line);
 
@@ -28,24 +30,103 @@ void ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
 		if (line.find("autoindex:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractAutoIndexValue(kv, location)) syntaxError(currentLineNumber);
-			printLocation(location);
+			//printLocation(location);
 		}
 		else if (line.find("allowed_methods:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractAllowedMethods(kv, location)) syntaxError(currentLineNumber);
-			printLocation(location);
+			//printLocation(location);
 		}
-		else if (line.find("index:")) {
+		else if (line.find("index:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractIndexValues(kv, location)) syntaxError(currentLineNumber);
+			//printLocation(location);
+		}
+		else if (line.find("return:") != string::npos) {
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
+			if (!extractReturnValue(kv, location)) syntaxError(currentLineNumber);
+			//printLocation(location);
+		}
+		else if (line.find("root:") != string::npos) {
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
+			if (!extractRootValue(kv, location)) syntaxError(currentLineNumber);
+			//printLocation(location);
+		}
+		else if (line.find("cgi_path:") != string::npos) {
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
+			if (!extractCgiPath(file, location, currentLineNumber)) syntaxError(currentLineNumber);
 			printLocation(location);
 		}
 		else syntaxError(currentLineNumber);
 	}
 }
 
+bool ConfigurationParser::isValidCgiKey(const string& method) {
+	/* std++98 sir 4er t7awa */
+	static  set<string> cgi;
+	static bool init = false;
+
+	if (!init) {
+		cgi.insert("php");
+		cgi.insert("rb");
+		cgi.insert("py");
+		init = true;
+	}	
+	return cgi.find(method) != cgi.end();
+}
+
+bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int& currentLineNumber) {
+	string line;
+	bool findPath = false;
+	set<string> cgi;
+	while (getline(file, line) && ++currentLineNumber) {
+		if (LineIsCommentOrEmpty(line)) continue;
+
+		int CurrentIndentLevel = getIndentLevel(line);
+		if (CurrentIndentLevel != 3) {
+			file.seekg(file.tellg() - static_cast<streamoff>(line.length() - 1));
+			currentLineNumber--;
+			return findPath;
+		}
+		clear_kv(kv);
+		if (!verifyLineFormat(line, 1)) return false;
+		if (!isValidCgiKey(kv.key)) return false;
+		if (!cgi.insert(kv.key).second)
+			return false;
+		if (kv.value.empty()) return false;
+
+		location.cgi_path[kv.key] = kv.value;
+		findPath = true;
+	}
+	return findPath;
+}
+
+bool ConfigurationParser::extractRootValue(key_value& k_v, Location& location) {
+	if (k_v.value.empty()) return false;
+	if (k_v.key != "root") return false;
+
+	if (k_v.value.find(' ') != string::npos) return false;
+	location.root = k_v.value;
+	return true;
+}
+
+bool ConfigurationParser::extractReturnValue(key_value& k_v, Location& location) {
+	if (k_v.value.empty()) return false;
+	if (k_v.key != "return") return false;
+	
+	if (k_v.value.find("..") != string::npos) return false;
+	if (k_v.value.find(' ') != string::npos) return false;
+	location.redirection_return = k_v.value;
+	return true;
+}
+
 bool ConfigurationParser::isValidIndex(const string& index) {
-	const vector<string> invalidChars = {"&", "|", ";", "$"};
+	vector<char> invalidChars;
+
+	invalidChars.push_back('&');
+	invalidChars.push_back('|');
+	invalidChars.push_back(';');
+	invalidChars.push_back('$');
 
 	if (index.find(' ') != string::npos) return false;
 	if (index.find("../") != string::npos) return false;

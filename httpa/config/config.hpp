@@ -26,12 +26,12 @@ struct Location
     // Location parameters
     bool autoindex;
     string root;
-    string path;
+    string path; /* hada */
     string redirection_return;
-    string upload_path;
+    string upload_path; /* ou hada */
     vector<string> allow_methods;
     vector<string> index;
-    map<string, string> cgi_path; 
+    map<string, string> cgi_path;  /* ou hadi baynin */
 };
 
 class ServerConfiguration

@@ -58,5 +58,12 @@ class ConfigurationParser : public ServerConfiguration
 
 		bool extractIndexValues(key_value& k_v, Location& location);
 		bool isValidIndex(const string& index);
+
+		bool extractReturnValue(key_value& k_v, Location& location);
+
+		bool extractRootValue(key_value& k_v, Location& location);
+
+		bool isValidCgiKey(const string& method);
+		bool extractCgiPath(ifstream& file, Location& location, int& currentLineNumber);
 };
-#endif /* ayeh ayeh, configParser.hpp */
+#endif /* ayeh ayeh, configParser.hpp */
