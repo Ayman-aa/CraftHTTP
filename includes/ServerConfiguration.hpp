@@ -11,6 +11,7 @@
 #include <arpa/inet.h>
 #include <sys/epoll.h>
 #include <unistd.h>
+#include <cstdlib>
 #include <cstring>
 #include <fstream>
 #include <sstream>

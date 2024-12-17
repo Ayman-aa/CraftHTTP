@@ -5,7 +5,8 @@
 
 class ConfigurationParser
 {
-    
+    public:
+        vector<ServerConfiguration> servers;
 };
 typedef ConfigurationParser ClusterConfiguration;
 #endif

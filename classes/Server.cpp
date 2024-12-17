@@ -1,5 +1,6 @@
 #include "../includes/Server.hpp"
 
+
 Server::Server(ServerConfiguration& config)
     : socket(-1), config(config)
 {
@@ -78,16 +79,16 @@ void Server::listenSocket(int socketfd, const std::string& port)
 void Server::createSockets()
 {
     std::cout << "Server starting..." << std::endl;
-    for (const auto& port : config.ports) {
-        struct addrinfo* serverInfo = this->serverInfo(port);
+    for (size_t i = 0; i < config.ports.size(); ++i) {
+        struct addrinfo* serverInfo = this->serverInfo(config.ports[i]);
         if (serverInfo) {
-            this->bindSocket(serverInfo, port);
+            this->bindSocket(serverInfo, config.ports[i]);
             freeaddrinfo(serverInfo);
         }
     }
 
-    for (const auto& socketfd : sockets) {
-        this->listenSocket(socketfd, fd_to_port[socketfd]);
+    for (size_t i = 0; i < sockets.size(); ++i) {
+        this->listenSocket(sockets[i], fd_to_port[sockets[i]]);
     }
 
     if (!sockets.empty()) {

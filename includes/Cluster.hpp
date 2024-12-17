@@ -2,27 +2,27 @@
 #define CLUSTER_HPP
 
 #include "Server.hpp"
+#include "ServerConfiguration.hpp"
 
 class Cluster {
 public:
-    Cluster(const ServerConfiguration& config);
+    Cluster(ServerConfiguration& config);
     ~Cluster();
     void run();
 
 private:
     int epoll_fd;
     ServerConfiguration config;
-    std::vector<Server*> servers;
+    Server* server;
     std::map<int, int> client_to_server;
 
     void createEpoll();
     void addSocketToEpoll(int fd);
     void handleEvents(struct epoll_event* events, int numEvents);
     void acceptConnections(int serverSocket);
-    void handleExistingConnection(int clientSocket, uint32_t events);
+    void handleClient(int client_fd);
+    void serveErrorPage(int client_fd, const std::string& error_code);
     bool isServerFd(int fd);
-    Server& getServerByFd(int fd);
-    Server& getServerByClientFd(int fd);
     void cleanup();
 };
 
