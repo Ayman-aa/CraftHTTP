@@ -4,61 +4,76 @@
 
 void printLocation(const Location& location);
 
-bool ConfigurationParser::servLocationLine(key_value& k_v) {
+bool ConfigurationParser::servLocationLine(key_value& k_v, Location& location) {
 	if (k_v.value.empty()) return false;
 	if (k_v.key != "location") return false;
 
 	if (k_v.value[0] != '/') return false;
 	if (k_v.value.find("..") != string::npos) return false;
 	if (k_v.value.find("//") != string::npos) return false;
+	location.path = kv.value;
 	return true;	
 }
 
-void ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineNumber) {
+bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineNumber, Location& location) {
 	string line;
-	Location location;
 
 	location.autoindex = false;
+	bool findLoc = false;
 
 	while (getline(file, line) && ++currentLineNumber) {
 		int currentIndentLevel = getIndentLevel(line);
 
+		cout << "7na wesst l while, 3lash Line: "<< "'" << line << "'" << endl;
 		if (LineIsCommentOrEmpty(line)) continue;
-		if (currentIndentLevel != 2) syntaxError(currentLineNumber);
+		if (currentIndentLevel != 2) {
+			cout << "Line li b4ina ndriou bih rojo3 b zaman: " << "'" << line << "'" << endl;
+			file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
+			currentLineNumber--;
+			return findLoc;
+		}
 		clear_kv(kv);
 
 		if (line.find("autoindex:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractAutoIndexValue(kv, location)) syntaxError(currentLineNumber);
+			findLoc = true;
 			//printLocation(location);
 		}
 		else if (line.find("allowed_methods:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractAllowedMethods(kv, location)) syntaxError(currentLineNumber);
+			findLoc = true;
 			//printLocation(location);
 		}
 		else if (line.find("index:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractIndexValues(kv, location)) syntaxError(currentLineNumber);
+			findLoc = true;
 			//printLocation(location);
 		}
 		else if (line.find("return:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractReturnValue(kv, location)) syntaxError(currentLineNumber);
+			findLoc = true;
 			//printLocation(location);
 		}
 		else if (line.find("root:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractRootValue(kv, location)) syntaxError(currentLineNumber);
+			findLoc = true;
 			//printLocation(location);
 		}
 		else if (line.find("cgi_path:") != string::npos) {
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
 			if (!extractCgiPath(file, location, currentLineNumber)) syntaxError(currentLineNumber);
-			printLocation(location);
+			findLoc = true;
+			//printLocation(location);
 		}
-		else syntaxError(currentLineNumber);
+		else if (line.find("server:") != string::npos) continue ;
+		else syntaxError(currentLineNumber); 
 	}
+	return findLoc;
 }
 
 bool ConfigurationParser::isValidCgiKey(const string& method) {
@@ -81,10 +96,10 @@ bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int
 	set<string> cgi;
 	while (getline(file, line) && ++currentLineNumber) {
 		if (LineIsCommentOrEmpty(line)) continue;
-
+		cout << "Had line l5er fin 5litihi: " << line << endl;
 		int CurrentIndentLevel = getIndentLevel(line);
 		if (CurrentIndentLevel != 3) {
-			file.seekg(file.tellg() - static_cast<streamoff>(line.length() - 1));
+			file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
 			currentLineNumber--;
 			return findPath;
 		}

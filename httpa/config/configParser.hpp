@@ -25,6 +25,8 @@ class ConfigurationParser : public ServerConfiguration
 		ConfigurationParser(string& filePath);
 		/* end */
 
+		vector<ServerConfiguration*> servers;
+		ServerConfiguration currentServer;
 		void load(ifstream& file);
 		int getIndentLevel(const string& line);
 		bool isValidRootLevel(string& line);
@@ -48,8 +50,8 @@ class ConfigurationParser : public ServerConfiguration
 
 		bool extractErrorPages(ifstream& file, int& currentLineNumber);
 
-		void extractLocationInfos(ifstream& file, int& currentLineNumber);
-		bool servLocationLine(key_value& k_v);
+		bool extractLocationInfos(ifstream& file, int& currentLineNumber, Location& location);
+		bool servLocationLine(key_value& k_v, Location& location);
 
 		bool extractAutoIndexValue(key_value& k_v, Location& location);
 
@@ -66,4 +68,4 @@ class ConfigurationParser : public ServerConfiguration
 		bool isValidCgiKey(const string& method);
 		bool extractCgiPath(ifstream& file, Location& location, int& currentLineNumber);
 };
-#endif /* ayeh ayeh, configParser.hpp */
+#endif /* ayeh ayeh, configParser.hpp */
