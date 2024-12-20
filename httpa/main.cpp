@@ -26,8 +26,8 @@ std::string intToString(int num) {
 
 void printAllServers(const vector<ServerConfiguration*>& servers) {
     cout << "\n" << MAGENTA << "=====================================";
-    cout << "\n||      WEBSERV CONFIGURATION      ||";
-    cout << "\n=====================================" << RESET << "\n\n";
+    cout << "\n||      WEBSERV WITH " << servers.size() << " SERVS       ||";
+    cout << "\n=============================.=======" << RESET << "\n\n";
     
     if (servers.empty()) {
         cout << RED << "No servers configured!" << RESET << endl;
@@ -48,6 +48,7 @@ void printAllServers(const vector<ServerConfiguration*>& servers) {
         cout << YELLOW << "Basic Configuration:" << RESET << endl;
         cout << "├─ Host: " << servers[i]->host << endl;
         
+		
         // Print Ports
         cout << "├─ Ports: ";
         for (size_t j = 0; j < servers[i]->ports.size(); ++j) {

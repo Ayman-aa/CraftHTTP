@@ -1,5 +1,5 @@
 server:
-	ports: 8080,8089,5050,
+	ports: 8080,8081
 	server_names: 48k483x .fr frost.fr
 	host: 127.0.0.1
 	client_max_body_size: 2800000
@@ -15,13 +15,14 @@ server:
 		root: ./www
 		cgi_path:
 			php: /usr/bin/php
+
 server:
 	ports: 8080,8089,5050,
 	server_names: 48k483x .fr frost.fr
 	client_max_body_size: 2800000
 	error_pages:
 		404: error_pages/404.html
-		404: error_p/404.html
+		405: error_p/405.html
 	#host: 127.0.0.1
 
 	location: /root
@@ -35,11 +36,11 @@ server:
 			py: /usr/bin/python3
 			rb: /usr/bin/ruby
 	host: 127.0.0.1
-	#location: /r
-		#allowed_methods: GET,POST,DELETE
-		#index: i.html,h,hello.py
-		#return: http://google.com
-		#root: ./www
-		#cgi_path:
-			#php: /usr/bin/php
-			#py: /usr/bin/python3
+	location: /r
+		allowed_methods: GET,POST,DELETE
+		index: i.html,h,hello.py
+		return: http://google.com
+		root: ./www
+		cgi_path:
+			php: /usr/bin/php
+			py: /usr/bin/python3

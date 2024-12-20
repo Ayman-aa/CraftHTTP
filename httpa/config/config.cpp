@@ -30,7 +30,7 @@ bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumb
 		iss >> value;
 		if (value < 400 || value > 599) return false;
 
-		this->errorPages[value] = kv.value;
+		currentServer.errorPages[value] = kv.value;
 		cout << "safy ha7na storina asadi9" << endl;
 		foundValidErrorPage = true;
 	}
@@ -51,7 +51,7 @@ bool ConfigurationParser::extractClientMaxBodySizeValue(key_value& k_v) {
 	if (value < 0) return false;
 	if (value > MAX_BODY_SIZE) return false;
 
-	this->maxBodySize = value;
+	currentServer.maxBodySize = value;
 	return true;	
 }
 
@@ -63,7 +63,7 @@ bool ConfigurationParser::extractServerNamesValue(key_value& k_v) {
 
 	while (getline(input_ss, parsed, ' ')) {
 		if (parsed.empty()) return false;
-		this->serverNames.push_back(parsed);
+		currentServer.serverNames.push_back(parsed);
 	}
 	return true;
 }
@@ -90,7 +90,7 @@ bool ConfigurationParser::extractPortValue(key_value& k_v) {
 	
 	while (getline(input_ss, parsed, ',')) {
 		if (!isValidPortSegment(parsed)) return false;
-		this->ports.push_back(parsed);
+		currentServer.ports.push_back(parsed);
 	}
 	return true;
 }

@@ -14,16 +14,12 @@ ConfigurationParser::ConfigurationParser(string& filePath) {
 void ConfigurationParser::load(ifstream& file) {
 	string line;
 	int currentLineNumber = 0;
-	bool firstServer = true;
 
 	while (getline(file, line) && ++currentLineNumber) {
 		cout << "OUTER LOOP - Current line: '" << line << "'" << endl;
 		if (!isValidRootLevel(line)) syntaxError(currentLineNumber);
 
 		/* Create new server for each server block */
-		/*if (!firstServer)
-			servers.push_back(new ServerConfiguration(currentServer));
-		firstServer = false; */
 
 		while (getline(file, line) && ++currentLineNumber) {
 			int currentIndentLevel = getIndentLevel(line);
@@ -33,6 +29,7 @@ void ConfigurationParser::load(ifstream& file) {
 			if (LineIsCommentOrEmpty(line)) continue ;
 			if (line == "server:"  && !currentIndentLevel ) {
 				cout << "Found new server block, pushing current server and breaking" << endl;
+				cout << "ch7al men merra ya zebi wesh hreb lik" << endl;
 				servers.push_back(new ServerConfiguration(currentServer));
 				currentServer = ServerConfiguration();
 				/* Move file pointer back to reprocess the "server:" line */
@@ -83,22 +80,16 @@ void ConfigurationParser::load(ifstream& file) {
 			}
 			else if (line.find("location:") != string::npos){
 				Location location; /* reseti l9lawi nchoufou */
-				cout << "tmi7wa lwla, lal9itini mrra a5ra y3ni rah slet weld nass" << endl;
 				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
 				if (!servLocationLine(kv, location)) syntaxError(currentLineNumber);
 				if (!extractLocationInfos(file, currentLineNumber, location)) syntaxError(currentLineNumber);
 				currentServer.locations[location.path] = location;
-				cout << "Hanhna 5rejna ya zebi" << endl;
 			}
-			else
-			{
-				cout << "l3assba, that's it" << endl;
-			 	syntaxError(currentLineNumber); 
-			}
+			else syntaxError(currentLineNumber); 
 		}
-		if (!firstServer)
-			servers.push_back(new ServerConfiguration(currentServer));
 	}
+	cout << "ch7al men merra ya zebi wesh hreb lik, hadi dial lta7t ya zebi" << endl;
+	servers.push_back(new ServerConfiguration(currentServer));
 }
 
 bool ConfigurationParser::isValidRootLevel(string& line) {

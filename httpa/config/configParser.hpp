@@ -24,6 +24,11 @@ class ConfigurationParser : public ServerConfiguration
 		/* init constructor */
 		ConfigurationParser(string& filePath);
 		/* end */
+		
+		~ConfigurationParser() {
+			for (size_t i = 0; i < servers.size(); i++) 
+				delete servers[i];
+		}
 
 		vector<ServerConfiguration*> servers;
 		ServerConfiguration currentServer;
