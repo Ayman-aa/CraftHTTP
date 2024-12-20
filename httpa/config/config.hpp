@@ -38,6 +38,9 @@ class ServerConfiguration
 {
     public:
         // Constructor
+		ServerConfiguration(){
+			maxBodySize = -1;
+		}
         // parameters from server block
         vector<string> ports;
         string host;

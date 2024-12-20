@@ -14,19 +14,16 @@ ConfigurationParser::ConfigurationParser(string& filePath) {
 void ConfigurationParser::load(ifstream& file) {
 	string line;
 	int currentLineNumber = 0;
-	currentServer.maxBodySize = -1;
-	//Location location;
-	int serverCount = -1;
+	bool firstServer = true;
 
 	while (getline(file, line) && ++currentLineNumber) {
+		cout << "wlah mafhemt 9alwa blah: " << line << endl;
 		if (!isValidRootLevel(line)) syntaxError(currentLineNumber);
-		serverCount++;
-		if (serverCount > 0) {
-			servers.push_back(&currentServer);
-			ServerConfiguration temp;
-			currentServer = temp;
-			currentServer.maxBodySize = -1;
-		}
+
+		/* Create new server for each server block */
+		if (!firstServer)
+			servers.push_back(new ServerConfiguration(currentServer));
+		firstServer = false;
 
 		while (getline(file, line) && ++currentLineNumber) {
 			int currentIndentLevel = getIndentLevel(line);
@@ -91,8 +88,8 @@ void ConfigurationParser::load(ifstream& file) {
 			 	syntaxError(currentLineNumber); 
 			}
 		}
-		if (serverCount >= 0)
-			servers.push_back(&currentServer);
+		if (!firstServer)
+			servers.push_back(new ServerConfiguration(currentServer));
 	}
 }
 
