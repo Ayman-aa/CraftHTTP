@@ -35,6 +35,7 @@ void ConfigurationParser::load(ifstream& file) {
 				cout << "Found new server block, pushing current server and breaking" << endl;
 				servers.push_back(new ServerConfiguration(currentServer));
 				currentServer = ServerConfiguration();
+				/* Move file pointer back to reprocess the "server:" line */
 				file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
 				currentLineNumber--;
 				break;
