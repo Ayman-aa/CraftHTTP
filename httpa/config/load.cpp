@@ -21,9 +21,9 @@ void ConfigurationParser::load(ifstream& file) {
 		if (!isValidRootLevel(line)) syntaxError(currentLineNumber);
 
 		/* Create new server for each server block */
-		if (!firstServer)
+		/*if (!firstServer)
 			servers.push_back(new ServerConfiguration(currentServer));
-		firstServer = false;
+		firstServer = false; */
 
 		while (getline(file, line) && ++currentLineNumber) {
 			int currentIndentLevel = getIndentLevel(line);
@@ -31,7 +31,11 @@ void ConfigurationParser::load(ifstream& file) {
 			cout << "Line jdid li rje3 houw li fih host: " << "'" << line << "'"<< endl;
 
 			if (LineIsCommentOrEmpty(line)) continue ;
-			if (line.find("server:") != string::npos && !currentIndentLevel ) break;
+			if (line == "server:"  && !currentIndentLevel ) {
+				servers.push_back(new ServerConfiguration(currentServer));
+				currentServer = ServerConfiguration();
+				break;
+			}
 			if (currentIndentLevel != 1) syntaxError(currentLineNumber);
 
 			if (line.find("host:") != string::npos) {
