@@ -17,7 +17,7 @@ void ConfigurationParser::load(ifstream& file) {
 	bool firstServer = true;
 
 	while (getline(file, line) && ++currentLineNumber) {
-		cout << "wlah mafhemt 9alwa blah: " << line << endl;
+		cout << "OUTER LOOP - Current line: '" << line << "'" << endl;
 		if (!isValidRootLevel(line)) syntaxError(currentLineNumber);
 
 		/* Create new server for each server block */
@@ -28,12 +28,15 @@ void ConfigurationParser::load(ifstream& file) {
 		while (getline(file, line) && ++currentLineNumber) {
 			int currentIndentLevel = getIndentLevel(line);
 			clear_kv(kv);
-			cout << "Line jdid li rje3 houw li fih host: " << "'" << line << "'"<< endl;
-
+			cout << "INNER LOOP - Current line: '" << line << "'" << endl;
+			cout << "Current indent level: " << currentIndentLevel << endl;
 			if (LineIsCommentOrEmpty(line)) continue ;
 			if (line == "server:"  && !currentIndentLevel ) {
+				cout << "Found new server block, pushing current server and breaking" << endl;
 				servers.push_back(new ServerConfiguration(currentServer));
 				currentServer = ServerConfiguration();
+				file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
+				currentLineNumber--;
 				break;
 			}
 			if (currentIndentLevel != 1) syntaxError(currentLineNumber);
