@@ -18,14 +18,14 @@ server:
 			py: /usr/bin/python3
 			rb: /usr/bin/ruby
 	host: 127.0.0.1
-	location: /r
-		allowed_methods: GET,POST,DELETE
-		index: i.html,h,hello.py
-		return: http://google.com
-		root: ./www
-		cgi_path:
-			php: /usr/bin/php
-			py: /usr/bin/python3
+	#location: /r
+		#allowed_methods: GET,POST,DELETE
+		#index: i.html,h,hello.py
+		#return: http://google.com
+		#root: ./www
+		#cgi_path:
+			#php: /usr/bin/php
+			#py: /usr/bin/python3
 
 
 server:
@@ -48,11 +48,11 @@ server:
 			py: /usr/bin/python3
 			rb: /usr/bin/ruby
 	host: 127.0.0.1
-	location: /r
-		allowed_methods: GET,POST,DELETE
-		index: i.html,h,hello.py
-		return: http://google.com
-		root: ./www
-		cgi_path:
-			php: /usr/bin/php
-			py: /usr/bin/python3
+	#location: /r
+		#allowed_methods: GET,POST,DELETE
+		#index: i.html,h,hello.py
+		#return: http://google.com
+		#root: ./www
+		#cgi_path:
+			#php: /usr/bin/php
+			#py: /usr/bin/python3

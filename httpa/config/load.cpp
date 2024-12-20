@@ -34,6 +34,7 @@ void ConfigurationParser::load(ifstream& file) {
 			cout << "Line jdid li rje3 houw li fih host: " << "'" << line << "'"<< endl;
 
 			if (LineIsCommentOrEmpty(line)) continue ;
+			if (line.find("server:") != string::npos && !currentIndentLevel ) break;
 			if (currentIndentLevel != 1) syntaxError(currentLineNumber);
 
 			if (line.find("host:") != string::npos) {
@@ -84,7 +85,6 @@ void ConfigurationParser::load(ifstream& file) {
 				currentServer.locations[location.path] = location;
 				cout << "Hanhna 5rejna ya zebi" << endl;
 			}
-			else if (line.find("server:") != string::npos) break;
 			else
 			{
 				cout << "l3assba, that's it" << endl;
