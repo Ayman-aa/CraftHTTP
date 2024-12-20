@@ -6,11 +6,11 @@ int main() {
     config.ports.push_back("8080");
     config.ports.push_back("8081");
     config.host = "127.0.0.1";
-    config.locations["/"].root = "/home/aymanisme/CraftHTTP/assets"; // Correct root directory
+    config.locations["/"].root = "/mnt/c/Users/Ayman/Desktop/crafthttp/assets"; // Correct root directory
 
     // Define custom error pages
-    config.errorPages["404"] = "/home/aymanisme/CraftHTTP/errorPages/404.html";
-    config.errorPages["405"] = "/home/aymanisme/CraftHTTP/errorPages/405.html";
+    config.errorPages["404"] = "/mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/404.html";
+    config.errorPages["405"] = "/mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/405.html";
 
     std::cout << "Server host: " << config.host << std::endl;
     std::cout << "Root of location /: " << config.locations["/"].root << std::endl;
