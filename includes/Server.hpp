@@ -3,17 +3,20 @@
 
 #include "ServerConfiguration.hpp"
 
+
 class Server {
 public:
     Server(ServerConfiguration& config);
     ~Server();
     int getSocket() const;
     const std::map<int, std::string>& getFdToPort() const;
+    const ServerConfiguration& getConfig() const;
+    const std::vector<int>& getSockets() const; // Add this line
 
 private:
     int socket;
     ServerConfiguration config;
-    std::vector<int> sockets;
+    std::vector<int> sockets; // Add this line
     std::map<int, std::string> fd_to_port;
 
     struct addrinfo* serverInfo(const std::string& port);

@@ -5,7 +5,6 @@ Server::Server(ServerConfiguration& config)
     : socket(-1), config(config)
 {
     createSockets();
-    std::cout << "full path request: " << config.locations["/"].root << std::endl;
 }
 
 Server::~Server() {
@@ -16,9 +15,16 @@ Server::~Server() {
 int Server::getSocket() const {
     return socket;
 }
+const std::vector<int>& Server::getSockets() const { // Add this function
+    return sockets;
+}
 
 const std::map<int, std::string>& Server::getFdToPort() const {
     return fd_to_port;
+}
+
+const ServerConfiguration& Server::getConfig() const {
+    return config;
 }
 
 struct addrinfo* Server::serverInfo(const std::string& port)
