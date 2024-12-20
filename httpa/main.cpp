@@ -1,14 +1,13 @@
 /* -- main.cpp -- */
 
-# include <iostream>
-# include <cstdio>
-# include "config/configParser.hpp"
-
+#include <iostream>
+#include <cstdio>
+#include <sstream>  // Add this for stringstream
+#include "config/configParser.hpp"
 
 /* global var */
 const char *filePath;
 char *error;
-
 
 const std::string RESET = "\033[0m";
 const std::string RED = "\033[31m";
@@ -17,6 +16,13 @@ const std::string YELLOW = "\033[33m";
 const std::string BLUE = "\033[34m";
 const std::string MAGENTA = "\033[35m";
 const std::string CYAN = "\033[36m";
+
+// Helper function to convert int to string in C++98
+std::string intToString(int num) {
+    std::stringstream ss;
+    ss << num;
+    return ss.str();
+}
 
 void printAllServers(const vector<ServerConfiguration*>& servers) {
     cout << "\n" << MAGENTA << "=====================================";
@@ -62,11 +68,10 @@ void printAllServers(const vector<ServerConfiguration*>& servers) {
         }
         cout << endl;
 
-        // Print Body Size Limits
+        // Print Body Size Limits - Modified this line
         cout << "├─ Max Body Size: " << 
-            (servers[i]->maxBodySize == -1 ? "unlimited" : to_string(servers[i]->maxBodySize) + " bytes") 
+            (servers[i]->maxBodySize == -1 ? "unlimited" : intToString(servers[i]->maxBodySize) + " bytes") 
             << endl;
-
         // Print Error Pages
         if (!servers[i]->errorPages.empty()) {
             cout << "\n" << GREEN << "Error Pages:" << RESET << endl;
@@ -168,7 +173,7 @@ int main(int ac, char *av[])
 
 	try {
 		ConfigurationParser fileParser(fp);
-		printAllServers(&fileParser.servers)
+		printAllServers(fileParser.servers);
 		//printAllLocations(fileParser);
 	}
 	catch (exception& e) {
