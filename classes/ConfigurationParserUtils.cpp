@@ -1,6 +1,6 @@
 /* -- config.cpp -- */
 
-#include "configParser.hpp"
+#include "ConfigurationParser.hpp"
 
 bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumber) {
 	string line;

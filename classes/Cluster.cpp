@@ -5,7 +5,7 @@ Cluster::Cluster(ClusterConfiguration& configs)
 {
     createEpoll();
 
-    vector<ServerConfiguration> serversConfigurations = config.servers;
+    vector<ServerConfiguration*> serversConfigurations = config.servers;
     for (int i = 0; i < serversConfigurations.size(); i++)
     {
         Server *server = new Server(serversConfigurations[i]);
@@ -116,49 +116,61 @@ void Cluster::handleClient(int client_fd)
         return;
     }
 
+    const ServerConfiguration& config = server->getConfig();
+
+    // Find the appropriate location block
+    std::map<std::string, Location>::const_iterator loc_it = config.locations.find(path);
+    if (loc_it == config.locations.end()) {
+        // If the exact path is not found, look for the root location
+        loc_it = config.locations.find("/");
+        if (loc_it == config.locations.end()) {
+            // No location found, serve custom 404 error page
+            serveErrorPage(client_fd, 404, server);
+            close(client_fd);
+            return;
+        }
+    }
+
+    const Location& location = loc_it->second;
+
     if (method == "GET") {
         // Handle GET request
-        std::map<std::string, Location>::const_iterator it = server->getConfig().locations.begin();
-        if (it != server->getConfig().locations.end()) {
-            std::string file_path = it->second.root + path;
-            if (file_path[file_path.size() - 1] == '/') {
-                file_path += "index.html"; // Serve index.html for directory requests
-            }
-            std::cout << "full path request: " << file_path << std::endl;   
-            // Read file content in chunks
-            std::ifstream file(file_path.c_str(), std::ios::binary);
-            if (!file) {
-                // File not found, serve custom 404 error page
-                serveErrorPage(client_fd, "404", server);
-            } else {
-                // File found, send 200 response with file content
-                std::string response = "HTTP/1.1 200 OK\r\n\r\n";
-                send(client_fd, response.c_str(), response.size(), 0);
-
-                char file_buffer[1024];
-                while (file.read(file_buffer, sizeof(file_buffer)) || file.gcount() > 0) {
-                    send(client_fd, file_buffer, file.gcount(), 0);
-                }
-            }
+        std::string file_path = location.root + path;
+        if (file_path[file_path.size() - 1] == '/') {
+            file_path += "index.html"; // Serve index.html for directory requests
+        }
+        std::cout << "full path request: " << file_path << std::endl;   
+        // Read file content in chunks
+        std::ifstream file(file_path.c_str(), std::ios::binary);
+        if (!file) {
+            // File not found, serve custom 404 error page
+            serveErrorPage(client_fd, 404, server);
         } else {
-            // No locations found, serve custom 404 error page
-            serveErrorPage(client_fd, "404", server);
+            // File found, send 200 response with file content
+            std::string response = "HTTP/1.1 200 OK\r\n\r\n";
+            send(client_fd, response.c_str(), response.size(), 0);
+
+            char file_buffer[1024];
+            while (file.read(file_buffer, sizeof(file_buffer)) || file.gcount() > 0) {
+                send(client_fd, file_buffer, file.gcount(), 0);
+            }
         }
     } else if (method == "POST") {
         // Block POST request, serve custom 405 error page
-        serveErrorPage(client_fd, "405", server);
+        serveErrorPage(client_fd, 405, server);
     } else {
         // Method not allowed, serve custom 405 error page
-        serveErrorPage(client_fd, "405", server);
+        serveErrorPage(client_fd, 405, server);
     }
 
     close(client_fd);
 }
 
-void Cluster::serveErrorPage(int client_fd, const std::string& error_code, Server* server)
+void Cluster::serveErrorPage(int client_fd, int error_code, Server* server)
 {
-    std::map<std::string, std::string>::const_iterator it = server->getConfig().errorPages.find(error_code);
-    if (it == server->getConfig().errorPages.end()) {
+    const ServerConfiguration& config = server->getConfig();
+    std::map<int, std::string>::const_iterator it = config.errorPages.find(error_code);
+    if (it == config.errorPages.end()) {
         // If custom error page not found, send default error message
         std::stringstream ss;
         ss << "HTTP/1.1 " << error_code << " Error\r\nContent-Length: " << 13 << "\r\n\r\n" << error_code << " Error";
@@ -182,12 +194,13 @@ void Cluster::serveErrorPage(int client_fd, const std::string& error_code, Serve
             std::string content = error_content.str();
             std::stringstream ss;
             ss << content.size();
-            std::string response = "HTTP/1.1 " + error_code + " Error\r\nContent-Length: " + ss.str() + "\r\n\r\n" + content;
+            std::stringstream response_stream;
+            response_stream << "HTTP/1.1 " << error_code << " Error\r\nContent-Length: " << ss.str() << "\r\n\r\n" << content;
+            std::string response = response_stream.str();
             send(client_fd, response.c_str(), response.size(), 0);
         }
     }
 }
-
 bool Cluster::isServerFd(int fd) {
     return server_fd_to_server.find(fd) != server_fd_to_server.end();
 }

@@ -9,7 +9,7 @@
 
 class Server {
 public:
-    Server(ServerConfiguration& config);
+    Server(ServerConfiguration* config);
     ~Server();
     int getSocket() const;
     const std::map<int, std::string>& getFdToPort() const;
@@ -22,9 +22,9 @@ private:
     std::vector<int> sockets;
     std::map<int, std::string> fd_to_port;
 
-    struct addrinfo* serverInfo(const std::string& port);
-    void bindSocket(int sockfd, struct addrinfo* serverInfo, const std::string& port);
-    void listenSocket(int socketfd, const std::string& port);
+    struct addrinfo* serverInfo(const string& port);
+    void bindSocket(int sockfd, struct addrinfo* serverInfo,const string& port);
+    void listenSocket(int socketfd,const string& port);
     void createSockets();
     void cleanup();
 };

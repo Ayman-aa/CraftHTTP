@@ -22,7 +22,7 @@ private:
     void handleEvents(struct epoll_event* events, int numEvents);
     void acceptConnections(int serverSocket);
     void handleClient(int client_fd);
-    void serveErrorPage(int client_fd, const std::string& error_code, Server* server);
+    void serveErrorPage(int client_fd, int error_code, Server* server);
     bool isServerFd(int fd);
     void cleanup();
 };

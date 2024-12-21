@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -34,21 +35,23 @@ struct Location
 class ServerConfiguration
 {
     public:
-        // Constructor
-        ServerConfiguration(){};
-        ServerConfiguration(string configFile);
+    // Default Constructor
+    ServerConfiguration() : maxBodySize(-1) {}
+
+    // Copy Constructor
+    ServerConfiguration(ServerConfiguration* other)
+        : ports(other->ports), host(other->host), bodySize(other->bodySize),
+          maxBodySize(other->maxBodySize), serverNames(other->serverNames),
+          errorPages(other->errorPages), locations(other->locations) {}
+
         // parameters from server block
         vector<string> ports;
         string host;
         string bodySize;
-        size_t maxBodySize;
+        ssize_t maxBodySize;
         vector<string> serverNames;
-        map<string, string> errorPages;
+        map<int, string> errorPages;
         map<string, Location> locations;
-        // Getters
-        string getErrorPage(string code);
-        string getLocations(string path);
-        ServerConfiguration getServerConfiguration(const string &host, string &port, string &ip);
 };
 
 #endif

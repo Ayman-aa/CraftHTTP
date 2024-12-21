@@ -1,6 +1,6 @@
 #include "../includes/Server.hpp"
 
-Server::Server(ServerConfiguration& config)
+Server::Server(ServerConfiguration* config)
     : main_socket(-1), config(config)
 {
     createSockets();
@@ -51,7 +51,7 @@ void Server::cleanup() {
     sockets.clear();
 }
 
-struct addrinfo* Server::serverInfo(const std::string& port) {
+struct addrinfo* Server::serverInfo(const string& port) {
     struct addrinfo hints, *res;
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -66,7 +66,7 @@ struct addrinfo* Server::serverInfo(const std::string& port) {
     return res;
 }
 
-void Server::bindSocket(int sockfd, struct addrinfo* serverInfo, const std::string& port) {
+void Server::bindSocket(int sockfd, struct addrinfo* serverInfo,const string& port) {
     int yes = 1;
     if (setsockopt(sockfd, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1) {
         std::cerr << "setsockopt error\n";
@@ -79,7 +79,7 @@ void Server::bindSocket(int sockfd, struct addrinfo* serverInfo, const std::stri
     }
 }
 
-void Server::listenSocket(int socketfd, const std::string& port) {
+void Server::listenSocket(int socketfd,const string& port) {
     if (listen(socketfd, 10) == -1) {
         std::cerr << "listen error on port " << port << "\n";
         return;

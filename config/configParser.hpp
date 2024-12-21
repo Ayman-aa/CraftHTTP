@@ -1,4 +1,4 @@
-/* -- configParser.hpp -- */
+/* -- ConfigurationParser.hpp -- */
 
 #pragma once
 #ifndef CONFIGURATIONPARSER_HPP
@@ -73,4 +73,4 @@ class ConfigurationParser : public ServerConfiguration
 		bool isValidCgiKey(const string& method);
 		bool extractCgiPath(ifstream& file, Location& location, int& currentLineNumber);
 };
-#endif /* ayeh ayeh, configParser.hpp */
+#endif /* ayeh ayeh, ConfigurationParser.hpp */

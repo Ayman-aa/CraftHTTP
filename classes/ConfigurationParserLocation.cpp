@@ -1,6 +1,6 @@
 /* -- location.cpp --*/
 
-#include "configParser.hpp"
+#include "ConfigurationParser.hpp"
 
 void printLocation(const Location& location);
 
