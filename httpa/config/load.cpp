@@ -17,6 +17,7 @@ void ConfigurationParser::load(ifstream& file) {
 
 	while (getline(file, line) && ++currentLineNumber) {
 		cout << "OUTER LOOP - Current line: '" << line << "'" << endl;
+		if (LineIsCommentOrEmpty(line)) continue;
 		if (!isValidRootLevel(line)) syntaxError(currentLineNumber);
 
 		/* Create new server for each server block */
