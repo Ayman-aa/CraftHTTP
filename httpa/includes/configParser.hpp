@@ -80,6 +80,8 @@ class ConfigurationParser : public ServerConfiguration
 		bool isValidCgiKey(const string& method);
 		bool extractCgiPath(ifstream& file, Location& location, int& currentLineNumber);
 
+		bool extractUploadPath(key_value& k_v, Location& location);
+
 		/* Helper method, bash nrje3 offset */
 		void FileSeekg(ifstream& file, const string& line, int &currentLineNumber);
 };

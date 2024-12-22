@@ -1,6 +1,6 @@
 /* -- location.cpp --*/
 
-#include "configParser.hpp"
+#include "../includes/configParser.hpp"
 
 void printLocation(const Location& location);
 
@@ -55,6 +55,11 @@ bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
 			if (!extractReturnValue(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			findLoc = true;
 		}
+		else if (line.find("upload_path:") != string::npos) {
+			if (location.upload_path != "") syntaxError(currentLineNumber, DUPLICATE_ENTRY);
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			if (!extractUploadPath(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+		}
 		else if (line.find("root:") != string::npos) {
 			if (location.root != "") syntaxError(currentLineNumber, DUPLICATE_ENTRY);
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
@@ -71,6 +76,15 @@ bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
 		else syntaxError(currentLineNumber, SYNTAX_ERROR); 
 	}
 	return findLoc;
+}
+
+bool ConfigurationParser::extractUploadPath(key_value& k_v, Location& location) {
+	if (k_v.value.empty())	return false;
+	if (k_v.key != "upload_path") return false;
+
+	if (k_v.value.find(' ') != string::npos) return false;
+	location.upload_path = k_v.value;
+	return true;
 }
 
 bool ConfigurationParser::isValidCgiKey(const string& method) {

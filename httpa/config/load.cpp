@@ -1,6 +1,6 @@
 /* -- laod.cpp -- */
 
-#include "configParser.hpp"
+#include "../includes/configParser.hpp"
 
 key_value kv;
 

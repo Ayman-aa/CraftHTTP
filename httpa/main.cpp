@@ -3,7 +3,7 @@
 #include <iostream>
 #include <cstdio>
 #include <sstream>  // Add this for stringstream
-#include "config/configParser.hpp"
+#include "includes/configParser.hpp"
 
 /* global var */
 const char *filePath;
@@ -92,6 +92,9 @@ void printAllServers(const vector<ServerConfiguration*>& servers) {
                 // Print Location Details
                 if (!locIt->second.root.empty())
                     cout << "├─ Root: " << locIt->second.root << endl;
+
+                if (!locIt->second.root.empty())
+                    cout << "├─ Upload_path: " << locIt->second.upload_path << endl;
                 
                 cout << "├─ Autoindex: " << (locIt->second.autoindex ? "on" : "off") << endl;
                 
