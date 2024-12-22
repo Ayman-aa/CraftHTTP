@@ -12,11 +12,8 @@ bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumb
 		int CurrentIndentLevel = getIndentLevel(line);
 		if (CurrentIndentLevel != 2) {
 			/* Move back one line */
-			cout << "line wesst rj3a: " << line << endl;
-			cout << "current line num fl error != 2" << currentLineNumber <<endl;
-			file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
-			currentLineNumber--;
-			/* return false if we haven't found at least we valid error page */
+			FileSeekg(file, line, currentLineNumber);
+			/* false if we haven't found at least error page we7da */
 			return foundValidErrorPage;
 		}
 		clear_kv(kv);
@@ -31,7 +28,6 @@ bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumb
 		if (value < 400 || value > 599) return false;
 
 		currentServer.errorPages[value] = kv.value;
-		cout << "safy ha7na storina asadi9" << endl;
 		foundValidErrorPage = true;
 	}
 	return foundValidErrorPage;
@@ -152,7 +148,6 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
 		if (line[i] == ':')
 	 		colonCount++;
 	}
-	cout << "ColonCount: " << colonCount << endl;
 	if (colonCount != 1 && (line.find("return:") == string::npos)) return false;
 
 	/* na5do pos of colona */
@@ -161,7 +156,6 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
 	kv.key = line.substr(0, colonPosition);
 	if (kv.key.empty() || kv.key.find(' ') != string::npos || kv.key.find('\t') != string::npos)
 		return false;
-	cout << "\nkey: " << kv.key << endl;
 	//if (kv.key == "error_pages") return true;
 	/* daba value dial dak key */
 	kv.value = line.substr(colonPosition+1);
@@ -172,14 +166,13 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
 	if (kv.value.empty() || firstNoSpace == string::npos) return false;
 	if (firstNoSpace != string::npos && lastNoSpace  != string::npos)
 		kv.value = kv.value.substr(firstNoSpace, lastNoSpace - firstNoSpace + 1);
-	cout << "value: " << kv.value<< "\n" << endl;
 	return true;
 }
 
-void ConfigurationParser::syntaxError(int currentLineNumber) {
+void ConfigurationParser::syntaxError(int currentLineNumber, const string& errorMessage) {
 	ostringstream oss;
 	oss << currentLineNumber;
-	throw runtime_error("error: syntax error at line " + oss.str());
+	throw runtime_error("Error on line " + oss.str() + ": " + errorMessage);
 }
 
 void ConfigurationParser::clear_kv(key_value& kv) {

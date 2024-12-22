@@ -24,54 +24,51 @@ bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
 	while (getline(file, line) && ++currentLineNumber) {
 		int currentIndentLevel = getIndentLevel(line);
 
-		cout << "7na wesst l while, 3lash Line: "<< "'" << line << "'" << endl;
 		if (LineIsCommentOrEmpty(line)) continue;
 		if (currentIndentLevel != 2) {
-			cout << "Line li b4ina ndriou bih rojo3 b zaman: " << "'" << line << "'" << endl;
-			file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
-			currentLineNumber--;
+			/*Line li b4ina ndriou bih rojo3 b zaman: */
+			FileSeekg(file, line, currentLineNumber);
 			return findLoc;
 		}
-		clear_kv(kv);
 
+		clear_kv(kv);
 		if (line.find("autoindex:") != string::npos) {
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
-			if (!extractAutoIndexValue(kv, location)) syntaxError(currentLineNumber);
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			if (!extractAutoIndexValue(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			findLoc = true;
-			//printLocation(location);
 		}
 		else if (line.find("allowed_methods:") != string::npos) {
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
-			if (!extractAllowedMethods(kv, location)) syntaxError(currentLineNumber);
+			if (!location.allow_methods.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			if (!extractAllowedMethods(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			findLoc = true;
-			//printLocation(location);
 		}
 		else if (line.find("index:") != string::npos) {
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
-			if (!extractIndexValues(kv, location)) syntaxError(currentLineNumber);
+			if (!location.index.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			if (!extractIndexValues(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			findLoc = true;
-			//printLocation(location);
 		}
 		else if (line.find("return:") != string::npos) {
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
-			if (!extractReturnValue(kv, location)) syntaxError(currentLineNumber);
+			if (location.redirection_return != "") syntaxError(currentLineNumber, DUPLICATE_ENTRY);
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			if (!extractReturnValue(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			findLoc = true;
-			//printLocation(location);
 		}
 		else if (line.find("root:") != string::npos) {
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
-			if (!extractRootValue(kv, location)) syntaxError(currentLineNumber);
+			if (location.root != "") syntaxError(currentLineNumber, DUPLICATE_ENTRY);
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			if (!extractRootValue(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			findLoc = true;
-			//printLocation(location);
 		}
 		else if (line.find("cgi_path:") != string::npos) {
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber);
-			if (!extractCgiPath(file, location, currentLineNumber)) syntaxError(currentLineNumber);
+			if (!location.cgi_path.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			if (!extractCgiPath(file, location, currentLineNumber)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			findLoc = true;
-			//printLocation(location);
 		}
 		else if (line.find("server:") != string::npos) continue ;
-		else syntaxError(currentLineNumber); 
+		else syntaxError(currentLineNumber, SYNTAX_ERROR); 
 	}
 	return findLoc;
 }
@@ -94,13 +91,12 @@ bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int
 	string line;
 	bool findPath = false;
 	set<string> cgi;
+
 	while (getline(file, line) && ++currentLineNumber) {
 		if (LineIsCommentOrEmpty(line)) continue;
-		cout << "Had line l5er fin 5litihi: " << line << endl;
 		int CurrentIndentLevel = getIndentLevel(line);
 		if (CurrentIndentLevel != 3) {
-			file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
-			currentLineNumber--;
+			FileSeekg(file, line, currentLineNumber);
 			return findPath;
 		}
 		clear_kv(kv);
@@ -206,54 +202,3 @@ bool ConfigurationParser::extractAutoIndexValue(key_value& k_v, Location& locati
 	location.autoindex = (k_v.value == "on");
 	return true;
 }
-
-
-
-
-
-// Helper function to print a vector if it exists
-void printVector(const vector<string>& vec, const string& label) {
-    if (!vec.empty()) {
-        cout << "  " << label << ": ";
-        for (vector<string>::const_iterator it = vec.begin(); it != vec.end(); ++it) {
-            cout << *it << " ";
-        }
-        cout << endl;
-    } else {
-        cout << "  " << label << ": Not set" << endl;
-    }
-}
-
-// Helper function to print a map if it exists
-void printMap(const map<string, string>& m, const string& label) {
-    if (!m.empty()) {
-        cout << "  " << label << ":" << endl;
-        for (map<string, string>::const_iterator it = m.begin(); it != m.end(); ++it) {
-            cout << "    " << it->first << " -> " << it->second << endl;
-        }
-    } else {
-        cout << "  " << label << ": Not set" << endl;
-    }
-}
-
-// Function to print the Location struct
-void printLocation(const Location& location) {
-    cout << "Location Details:" << endl;
-
-    // Autoindex always exists
-    cout << "  Autoindex: " << (location.autoindex ? "true" : "false") << endl;
-
-    // Check and print string values
-    cout << "  Root: " << (!location.root.empty() ? location.root : "Not set") << endl;
-    cout << "  Path: " << (!location.path.empty() ? location.path : "Not set") << endl;
-    cout << "  Redirection Return: " << (!location.redirection_return.empty() ? location.redirection_return : "Not set") << endl;
-    cout << "  Upload Path: " << (!location.upload_path.empty() ? location.upload_path : "Not set") << endl;
-
-    // Check and print vectors
-    printVector(location.allow_methods, "Allowed Methods");
-    printVector(location.index, "Index");
-
-    // Check and print map
-    printMap(location.cgi_path, "CGI Paths");
-}
-

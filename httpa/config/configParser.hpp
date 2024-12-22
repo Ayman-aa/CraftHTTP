@@ -6,6 +6,12 @@
 
 #include <cstddef> /* for size_t, ... */
 
+#define SYNTAX_ERROR "Syntax error in configuration file."
+#define DUPLICATE_ENTRY "Duplicate entry detected."
+#define SERVER_ERROR "Expected 'server:' to start a new server block."
+#define LOCATION_ERROR "Expected 'location:' to start a new location block."
+#define SERVER_BLOCK_ERROR "Error in location block configuration."
+
 #include "config.hpp"
 
 struct key_value {
@@ -37,7 +43,8 @@ class ConfigurationParser : public ServerConfiguration
 		bool isValidRootLevel(string& line);
 		bool verifyLineFormat(string& line, int indentLevel);
 		bool isValidSecondLevel(string& line);
-		void syntaxError(int currentLineNumber);
+		
+		void syntaxError(int currentLineNumber, const string& errorMessage);
 
 		void clear_kv(key_value& kv);
 
@@ -72,5 +79,8 @@ class ConfigurationParser : public ServerConfiguration
 
 		bool isValidCgiKey(const string& method);
 		bool extractCgiPath(ifstream& file, Location& location, int& currentLineNumber);
+
+		/* Helper method, bash nrje3 offset */
+		void FileSeekg(ifstream& file, const string& line, int &currentLineNumber);
 };
 #endif /* ayeh ayeh, configParser.hpp */
