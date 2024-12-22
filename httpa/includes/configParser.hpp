@@ -7,6 +7,8 @@
 
 #include "config.hpp"
 
+
+
 struct key_value {
 	string key;
 	string value;
@@ -76,6 +78,6 @@ class ConfigurationParser : public ServerConfiguration
 		bool extractUploadPath(key_value& k_v, Location& location);
 
 		/* Helper method, bash nrje3 offset */
-		void FileSeekg(ifstream& file, const string& line, int &currentLineNumber);
+		bool FileSeekg(ifstream& file, const string& line, int &currentLineNumber, bool retVal);
 };
 #endif /* ayeh ayeh, configParser.hpp */

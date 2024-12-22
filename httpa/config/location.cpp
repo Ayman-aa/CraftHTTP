@@ -2,7 +2,36 @@
 
 #include "../includes/configParser.hpp"
 
-void printLocation(const Location& location);
+bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineNumber, Location& location) {
+	string line;
+	bool findLoc = false;
+
+	while (getline(file, line) && ++currentLineNumber) {
+		int currentIndentLevel = getIndentLevel(line);
+
+		if (LineIsCommentOrEmpty(line)) continue;
+		if (currentIndentLevel != 2) return FileSeekg(file, line, currentLineNumber, findLoc);
+
+		clear_kv(kv);
+
+		CHECK_AND_EXTRACT_BOOL("autoindex:", extractAutoIndexValue);
+		CHECK_AND_EXTRACT_CONTAINER("index:", location.index, extractIndexValues);
+		CHECK_AND_EXTRACT_STR("return:", location.redirection_return, extractReturnValue);
+		CHECK_AND_EXTRACT_STR("upload_path:", location.upload_path, extractUploadPath);
+		CHECK_AND_EXTRACT_STR("root:", location.root, extractRootValue);
+		CHECK_AND_EXTRACT_CONTAINER("allowed_methods", location.allow_methods, extractAllowedMethods);
+		if (line.find("cgi_path:") != string::npos) {
+			if (!location.cgi_path.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
+			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			if (!extractCgiPath(file, location, currentLineNumber)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+			findLoc = true;
+			continue;
+		}
+		if (line.find("server:") != string::npos) continue ;
+		else syntaxError(currentLineNumber, SYNTAX_ERROR); 
+	}
+	return findLoc;
+}
 
 bool ConfigurationParser::servLocationLine(key_value& k_v, Location& location) {
 	if (k_v.value.empty()) return false;
@@ -14,73 +43,8 @@ bool ConfigurationParser::servLocationLine(key_value& k_v, Location& location) {
 	location.path = kv.value;
 	return true;	
 }
-
-bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineNumber, Location& location) {
-	string line;
-
-	location.autoindex = false;
-	bool findLoc = false;
-
-	while (getline(file, line) && ++currentLineNumber) {
-		int currentIndentLevel = getIndentLevel(line);
-
-		if (LineIsCommentOrEmpty(line)) continue;
-		if (currentIndentLevel != 2) {
-			/*Line li b4ina ndriou bih rojo3 b zaman: */
-			FileSeekg(file, line, currentLineNumber);
-			return findLoc;
-		}
-
-		clear_kv(kv);
-		if (line.find("autoindex:") != string::npos) {
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			if (!extractAutoIndexValue(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			findLoc = true;
-		}
-		else if (line.find("allowed_methods:") != string::npos) {
-			if (!location.allow_methods.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			if (!extractAllowedMethods(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			findLoc = true;
-		}
-		else if (line.find("index:") != string::npos) {
-			if (!location.index.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			if (!extractIndexValues(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			findLoc = true;
-		}
-		else if (line.find("return:") != string::npos) {
-			if (location.redirection_return != "") syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			if (!extractReturnValue(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			findLoc = true;
-		}
-		else if (line.find("upload_path:") != string::npos) {
-			if (location.upload_path != "") syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			if (!extractUploadPath(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-		}
-		else if (line.find("root:") != string::npos) {
-			if (location.root != "") syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			if (!extractRootValue(kv, location)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			findLoc = true;
-		}
-		else if (line.find("cgi_path:") != string::npos) {
-			if (!location.cgi_path.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			if (!extractCgiPath(file, location, currentLineNumber)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			findLoc = true;
-		}
-		else if (line.find("server:") != string::npos) continue ;
-		else syntaxError(currentLineNumber, SYNTAX_ERROR); 
-	}
-	return findLoc;
-}
-
 bool ConfigurationParser::extractUploadPath(key_value& k_v, Location& location) {
-	if (k_v.value.empty())	return false;
-	if (k_v.key != "upload_path") return false;
+	if (k_v.value.empty() || k_v.key != "upload_path")	return false;
 
 	if (k_v.value.find(' ') != string::npos) return false;
 	location.upload_path = k_v.value;
@@ -89,16 +53,7 @@ bool ConfigurationParser::extractUploadPath(key_value& k_v, Location& location) 
 
 bool ConfigurationParser::isValidCgiKey(const string& method) {
 	/* std++98 sir 4er t7awa */
-	static  set<string> cgi;
-	static bool init = false;
-
-	if (!init) {
-		cgi.insert("php");
-		cgi.insert("rb");
-		cgi.insert("py");
-		init = true;
-	}	
-	return cgi.find(method) != cgi.end();
+	return (method == "php" || method == "rb" || method == "py");
 }
 
 bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int& currentLineNumber) {
@@ -109,10 +64,7 @@ bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int
 	while (getline(file, line) && ++currentLineNumber) {
 		if (LineIsCommentOrEmpty(line)) continue;
 		int CurrentIndentLevel = getIndentLevel(line);
-		if (CurrentIndentLevel != 3) {
-			FileSeekg(file, line, currentLineNumber);
-			return findPath;
-		}
+		if (CurrentIndentLevel != 3) return FileSeekg(file, line, currentLineNumber, findPath);
 		clear_kv(kv);
 		if (!verifyLineFormat(line, 1)) return false;
 		if (!isValidCgiKey(kv.key)) return false;
@@ -127,8 +79,7 @@ bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int
 }
 
 bool ConfigurationParser::extractRootValue(key_value& k_v, Location& location) {
-	if (k_v.value.empty()) return false;
-	if (k_v.key != "root") return false;
+	if (k_v.value.empty() || k_v.key != "root") return false;
 
 	if (k_v.value.find(' ') != string::npos) return false;
 	location.root = k_v.value;
@@ -136,8 +87,7 @@ bool ConfigurationParser::extractRootValue(key_value& k_v, Location& location) {
 }
 
 bool ConfigurationParser::extractReturnValue(key_value& k_v, Location& location) {
-	if (k_v.value.empty()) return false;
-	if (k_v.key != "return") return false;
+	if (k_v.value.empty() || k_v.key != "return") return false;
 	
 	if (k_v.value.find("..") != string::npos) return false;
 	if (k_v.value.find(' ') != string::npos) return false;
@@ -146,25 +96,22 @@ bool ConfigurationParser::extractReturnValue(key_value& k_v, Location& location)
 }
 
 bool ConfigurationParser::isValidIndex(const string& index) {
-	vector<char> invalidChars;
-
-	invalidChars.push_back('&');
-	invalidChars.push_back('|');
-	invalidChars.push_back(';');
-	invalidChars.push_back('$');
-
 	if (index.find(' ') != string::npos) return false;
-	if (index.find("../") != string::npos) return false;
-	if (index.find('/') != string::npos) return false;
+	/*
+		* if (index.find("../") != string::npos) return false;
+		*if (index.find('/') != string::npos) return false;
+	*/
 
-	for (size_t i = 0; i < 3 ; i++)
-		if (index.find(invalidChars[i]) != string::npos) return false;
+	if (index.find('&') != string::npos) return false;
+    if (index.find('|') != string::npos) return false;
+    if (index.find(';') != string::npos) return false;
+    if (index.find('$') != string::npos) return false;
+
 	return true;
 }
 
 bool ConfigurationParser::extractIndexValues(key_value& k_v, Location& location) {
-	if (k_v.value.empty()) return false;
-	if (k_v.key != "index") return false;
+	if (k_v.value.empty() || k_v.key != "index") return false;
 
 	string parsed, input = k_v.value;
 	istringstream iss(input);
@@ -178,21 +125,11 @@ bool ConfigurationParser::extractIndexValues(key_value& k_v, Location& location)
 
 bool ConfigurationParser::isValidMethod(const string& method) {
 	/* std++98 sir 4er t7awa */
-	static  set<string> methods;
-	static bool init = false;
-
-	if (!init) {
-		methods.insert("GET");
-		methods.insert("POST");
-		methods.insert("DELETE");
-		init = true;
-	}	
-	return methods.find(method) != methods.end();
+	 return (method == "GET" || method == "POST" || method == "DELETE");
 }
 
 bool ConfigurationParser::extractAllowedMethods(key_value& k_v, Location& location) {
-	if (k_v.value.empty()) return false;
-	if (k_v.key != "allowed_methods") return false;
+	if (k_v.value.empty() || k_v.key != "allowed_methods") return false;
 	
 	set<string> uniqueMethods;	
 	string parsed, input = k_v.value;
@@ -209,8 +146,7 @@ bool ConfigurationParser::extractAllowedMethods(key_value& k_v, Location& locati
 }
 
 bool ConfigurationParser::extractAutoIndexValue(key_value& k_v, Location& location) {
-	if (k_v.value.empty()) return false;
-	if (k_v.key != "autoindex") return false;
+	if (k_v.value.empty() || k_v.key != "autoindex") return false;
 
 	if (k_v.value != "on" && k_v.value != "off") return false;
 	location.autoindex = (k_v.value == "on");

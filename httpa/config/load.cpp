@@ -29,7 +29,9 @@ void ConfigurationParser::load(ifstream& file) {
 				servers.push_back(new ServerConfiguration(currentServer));
 				currentServer = ServerConfiguration();
 				/* Move file pointer back to reprocess the "server:" line */
-				FileSeekg(file, line, currentLineNumber);
+				/* TODO:  saweb dik voidox ra 4abia */
+				bool voidox = FileSeekg(file, line, currentLineNumber, true);
+				(void)voidox;
 				break;
 			}
 			if (currentIndentLevel != 1) syntaxError(currentLineNumber, SYNTAX_ERROR);
@@ -91,7 +93,8 @@ int ConfigurationParser::getIndentLevel(const string& line) {
 	return IndentLevel;
 }
 
-void ConfigurationParser::FileSeekg(ifstream& file, const string& line, int &currentLineNumber) {
+bool ConfigurationParser::FileSeekg(ifstream& file, const string& line, int &currentLineNumber, bool retVal) {
 	file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
 	currentLineNumber--;
+	return retVal;
 }

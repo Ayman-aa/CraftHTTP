@@ -10,12 +10,8 @@ bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumb
 		if (LineIsCommentOrEmpty(line)) continue ;
 
 		int CurrentIndentLevel = getIndentLevel(line);
-		if (CurrentIndentLevel != 2) {
-			/* Move back one line */
-			FileSeekg(file, line, currentLineNumber);
-			/* false if we haven't found at least error page we7da */
-			return foundValidErrorPage;
-		}
+		if (CurrentIndentLevel != 2)  return FileSeekg(file, line, currentLineNumber,foundValidErrorPage );
+			
 		clear_kv(kv);
 		if (!verifyLineFormat(line, 1))
 			return false;

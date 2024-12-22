@@ -15,8 +15,7 @@ server:
 		404: error_p/404.html
 
 	location: /root
-		autoindex: off
-		autoindex: on
+		autoindex:   on
 		allowed_methods: GET,POST,DELETE 
 		index: i.html,h,hello.py
 		return: http://google.com
