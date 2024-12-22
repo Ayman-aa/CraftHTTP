@@ -4,13 +4,6 @@
 #ifndef CONFIGURATIONPARSER_HPP
 #define CONFIGURATIONPARSER_HPP
 
-#include <cstddef> /* for size_t, ... */
-
-#define SYNTAX_ERROR "Syntax error in configuration file."
-#define DUPLICATE_ENTRY "Duplicate entry detected."
-#define SERVER_ERROR "Expected 'server:' to start a new server block."
-#define LOCATION_ERROR "Expected 'location:' to start a new location block."
-#define SERVER_BLOCK_ERROR "Error in location block configuration."
 
 #include "config.hpp"
 
