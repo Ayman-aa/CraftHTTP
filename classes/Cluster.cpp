@@ -6,7 +6,7 @@ Cluster::Cluster(ClusterConfiguration& configs)
     createEpoll();
 
     vector<ServerConfiguration*> serversConfigurations = config.servers;
-    for (int i = 0; i < serversConfigurations.size(); i++)
+    for (long unsigned int i = 0; i < serversConfigurations.size(); i++)
     {
         Server *server = new Server(serversConfigurations[i]);
         const vector<int>& serverSockets = server->getSockets();
@@ -30,7 +30,7 @@ Cluster::~Cluster() {
 void Cluster::createEpoll() {
     epoll_fd = epoll_create1(0);
     if (epoll_fd == -1) {
-        std::cerr << "Error creating epoll instance\n";
+        cerr << "Error creating epoll instance\n";
         cleanup();
         exit(1);
     }
@@ -38,13 +38,12 @@ void Cluster::createEpoll() {
 
 void Cluster::addSocketToEpoll(int fd) {
     struct epoll_event event;
-    event.events = EPOLLIN;
+    event.events = EPOLLIN | EPOLLOUT | EPOLLHUP | EPOLLERR;
     event.data.fd = fd;
 
     if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event) == -1) {
-        std::cerr << "Error adding socket to epoll\n";
+        cerr << "Error adding socket to epoll" << endl;
         cleanup();
-        exit(1);
     }
 }
 
@@ -55,7 +54,7 @@ void Cluster::run() {
     while (true) {
         int numEvents = epoll_wait(epoll_fd, events, maxEvents, -1);
         if (numEvents == -1) {
-            std::cerr << "Error in epoll_wait: " << strerror(errno) << "\n";
+            cerr << "Error in epoll_wait: " << strerror(errno) << "\n";
             break;
         }
 
@@ -79,10 +78,10 @@ void Cluster::handleEvents(struct epoll_event* events, int numEvents) {
 void Cluster::acceptConnections(int serverSocket) {
     int clientSocket = accept(serverSocket, NULL, NULL);
     if (clientSocket == -1) {
-        std::cerr << "Error accepting connection: " << strerror(errno) << "\n";
+        cerr << "Error accepting connection: " << strerror(errno) << "\n";
         return;
     }
-    std::cout << "Server: Accepted new connection\n";
+    cout << "Server: Accepted new connection\n";
 
     addSocketToEpoll(clientSocket);
     client_to_server[clientSocket] = serverSocket;
@@ -99,19 +98,19 @@ void Cluster::handleClient(int client_fd)
     buffer[bytes_received] = '\0';
 
     // Parse HTTP request (simplified)
-    std::string request(buffer);
-    std::istringstream request_stream(request);
-    std::string method, path, version;
+    string request(buffer);
+    istringstream request_stream(request);
+    string method, path, version;
     request_stream >> method >> path >> version;
 
-    std::cout << "Requested path: " << path << std::endl; // Log the requested path
+    cout << "Requested path: " << path << endl; // Log the requested path
 
     // Determine which server the client is connected to
     int server_fd = client_to_server[client_fd];
     Server* server = server_fd_to_server[server_fd];
 
     if (server == NULL) {
-        std::cerr << "Server not found for client_fd: " << client_fd << std::endl;
+        cerr << "Server not found for client_fd: " << client_fd << endl;
         close(client_fd);
         return;
     }
@@ -119,7 +118,7 @@ void Cluster::handleClient(int client_fd)
     const ServerConfiguration& config = server->getConfig();
 
     // Find the appropriate location block
-    std::map<std::string, Location>::const_iterator loc_it = config.locations.find(path);
+    map<string, Location>::const_iterator loc_it = config.locations.find(path);
     if (loc_it == config.locations.end()) {
         // If the exact path is not found, look for the root location
         loc_it = config.locations.find("/");
@@ -135,19 +134,19 @@ void Cluster::handleClient(int client_fd)
 
     if (method == "GET") {
         // Handle GET request
-        std::string file_path = location.root + path;
+        string file_path = location.root + path;
         if (file_path[file_path.size() - 1] == '/') {
             file_path += "index.html"; // Serve index.html for directory requests
         }
-        std::cout << "full path request: " << file_path << std::endl;   
+        cout << "full path request: " << file_path << endl;   
         // Read file content in chunks
-        std::ifstream file(file_path.c_str(), std::ios::binary);
+        ifstream file(file_path.c_str(), ios::binary);
         if (!file) {
             // File not found, serve custom 404 error page
             serveErrorPage(client_fd, 404, server);
         } else {
             // File found, send 200 response with file content
-            std::string response = "HTTP/1.1 200 OK\r\n\r\n";
+            string response = "HTTP/1.1 200 OK\r\n\r\n";
             send(client_fd, response.c_str(), response.size(), 0);
 
             char file_buffer[1024];
@@ -169,34 +168,34 @@ void Cluster::handleClient(int client_fd)
 void Cluster::serveErrorPage(int client_fd, int error_code, Server* server)
 {
     const ServerConfiguration& config = server->getConfig();
-    std::map<int, std::string>::const_iterator it = config.errorPages.find(error_code);
+    map<int, string>::const_iterator it = config.errorPages.find(error_code);
     if (it == config.errorPages.end()) {
         // If custom error page not found, send default error message
-        std::stringstream ss;
+        stringstream ss;
         ss << "HTTP/1.1 " << error_code << " Error\r\nContent-Length: " << 13 << "\r\n\r\n" << error_code << " Error";
-        std::string default_message = ss.str();
+        string default_message = ss.str();
         send(client_fd, default_message.c_str(), default_message.size(), 0);
     } else {
         // Custom error page found, send it
-        std::string error_page_path = it->second;
-        std::ifstream error_file(error_page_path.c_str());
+        string error_page_path = it->second;
+        ifstream error_file(error_page_path.c_str());
         if (!error_file) {
             // If custom error page file not found, send default error message
-            std::cout << "Error page not found" << std::endl;
-            std::stringstream ss;
+            cout << "Error page not found" << endl;
+            stringstream ss;
             ss << "HTTP/1.1 " << error_code << " Error\r\nContent-Length: " << 13 << "\r\n\r\n" << error_code << " Error";
-            std::string default_message = ss.str();
+            string default_message = ss.str();
             send(client_fd, default_message.c_str(), default_message.size(), 0);
         } else {
             // Custom error page file found, send it
-            std::stringstream error_content;
+            stringstream error_content;
             error_content << error_file.rdbuf();
-            std::string content = error_content.str();
-            std::stringstream ss;
+            string content = error_content.str();
+            stringstream ss;
             ss << content.size();
-            std::stringstream response_stream;
+            stringstream response_stream;
             response_stream << "HTTP/1.1 " << error_code << " Error\r\nContent-Length: " << ss.str() << "\r\n\r\n" << content;
-            std::string response = response_stream.str();
+            string response = response_stream.str();
             send(client_fd, response.c_str(), response.size(), 0);
         }
     }
@@ -206,7 +205,7 @@ bool Cluster::isServerFd(int fd) {
 }
 
 void Cluster::cleanup() {
-    for (std::vector<Server*>::iterator it = servers.begin(); it != servers.end(); ++it) {
+    for (vector<Server*>::iterator it = servers.begin(); it != servers.end(); ++it) {
         delete *it;
     }
     servers.clear();

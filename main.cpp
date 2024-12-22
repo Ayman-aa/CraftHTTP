@@ -23,8 +23,8 @@ int main() {
     // config.servers[1].errorPages[404] = "/mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/404.html";
     // config.servers[1].errorPages[405] = "/mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/405.html";
 
-    std::cout << "Server host 1: " << config.servers[0]->host << std::endl;
-    std::cout << "Root of location 1 /: " << config.servers[0]->locations["/"].root << std::endl;
+    cout << "Server host 1: " << config.servers[0]->host << endl;
+    cout << "Root of location 1 /: " << config.servers[0]->locations["/"].root << endl;
 
     cout << "Server host 2: " << config.servers[1]->host << endl;
     cout << "Root of location 2 /: " << config.servers[1]->locations["/"].root << endl;
@@ -32,8 +32,8 @@ int main() {
     Cluster cluster(config);
     cluster.run();
     }
-    catch (const std::exception& e) {
-        std::cerr << e.what() << '\n';
+    catch (const exception& e) {
+        cerr << e.what() << '\n';
     }
 
     return 0;

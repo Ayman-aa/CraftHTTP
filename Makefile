@@ -1,2 +1,2 @@
 all: 
-	c++ -std=c++98 -Wall -Wextra -Werror -o serv main.cpp classes/*.cpp config/*.cpp -I./includes -I./config
+	c++ -std=c++98 -Wall -Wextra -Werror main.cpp classes/*.cpp -I./includes -o webserv

@@ -13,9 +13,9 @@ public:
 private:
     int epoll_fd;
     ClusterConfiguration config;
-    std::vector<Server*> servers;
-    std::map<int, int> client_to_server;
-    std::map<int, Server*> server_fd_to_server; // Add this line
+    vector<Server*> servers;
+    map<int, int> client_to_server;
+    map<int, Server*> server_fd_to_server; // Add this line
 
     void createEpoll();
     void addSocketToEpoll(int fd);
