@@ -160,7 +160,7 @@ void printAllServers(const vector<ServerConfiguration*>& servers) {
 
 
 
-int main(int ac, char *av[])
+/*int main(int ac, char *av[])
 {
 	if (ac != 2) {
 		if (ac > 2) {
@@ -184,4 +184,34 @@ int main(int ac, char *av[])
 		cout << e.what() << endl;
 	}
 	return 0;
+}
+*/
+
+int main(int ac, char *av[]) {
+    std::string filePath;
+
+    if (ac != 2) {
+        if (ac > 2) {
+            std::cerr << RED << "[!] Too many args. Usage: " << av[0] << " <config>" << RESET << std::endl;
+            return 1;
+        }
+        std::cerr << YELLOW << "[!] No config. Using default." << RESET << std::endl;
+        filePath = "conf/test.yaml";
+    } else {
+        filePath = av[1];
+    }
+
+    std::cout << CYAN << "[~] Config: " << filePath << RESET << std::endl;
+
+    try {
+        // Assuming ConfigurationParser and printAllServers are defined elsewhere
+        ConfigurationParser fileParser(filePath);
+        printAllServers(fileParser.servers);
+        // printAllLocations(fileParser);
+    } catch (const std::exception &e) {
+        std::cerr << RED << "[X] Error: " << e.what() << RESET << std::endl;
+        return 1;
+    }
+
+    return 0;
 }
