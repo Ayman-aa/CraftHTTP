@@ -1,9 +1,6 @@
 /* -- main.cpp -- */
 
-#include <iostream>
-#include <cstdio>
-#include <sstream>  // Add this for stringstream
-#include "includes/configParser.hpp"
+#include "./includes/configParser.hpp"
 
 /* global var */
 const char *filePath;

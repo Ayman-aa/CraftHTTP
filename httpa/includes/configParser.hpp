@@ -1,19 +1,15 @@
 /* -- configParser.hpp -- */
 
-#pragma once
+// #pragma once
 #ifndef CONFIGURATIONPARSER_HPP
 #define CONFIGURATIONPARSER_HPP
 
 
 #include "config.hpp"
 
-
-
 struct key_value {
 	string key;
 	string value;
-	string currentParsedValue;
-	bool isCommentOrEmptyLine;
 };
 
 extern key_value kv;

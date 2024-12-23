@@ -1,43 +1,11 @@
 /* -- config.hpp -- */
 
-#pragma once
+// #pragma once
 
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
 #include "includes.hpp"
-#define CHECK_DUPLICATE(FIELD) \
-	if (!FIELD.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY) \
-
-#define CHECK_DUPLICATE_STR(FIELD) \
-	if (FIELD != "") syntaxError(currentLineNumber, DUPLICATE_ENTRY) \
-
-#define CHECK_AND_EXTRACT_STR(FIELD, CONTAINER, FUNC) \
-	if (line.find(FIELD) != string::npos) { \
-		CHECK_DUPLICATE_STR(CONTAINER); \
-		if (!verifyLineFormat(line, 1) || !FUNC(kv, location)) \
-			syntaxError(currentLineNumber, SYNTAX_ERROR); \
-		findLoc = true; \
-		continue ; \
-	} \
-
-#define CHECK_AND_EXTRACT_CONTAINER(FIELD, CONTAINER, FUNC) \
-	if (line.find(FIELD) != string::npos) { \
-		CHECK_DUPLICATE(CONTAINER); \
-		if (!verifyLineFormat(line, 1) || !FUNC(kv, location)) \
-			syntaxError(currentLineNumber, SYNTAX_ERROR); \
-		findLoc = true; \
-		continue ; \
-	} \
-
-#define CHECK_AND_EXTRACT_BOOL(FIELD, FUNC) \
-	if (line.find(FIELD) != string::npos) { \
-		if (!verifyLineFormat(line, 1) || !FUNC(kv, location)) \
-			syntaxError(currentLineNumber, SYNTAX_ERROR); \
-		findLoc = true; \
-		continue ; \
-	} \
-
 
 struct Location
 {

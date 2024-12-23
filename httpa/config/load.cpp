@@ -9,6 +9,7 @@ ConfigurationParser::ConfigurationParser(string& filePath) {
 	if (!file.is_open())
 		throw runtime_error("failed to open file: " + filePath);
 	ConfigurationParser::load(file);
+	file.close();
 }
 
 void ConfigurationParser::load(ifstream& file) {
@@ -23,51 +24,31 @@ void ConfigurationParser::load(ifstream& file) {
 
 		while (getline(file, line) && ++currentLineNumber) {
 			int currentIndentLevel = getIndentLevel(line);
+
 			clear_kv(kv);
+
 			if (LineIsCommentOrEmpty(line)) continue ;
+
 			if (line == "server:"  && !currentIndentLevel ) {
 				servers.push_back(new ServerConfiguration(currentServer));
 				currentServer = ServerConfiguration();
-				/* Move file pointer back to reprocess the "server:" line */
-				/* TODO:  saweb dik voidox ra 4abia */
-				bool voidox = FileSeekg(file, line, currentLineNumber, true);
-				(void)voidox;
+				FileSeekg(file, line, currentLineNumber, true);
 				break;
 			}
 			if (currentIndentLevel != 1) syntaxError(currentLineNumber, SYNTAX_ERROR);
 
-			if (line.find("host:") != string::npos) {
-				if (!verifyLineFormat(line, currentIndentLevel)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-				if (extractHostKey(kv))  {
-					if (!currentServer.host.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-					currentServer.host = kv.currentParsedValue;
-				}
-				else syntaxError(currentLineNumber, SYNTAX_ERROR);
-			}
-			else if (line.find("ports:") != string::npos) {
-				if (!verifyLineFormat(line, currentIndentLevel)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-				if (!currentServer.ports.empty())  syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-				if (!extractPortValue(kv)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			}
-			else if (line.find("server_names:") != string::npos) {
-				if (!verifyLineFormat(line, currentIndentLevel)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-				if (!currentServer.serverNames.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-				if (!extractServerNamesValue(kv)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			}
-			else if (line.find("error_pages:") != string::npos) {
+			CHECK_AND_EXTRACT("host:", currentServer.host, extractHostKey);
+			CHECK_AND_EXTRACT("ports:", currentServer.ports, extractPortValue);
+			CHECK_AND_EXTRACT("server_names:", currentServer.serverNames, extractServerNamesValue);
+			CHECK_AND_EXTRACT_MAX_BODY_SIZE("client_max_body_size:", currentServer.maxBodySize, extractClientMaxBodySizeValue);
+
+			if (line.find("error_pages:") != string::npos) {
 				if (!extractErrorPages(file, currentLineNumber)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+				continue;
 			}
-			else if (line.find("client_max_body_size:") != string::npos) {
-				if (!verifyLineFormat(line, currentIndentLevel)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-				if (!(currentServer.maxBodySize == -1)) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
-				if (!extractClientMaxBodySizeValue(kv)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-			}
-			else if (line.find("location:") != string::npos){
-				Location location; /* reseti l9lawi nchoufou */
-				if (!verifyLineFormat(line, currentIndentLevel)) syntaxError(currentLineNumber, SYNTAX_ERROR);
-				if (!servLocationLine(kv, location)) syntaxError(currentLineNumber, LOCATION_ERROR );
-				if (!extractLocationInfos(file, currentLineNumber, location)) syntaxError(currentLineNumber, SERVER_BLOCK_ERROR);
-				currentServer.locations[location.path] = location;
+			if (line.find("location:") != string::npos){
+				HANDLE_LOCATION();
+				continue;
 			}
 			else syntaxError(currentLineNumber, SYNTAX_ERROR); 
 		}

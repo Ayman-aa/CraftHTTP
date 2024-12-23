@@ -1,6 +1,6 @@
 /* -- includes.hpp -- */
 
-#pragma once
+// #pragma once
 
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
@@ -12,6 +12,77 @@
   *  khassak tsta3mel 'std::' directement.
 */
 using namespace std;
+
+/* 
+  HAHAHAHAHAHHHA
+*/
+#define CHECK_DUPLICATE(FIELD) \
+	if (!FIELD.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY) \
+
+#define CHECK_AND_EXTRACT(FIELD, CONTAINER, FUNC) \
+	if (line.find(FIELD) != string::npos) { \
+		CHECK_DUPLICATE(CONTAINER); \
+		if (!verifyLineFormat(line, currentIndentLevel) || !FUNC(kv)) \
+			syntaxError(currentLineNumber, SYNTAX_ERROR); \
+		continue ; \
+	} \
+
+#define CHECK_AND_EXTRACT_MAX_BODY_SIZE(FIELD, CONTAINER, FUNC) \
+	if (line.find(FIELD) != string::npos) { \
+		if (CONTAINER != -1) syntaxError(currentLineNumber, DUPLICATE_ENTRY); \
+		if (!verifyLineFormat(line, currentIndentLevel) || !FUNC(kv)) \
+			syntaxError(currentLineNumber, SYNTAX_ERROR); \
+		continue ; \
+	} \
+
+#define CHECK_AND_EXTRACT_LOCATION(FIELD, CONTAINER, FUNC) \
+	if (line.find(FIELD) != string::npos) { \
+		CHECK_DUPLICATE(CONTAINER); \
+		if (!verifyLineFormat(line, 1) || !FUNC(kv, location)) \
+			syntaxError(currentLineNumber, SYNTAX_ERROR); \
+		findLoc = true; \
+		continue ; \
+	} \
+
+#define CHECK_AND_EXTRACT_LOCATION_BOOL(FIELD, FUNC) \
+	if (line.find(FIELD) != string::npos) { \
+		if (!verifyLineFormat(line, 1) || !FUNC(kv, location)) \
+			syntaxError(currentLineNumber, SYNTAX_ERROR); \
+		findLoc = true; \
+		continue ; \
+	} \
+
+#define HANDLE_LOCATION() \
+    Location location; \
+    if (!verifyLineFormat(line, currentIndentLevel)) \
+        syntaxError(currentLineNumber, SYNTAX_ERROR); \
+    if (!servLocationLine(kv, location)) \
+        syntaxError(currentLineNumber, LOCATION_ERROR); \
+    if (!extractLocationInfos(file, currentLineNumber, location)) \
+        syntaxError(currentLineNumber, SERVER_BLOCK_ERROR); \
+    currentServer.locations[location.path] = location; \
+
+#define CHECK_STRING_FORMAT(STR, WHAT) \
+	if (STR.find(WHAT) != string::npos) return false; \
+
+#define VALIDATE_KV(KEY) \
+	if (k_v.value.empty() || k_v.key != KEY) return false; \
+
+#define CHECK_INVALID_CHARS(STR) \
+    if (STR.find('&') != string::npos || \
+        STR.find('|') != string::npos || \
+        STR.find(';') != string::npos || \
+        STR.find('$') != string::npos) return false; \
+
+#define CHECK_ALL_DIGITS(STR) \
+    for (size_t i = 0; i < STR.length(); i++) \
+        if (!isdigit(STR[i])) return false; \
+
+#define VALIDATE_NUMERIC_RANGE(VALUE, MIN, MAX) \
+    int value = 0; \
+    istringstream iss(VALUE); \
+    iss >> value; \
+    if (value < MIN || value > MAX) return false; \
 
 
 /* ERROR MACROS */
