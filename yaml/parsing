@@ -1,0 +1,15 @@
+class ConfigParser {
+    while (reading_config) {
+        // Parse current block
+        current_block = parseBlock();
+        
+        // Validate immediately
+        if (!validateBlock(current_block)) {
+            // Throw error or log issue
+            handleError();
+        }
+        
+        // Store validated block
+        storeBlock(current_block);
+    }
+}
