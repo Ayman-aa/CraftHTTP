@@ -38,7 +38,7 @@ class ParsingReq
     int loadHeaders(Binary &data);
     void parseRequest();
     void parsRequestline(std::string &line);
-    void parseHeaders();
+    void parseHeaders(std::string &line);
     void checkPath();
 
     bool parseUri(const std::string& uriStr);

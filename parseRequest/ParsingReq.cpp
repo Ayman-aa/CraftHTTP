@@ -85,8 +85,10 @@ void ParsingReq::parsRequestline(std::string &line)
         if(words.size() != 2 || words[0] != "HTTP")
             throw HttpError(BadRequest, "Bad Request");
         if(words[1] != "1.1")
-            throw HttpError(HTTPVersionNotSupported,"505 HTTP Version Not Supported);
+            throw HttpError(HTTPVersionNotSupported,"505 HTTP Version Not Supported");
     }
+    else
+        throw HttpError(BadRequest, "Bad Request");
 }
 int ParsingReq::loadHeaders(Binary &data)
 {
@@ -104,11 +106,19 @@ int ParsingReq::loadHeaders(Binary &data)
         {
                 parseHeaders(lines[i]);
         }
+        this->headersLoaded = true;
+        size_t start = headerEnd == data.find("\r\n\r\n") ? headerEnd + 4 : headerEnd + 2;
+        data = data.substr(start, headerEnd - start);
     }
     return 0;
 }
-
-
+void ParsingReq::parseRequest()
+   {
+  	std::map<std::string, std::string>::iterator it trans=msg.headers.find("Transfer-Encoding");
+	std::map<std::string, std::string>::iterator it con=msg.headers.find("Content-Length");
+    if(msg.method != "GET" && msg.method != "POST" && msg.method != "DELETE")
+      	throw HttpError(MethodNotAllowed, "Method Not Allowed");
+  }
 // int main() {
 //     std::string testStr = "Header1: value1\r\nHeader2: value2\r\nHeader3: value3\r\n";
     
