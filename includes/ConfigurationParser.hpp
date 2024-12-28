@@ -71,5 +71,5 @@ class ConfigurationParser : public ServerConfiguration
 		bool isValidCgiKey(const string& method);
 		bool extractCgiPath(ifstream& file, Location& location, int& currentLineNumber);
 };
-typedef ConfigurationParser ClusterConfiguration;
+typedef ConfigurationParser Configurations;
 #endif /* ayeh ayeh, ConfigurationParser.hpp */

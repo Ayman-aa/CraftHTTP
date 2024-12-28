@@ -6,13 +6,13 @@
 
 class Cluster {
 public:
-    Cluster(ClusterConfiguration& config);
+    Cluster(Configurations& config);
     ~Cluster();
     void run();
 
 private:
     int epoll_fd;
-    ClusterConfiguration config;
+    Configurations config;
     vector<Server*> servers;
     map<int, int> client_to_server;
     map<int, Server*> server_fd_to_server; // Add this line
@@ -21,7 +21,7 @@ private:
     void addSocketToEpoll(int fd);
     void handleEvents(struct epoll_event* events, int numEvents);
     void acceptConnections(int serverSocket);
-    void handleClient(int client_fd);
+    void handleClient(int client_fd, uint32_t events);
     void serveErrorPage(int client_fd, int error_code, Server* server);
     bool isServerFd(int fd);
     void cleanup();

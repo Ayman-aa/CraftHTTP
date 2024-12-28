@@ -2,15 +2,11 @@
 #define SERVER_HPP
 
 #include "ServerConfiguration.hpp"
-#include <vector>
-#include <map>
-#include <string>
-#include <netdb.h>
 
 class Server {
 public:
     Server(ServerConfiguration* config);
-    ~Server();
+    virtual ~Server();
     int getSocket() const;
     const map<int, string>& getFdToPort() const;
     const ServerConfiguration& getConfig() const;
