@@ -7,6 +7,14 @@
 
 #include "includes.hpp"
 
+/* 
+  * Hadchi kaykhlik tsta3mel les fonctions ou les classes dyal std (bhal cout, string) 
+  * bla ma tzid 'std::'.  Mzyan f les petits projets, walakin f les grands projets yqder
+  *  ydir clash m3a les noms dyal les variables dyalk. Ila bghiti code mtnaddem w professional,
+  *  khassak tsta3mel 'std::' directement.
+*/
+using namespace std;
+
 struct Location
 {
     bool autoindex;

@@ -5,13 +5,6 @@
 #ifndef INCLUDES_HPP
 # define INCLUDES_HPP
 
-/* 
-  * Hadchi kaykhlik tsta3mel les fonctions ou les classes dyal std (bhal cout, string) 
-  * bla ma tzid 'std::'.  Mzyan f les petits projets, walakin f les grands projets yqder
-  *  ydir clash m3a les noms dyal les variables dyalk. Ila bghiti code mtnaddem w professional,
-  *  khassak tsta3mel 'std::' directement.
-*/
-using namespace std;
 
 /* 
   HAHAHAHAHAHHHA
@@ -79,7 +72,7 @@ using namespace std;
         if (!isdigit(STR[i])) return false; \
 
 #define VALIDATE_NUMERIC_RANGE(VALUE, MIN, MAX) \
-    int value = 0; \
+    ssize_t value = 0; \
     istringstream iss(VALUE); \
     iss >> value; \
     if (value < MIN || value > MAX) return false; \
