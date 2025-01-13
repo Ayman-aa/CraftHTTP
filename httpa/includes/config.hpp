@@ -34,8 +34,8 @@ class ServerConfiguration
     public:
 		ServerConfiguration(): maxBodySize(-1) {}
 
-		/* --------------- Parameters & Data Members ----------------- */
-		vector<string> ports;
+	/* --------------- Parameters & Data Members ----------------- */
+	vector<string> ports;
         string host;
         string bodySize;
         ssize_t maxBodySize;
@@ -44,7 +44,7 @@ class ServerConfiguration
         map<string, Location> locations;
 
         /* --------------- Member Functions ------------------------- */
-		string getErrorPage(string code);
+	string getErrorPage(string code);
         string getLocations(string path);
         ServerConfiguration getServerConfiguration(const string &host, string &port, string &ip);
 };
