@@ -32,7 +32,7 @@ struct Location
 class ServerConfiguration
 {
     public:
-		ServerConfiguration(): maxBodySize(-1) {}
+	ServerConfiguration(): maxBodySize(-1) {}
 
 	/* --------------- Parameters & Data Members ----------------- */
 	vector<string> ports;
