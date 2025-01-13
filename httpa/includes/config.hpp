@@ -1,7 +1,5 @@
 /* -- config.hpp -- */
 
-// #pragma once
-
 #ifndef CONFIG_HPP
 #define CONFIG_HPP
 
@@ -15,6 +13,7 @@
 */
 using namespace std;
 
+/* ========================== STRUCTURES =============================== */
 struct Location
 {
     bool autoindex;
@@ -26,18 +25,17 @@ struct Location
     vector<string> index;
     map<string, string> cgi_path;
     
-    /* WHO WHA */
     Location() : autoindex(false) {}
 };
 
+/* ========================== MAIN CLASS ================================ */
 class ServerConfiguration
 {
     public:
-        /* WHO HA*/
 		ServerConfiguration(): maxBodySize(-1) {}
 
-        /* PARAMS */
-        vector<string> ports;
+		/* --------------- Parameters & Data Members ----------------- */
+		vector<string> ports;
         string host;
         string bodySize;
         ssize_t maxBodySize;
@@ -45,8 +43,8 @@ class ServerConfiguration
         map<int, string> errorPages;
         map<string, Location> locations;
 
-        /* WHI HA */
-        string getErrorPage(string code);
+        /* --------------- Member Functions ------------------------- */
+		string getErrorPage(string code);
         string getLocations(string path);
         ServerConfiguration getServerConfiguration(const string &host, string &port, string &ip);
 };

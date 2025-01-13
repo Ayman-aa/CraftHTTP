@@ -6,9 +6,7 @@
 # define INCLUDES_HPP
 
 
-/* 
-  HAHAHAHAHAHHHA
-*/
+/* ========================== MACRO DEFINITIONS ========================== */
 #define CHECK_DUPLICATE(FIELD) \
 	if (!FIELD.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY) \
 
@@ -78,7 +76,7 @@
     if (value < MIN || value > MAX) return false; \
 
 
-/* ERROR MACROS */
+/* ========================== ERROR MESSAGES =========================== */
 #define SYNTAX_ERROR "Syntax error in configuration file."
 #define DUPLICATE_ENTRY "Duplicate entry detected."
 #define SERVER_ERROR "Expected 'server:' to start a new server block."
@@ -86,7 +84,7 @@
 #define SERVER_BLOCK_ERROR "Error in location block configuration."
 /* SAFY 7BASS */
 
-/* STANDARD LIBRARY HEADERS */
+/* ========================== STANDARD LIBRARY ========================= */
 #include <iostream>
 #include <string>
 #include <fstream>
@@ -100,7 +98,7 @@
 #include <unistd.h>
 #include <cstring>
 #include <cctype>
-#include <cstddef> /* for size_t, (...) */
+#include <cstddef> /* bnisba l size_t, (...) */
 /* SAFY 7BESS */
 
 
