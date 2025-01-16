@@ -1,9 +1,29 @@
 #pragma once
-#include "iostream"
-#include "map"
-#include "string"
+#include <string>
+#include <sys/types.h>
+#include <sys/socket.h>
+#include <sys/stat.h>
+#include <netdb.h>
+#include <cstring>
+#include <iostream>
+#include <cstdio>
+#include <unistd.h>
+#include <functional>
+#include <stdexcept>
+#include <arpa/inet.h>
+#include <iostream>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <sys/epoll.h>
+#include <cerrno>
+#include <unistd.h>
+#include <fcntl.h>
+#include <sys/wait.h>
+#include <ctime>
+#include <vector>
+#include <map>
 #include "../config/config.hpp"
-#include "../bits/Binary.hpp"
+#include "../bits/Content.hpp"
 #include "../HttpError/HttpError.hpp"
 #define VALID_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%"
 
@@ -31,11 +51,11 @@ class ParsingReq
     std::string cgi;
 
     ParsingReq();
-    ServerConfig serverConfig;
+    ServerConfiguration serverConfig;
     message msg;
     Location loc;
 
-    int loadHeaders(Binary &data);
+    int loadHeaders(Content &data);
     void parseRequest();
     void parsRequestline(std::string &line);
     void parseHeaders(std::string &line);

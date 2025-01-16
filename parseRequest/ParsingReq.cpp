@@ -90,7 +90,18 @@ void ParsingReq::parsRequestline(std::string &line)
     else
         throw HttpError(BadRequest, "Bad Request");
 }
-int ParsingReq::loadHeaders(Binary &data)
+void ParsingReq::parseHeaders(std::string &line)
+{
+    uint64_t pos = line.find(":");
+    std::string key = line.substr(0,pos);
+    std::string value = (pos != std::string::npos) ? line.substr(pos +1) : "";
+    if(key.find(' ') != std::string::npos)
+        throw HttpError(BadRequest, "Bad Request");
+    if(key == "Host" && msg.headers.find("Host") != msg.headers.end())
+        throw HttpError(BadRequest, "Bad Request");
+    
+}
+int ParsingReq::loadHeaders(Content &data)
 {
     //skip new lines
     while(data.to_string().length() && data.to_string()[0] == '\n')
@@ -106,29 +117,77 @@ int ParsingReq::loadHeaders(Binary &data)
         {
                 parseHeaders(lines[i]);
         }
-        this->headersLoaded = true;
-        size_t start = headerEnd == data.find("\r\n\r\n") ? headerEnd + 4 : headerEnd + 2;
-        data = data.substr(start, headerEnd - start);
+        this->haeaderGood = true;
+        size_t start = EOH == data.find("\r\n\r\n") ? EOH + 4 : EOH + 2;
+        data = data.substr(start, EOH - start);
+    }
+    return 0;
+}
+void ParsingReq::checkPath()
+{
+
+	struct stat fileInfo;
+	if (access(fullLocation.c_str(), F_OK) == 0){
+		stat(fullLocation.c_str(), &fileInfo);
+		if (S_ISDIR(fileInfo.st_mode))
+			isdir = 1;
+		if (access(fullLocation.c_str(), R_OK) != 0)
+			throw HttpError(Forbidden, "Forbidden");
+	}
+	else
+		throw HttpError(NotFound, "Not Found");
+}
+std::string getFileExtention(const std::string& filePath) {
+	size_t pos = filePath.find_last_of(".");
+	if (pos == std::string::npos)  // No extension.
+		return "";
+	return filePath.substr(pos + 1);  // Return everything after the period.
+}
+
+bool ParsingReq::parseUri(const std::string &uriStr)
+{
+    uriE &uri = msg.uri;
+    size_t queryPos = uriStr.find('?');
+    uri.path = uriStr.substr(0, queryPos);
+    if(queryPos != std::string::npos){
+        query = uriStr.substr(queryPos + 1);
+    }
+    // loc = serverConfig.getLocation(msg.uri.path);
+    if (this->loc.upload_path.empty())
+        this->upload_path = "./www/UPLOADS";
+    else
+        this->upload_path = this->loc.upload_path;
+    fullLocation = loc.root + msg.uri.path;
+    if (!loc.redirection_return.empty())
+        return 1;
+    checkPath();
+    //perpre for cgi extension
+    std::string fileExtention = getFileExtention(msg.uri.path);
+    if (loc.cgi_path.find(fileExtention) != loc.cgi_path.end()){
+        cgi = loc.cgi_path[fileExtention];
+        iscgi = true;
     }
     return 0;
 }
 void ParsingReq::parseRequest()
    {
-  	std::map<std::string, std::string>::iterator it trans=msg.headers.find("Transfer-Encoding");
-	std::map<std::string, std::string>::iterator it con=msg.headers.find("Content-Length");
+  	std::map<std::string, std::string>::iterator  trans=msg.headers.find("Transfer-Encoding");
+	std::map<std::string, std::string>::iterator  con=msg.headers.find("Content-Length");
     if(msg.method != "GET" && msg.method != "POST" && msg.method != "DELETE")
       	throw HttpError(MethodNotAllowed, "Method Not Allowed");
+    if (parseUri(msg.uri.fullUri))
+          return;//checking redirection;
+    if (serverConfig.hasLocation(msg.uri.path))
   }
 // int main() {
-//     std::string testStr = "Header1: value1\r\nHeader2: value2\r\nHeader3: value3\r\n";
-    
-//     std::vector<std::string> myresut1 = splitwithEOH(testStr);
-//     std::vector<std::string> their= splitWithDelimiters(testStr, {"\n", "\r\n"});
-//     for(size_t i = 0; i < their.size(); i++)
-//         std::cout << their[i] << " " << their.size() << std::endl;
-//     for(size_t i = 0; i < myresut1.size(); i++)
-//         std::cout << myresut1[i] << " " << myresut1.size() << std::endl;
-    
-
+//     std::string path ="f";
+//  struct   stat  s;
+//     if(access(path.c_str(), F_OK) == 0)
+//     {
+//         stat(path.c_str(), &s);
+//         std::cout <<"File user id: " << s.st_uid << std::endl;
+//         std::cout << "File size: " << s.st_size << std::endl;
+//     }
+ 
 //     return 0;
 // }

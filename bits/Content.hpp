@@ -8,19 +8,19 @@
 #include <sstream>
 #include <iomanip>
 
-class Binary
+class Content
 {
     std::vector< unsigned char > data;
     public:
-    Binary();
-    Binary( const std::vector< unsigned char > &);
-    Binary(const unsigned char *, size_t);
+    Content();
+    Content( const std::vector< unsigned char > &);
+    Content(const unsigned char *, size_t);
 
     void append(std::vector< unsigned char >);
     void append(const unsigned char *, size_t);
     size_t find(const std::string &);
 
-    Binary substr(size_t, std::string::size_type = std::string::npos);
+    Content substr(size_t, std::string::size_type = std::string::npos);
     size_t size();
     void erase(size_t, size_t);
     std::string to_string();
