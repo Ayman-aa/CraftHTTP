@@ -19,8 +19,9 @@ private:
     map<int, string> fd_to_port;
 
     struct addrinfo* serverInfo(const string& port);
-    void bindSocket(int sockfd, struct addrinfo* serverInfo,const string& port);
-    void listenSocket(int socketfd,const string& port);
+    void bindSocket(int sockFd, struct addrinfo *info, const std::string &port);
+    void listenSocket(int sockFd,const string& port, int backlog);
+    void setSocketOptions(int sockFd);
     void createSockets();
     void cleanup();
 };

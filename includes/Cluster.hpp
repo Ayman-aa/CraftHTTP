@@ -21,7 +21,7 @@ private:
     void addSocketToEpoll(int fd);
     void handleEvents(struct epoll_event* events, int numEvents);
     void acceptConnections(int serverSocket);
-    void handleClient(int client_fd, uint32_t events);
+    void handleClient(int client_fd);
     void serveErrorPage(int client_fd, int error_code, Server* server);
     bool isServerFd(int fd);
     void cleanup();

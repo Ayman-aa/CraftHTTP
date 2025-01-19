@@ -70,7 +70,7 @@ void Cluster::handleEvents(struct epoll_event* events, int numEvents) {
         if (isServerFd(eventFd)) {
             acceptConnections(eventFd);
         } else {
-            handleClient(eventFd, events[i].events);
+            handleClient(eventFd);
         }
     }
 }
@@ -87,7 +87,7 @@ void Cluster::acceptConnections(int serverSocket) {
     client_to_server[clientSocket] = serverSocket;
 }
 
-void Cluster::handleClient(int client_fd, uint32_t events)
+void Cluster::handleClient(int client_fd)
 {
     char buffer[1024];
     int bytes_received = recv(client_fd, buffer, sizeof(buffer) - 1, 0);
