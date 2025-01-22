@@ -30,19 +30,18 @@ struct Location
     vector<string> allow_methods;
     vector<string> index;
     map<string, string> cgi_path;
+	bool thereIsMethod(std::string &method);
+	bool thereIsCGI(std::string &cgi);
 };
 
 class ServerConfiguration
 {
     public:
-    // Default Constructor
-    ServerConfiguration() : maxBodySize(-1) {}
+		// Default Constructor
+		ServerConfiguration();
 
-    // Copy Constructor
-    ServerConfiguration(ServerConfiguration* other)
-        : ports(other->ports), host(other->host), bodySize(other->bodySize),
-          maxBodySize(other->maxBodySize), serverNames(other->serverNames),
-          errorPages(other->errorPages), locations(other->locations) {}
+		// Copy Constructor
+		ServerConfiguration(ServerConfiguration* other);
 
         // parameters from server block
         vector<string> ports;
@@ -52,6 +51,8 @@ class ServerConfiguration
         vector<string> serverNames;
         map<int, string> errorPages;
         map<string, Location> locations;
+        bool hasLocation(std::string &location);
+        Location &getLocation(std::string &location);
 };
 
 #endif
