@@ -35,7 +35,7 @@ bool ServerConfiguration::hasLocation(std::string &location)
 Location& ServerConfiguration::getLocation(std::string &location)
 {
 	Location *loc = NULL;
-	int maxMatch = 0;
+	size_t maxMatch = 0;
 	for (std::map<std::string, Location>::iterator it = locations.begin(); it != locations.end(); ++it)
 	{
 		size_t i = 0;
@@ -52,16 +52,20 @@ Location& ServerConfiguration::getLocation(std::string &location)
 	return *loc;
 }
 
-bool Location::thereIsMethod(std::string &method)
+bool Location::thereIsMethod(const std::string &method)
 {
 	if (allow_methods.empty() && method == "GET")
 		return true;
     
-	std::vector<std::string>::iterator it = std::find(allow_methods.begin(), allow_methods.end(), method);
-	return it != allow_methods.end();
+	for (std::vector<std::string>::iterator it = allow_methods.begin(); it != allow_methods.end(); ++it)
+	{
+		if (*it == method)
+			return true;
+	}
+	return false;
 }
 
-bool Location::thereIsCGI(std::string &cgi)
+bool Location::thereIsCGI(const std::string &cgi)
 {
 	return cgi_path.find(cgi) != cgi_path.end();
 }

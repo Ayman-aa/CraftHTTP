@@ -10,54 +10,30 @@ bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumb
 		if (LineIsCommentOrEmpty(line)) continue ;
 
 		int CurrentIndentLevel = getIndentLevel(line);
-		if (CurrentIndentLevel != 2) {
-			/* Move back one line */
-			cout << "line wesst rj3a: " << line << endl;
-			cout << "current line num fl error != 2" << currentLineNumber <<endl;
-			file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
-			currentLineNumber--;
-			/* return false if we haven't found at least we valid error page */
-			return foundValidErrorPage;
-		}
+		if (CurrentIndentLevel != 2)  return FileSeekg(file, line, currentLineNumber,foundValidErrorPage );
+			
 		clear_kv(kv);
-		if (!verifyLineFormat(line, 1))
-			return false;
-		for (size_t i = 0; i < kv.key.length(); i++) {
-			if (!isdigit(kv.key[i])) return false;
-		}
-		int value = 0;
-		istringstream iss(kv.key);
-		iss >> value;
-		if (value < 400 || value > 599) return false;
-
+		if (!verifyLineFormat(line, 1)) return false;
+		CHECK_ALL_DIGITS(kv.key);
+		VALIDATE_NUMERIC_RANGE(kv.key, 399, 600);
 		currentServer.errorPages[value] = kv.value;
-		cout << "safy ha7na storina asadi9" << endl;
 		foundValidErrorPage = true;
 	}
 	return foundValidErrorPage;
 }
 
 bool ConfigurationParser::extractClientMaxBodySizeValue(key_value& k_v) {
-	if (k_v.key != "client_max_body_size") return false;
-	if (k_v.value.empty()) return false;
+	VALIDATE_KV("client_max_body_size");
 	
-	for (size_t i = 0; i < k_v.value.length(); i++) {
-		if (!isdigit(k_v.value[i])) return false;
-	}
-	ssize_t value = 0;
-	istringstream iss(k_v.value);
-	iss >> value;
-	
-	if (value < 0) return false;
-	if (value > MAX_BODY_SIZE) return false;
-
+	CHECK_ALL_DIGITS(k_v.value);
+	VALIDATE_NUMERIC_RANGE(k_v.value, 0, MAX_BODY_SIZE);
 	currentServer.maxBodySize = value;
 	return true;	
 }
 
 bool ConfigurationParser::extractServerNamesValue(key_value& k_v) {
-	if (k_v.key != "server_names") return false;
-	if (k_v.value.empty()) return false;
+	VALIDATE_KV("server_names");
+
 	string parsed, input = k_v.value;
 	stringstream input_ss(input);
 
@@ -69,22 +45,18 @@ bool ConfigurationParser::extractServerNamesValue(key_value& k_v) {
 }
 
 bool ConfigurationParser::isValidPortSegment(const string& segment) {
-	if (kv.key != "ports") return false;
 	if (segment.empty()) return false;
 
-	for (size_t i = 0; i < segment.length(); i++) {
-		if (!isdigit(segment[i])) return false;
-	}
-
-	int value = 0;
-	istringstream iss(segment);
-	iss >> value;
-
-	return (value >= 1024 && value <= 65535);
+	CHECK_ALL_DIGITS(segment);
+	VALIDATE_NUMERIC_RANGE(segment, 1023, 65536);
+	return true;
 }
 
 bool ConfigurationParser::extractPortValue(key_value& k_v) {
 	/* 1024 -> 65535 : Registred ports. */
+	VALIDATE_KV("ports");
+	// if (kv.key != "ports") return false;
+	
 	string parsed, input = k_v.value;
 	stringstream input_ss(input);
 	
@@ -96,19 +68,16 @@ bool ConfigurationParser::extractPortValue(key_value& k_v) {
 }
 
 bool ConfigurationParser::isValidIPSegment(const string& segment) {
-	if (kv.key != "host") return false;
 	if (segment.empty()) return false;
 
-	for (size_t i = 0; i < segment.length(); i++)
-		if (!isdigit(segment[i])) return false;
-	
-	int value = 0;
-	istringstream iss(segment);
-	iss >> value;
-	return (value >= 0 && value <= 255);
+	CHECK_ALL_DIGITS(segment);
+	VALIDATE_NUMERIC_RANGE(segment, -1, 256);
+	return true;
 }
 
 bool ConfigurationParser::extractHostKey(key_value& k_v) { 
+	VALIDATE_KV("host");
+
 	int currentCountOfSubnets = 0;
 	string parsed, input = k_v.value;
 	stringstream input_ss(input);
@@ -116,7 +85,7 @@ bool ConfigurationParser::extractHostKey(key_value& k_v) {
 		if (!isValidIPSegment(parsed)) return false;
 		if (currentCountOfSubnets > 4) return false;
 	}
-	k_v.currentParsedValue = k_v.value;
+	currentServer.host = k_v.value;
 	return true;
 }
 
@@ -129,6 +98,7 @@ bool ConfigurationParser::LineIsCommentOrEmpty(string& line) {
 	if (trimCheck[0] == '#') return true;
 	return false;
 }
+
 bool ConfigurationParser::verifyLineFormat(string& line, int indentLevel) {
 	if (line.empty()) return true;
 
@@ -152,7 +122,6 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
 		if (line[i] == ':')
 	 		colonCount++;
 	}
-	cout << "ColonCount: " << colonCount << endl;
 	if (colonCount != 1 && (line.find("return:") == string::npos)) return false;
 
 	/* na5do pos of colona */
@@ -161,7 +130,6 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
 	kv.key = line.substr(0, colonPosition);
 	if (kv.key.empty() || kv.key.find(' ') != string::npos || kv.key.find('\t') != string::npos)
 		return false;
-	cout << "\nkey: " << kv.key << endl;
 	//if (kv.key == "error_pages") return true;
 	/* daba value dial dak key */
 	kv.value = line.substr(colonPosition+1);
@@ -172,18 +140,16 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
 	if (kv.value.empty() || firstNoSpace == string::npos) return false;
 	if (firstNoSpace != string::npos && lastNoSpace  != string::npos)
 		kv.value = kv.value.substr(firstNoSpace, lastNoSpace - firstNoSpace + 1);
-	cout << "value: " << kv.value<< "\n" << endl;
 	return true;
 }
 
-void ConfigurationParser::syntaxError(int currentLineNumber) {
+void ConfigurationParser::syntaxError(int currentLineNumber, const string& errorMessage) {
 	ostringstream oss;
 	oss << currentLineNumber;
-	throw runtime_error("error: syntax error at line " + oss.str());
+	throw runtime_error("Error on line " + oss.str() + ": " + errorMessage);
 }
 
 void ConfigurationParser::clear_kv(key_value& kv) {
 	kv.key.clear();
 	kv.value.clear();
-	kv.currentParsedValue.clear();
 }

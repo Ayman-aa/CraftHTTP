@@ -9,6 +9,7 @@ ConfigurationParser::ConfigurationParser(string& filePath) {
 	if (!file.is_open())
 		throw runtime_error("failed to open file: " + filePath);
 	ConfigurationParser::load(file);
+	file.close();
 }
 
 void ConfigurationParser::load(ifstream& file) {
@@ -16,79 +17,42 @@ void ConfigurationParser::load(ifstream& file) {
 	int currentLineNumber = 0;
 
 	while (getline(file, line) && ++currentLineNumber) {
-		cout << "OUTER LOOP - Current line: '" << line << "'" << endl;
-		if (!isValidRootLevel(line)) syntaxError(currentLineNumber);
+		if (LineIsCommentOrEmpty(line)) continue;
+		if (!isValidRootLevel(line)) syntaxError(currentLineNumber, SERVER_ERROR);
 
 		/* Create new server for each server block */
 
 		while (getline(file, line) && ++currentLineNumber) {
 			int currentIndentLevel = getIndentLevel(line);
+
 			clear_kv(kv);
-			cout << "INNER LOOP - Current line: '" << line << "'" << endl;
-			cout << "Current indent level: " << currentIndentLevel << endl;
+
 			if (LineIsCommentOrEmpty(line)) continue ;
+
 			if (line == "server:"  && !currentIndentLevel ) {
-				cout << "Found new server block, pushing current server and breaking" << endl;
-				cout << "ch7al men merra ya zebi wesh hreb lik" << endl;
 				servers.push_back(new ServerConfiguration(currentServer));
 				currentServer = ServerConfiguration();
-				/* Move file pointer back to reprocess the "server:" line */
-				file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
-				currentLineNumber--;
+				FileSeekg(file, line, currentLineNumber, true);
 				break;
 			}
-			if (currentIndentLevel != 1) syntaxError(currentLineNumber);
+			if (currentIndentLevel != 1) syntaxError(currentLineNumber, SYNTAX_ERROR);
 
-			if (line.find("host:") != string::npos) {
-				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
-				if (extractHostKey(kv))  {
-					if (!currentServer.host.empty()) syntaxError(currentLineNumber);
-					currentServer.host = kv.currentParsedValue;
-					cout << "currentServer.host: " << currentServer.host << endl;
-				}
-				else syntaxError(currentLineNumber);
+			CHECK_AND_EXTRACT("host:", currentServer.host, extractHostKey);
+			CHECK_AND_EXTRACT("ports:", currentServer.ports, extractPortValue);
+			CHECK_AND_EXTRACT("server_names:", currentServer.serverNames, extractServerNamesValue);
+			CHECK_AND_EXTRACT_MAX_BODY_SIZE("client_max_body_size:", currentServer.maxBodySize, extractClientMaxBodySizeValue);
+
+			if (line.find("error_pages:") != string::npos) {
+				if (!extractErrorPages(file, currentLineNumber)) syntaxError(currentLineNumber, SYNTAX_ERROR);
+				continue;
 			}
-			else if (line.find("ports:") != string::npos) {
-				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
-				if (currentServer.ports.empty() && extractPortValue(kv)) {
-					for (size_t i = 0; i < currentServer.ports.size(); i++)
-						cout << "ports[" << i << "]: " << "'" << currentServer.ports[i] << "'" << ",";
-					cout << endl;
-				}
-				else syntaxError(currentLineNumber);
+			if (line.find("location:") != string::npos){
+				HANDLE_LOCATION();
+				continue;
 			}
-			else if (line.find("server_names:") != string::npos) {
-				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
-				if (currentServer.serverNames.empty() && extractServerNamesValue(kv)) {
-					for (size_t i = 0; i < currentServer.serverNames.size(); i++)
-						cout << "server name[" << i << "]: " << "'" << currentServer.serverNames[i] << "'" << endl;;
-				}
-				else syntaxError(currentLineNumber);
-			}
-			else if (line.find("error_pages:") != string::npos) {
-				if (!extractErrorPages(file, currentLineNumber)) syntaxError(currentLineNumber);
-				cout << "Line li kantsnah yrje3 ah: " << line << endl;
-				for (map<int, string>::iterator it = currentServer.errorPages.begin(); it != currentServer.errorPages.end(); it++)
-					cout << "errorPage[" << it->first << "] = " << it->second << endl;
-			}
-			else if (line.find("client_max_body_size:") != string::npos) {
-				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
-				if (currentServer.maxBodySize == -1 && extractClientMaxBodySizeValue(kv)) {
-					cout << "client max body size: " << currentServer.maxBodySize << endl;	
-				}
-				else syntaxError(currentLineNumber);
-			}
-			else if (line.find("location:") != string::npos){
-				Location location; /* reseti l9lawi nchoufou */
-				(!verifyLineFormat(line, currentIndentLevel) ? syntaxError(currentLineNumber): (void)0);
-				if (!servLocationLine(kv, location)) syntaxError(currentLineNumber);
-				if (!extractLocationInfos(file, currentLineNumber, location)) syntaxError(currentLineNumber);
-				currentServer.locations[location.path] = location;
-			}
-			else syntaxError(currentLineNumber); 
+			else syntaxError(currentLineNumber, SYNTAX_ERROR); 
 		}
 	}
-	cout << "ch7al men merra ya zebi wesh hreb lik, hadi dial lta7t ya zebi" << endl;
 	servers.push_back(new ServerConfiguration(currentServer));
 }
 
@@ -110,3 +74,8 @@ int ConfigurationParser::getIndentLevel(const string& line) {
 	return IndentLevel;
 }
 
+bool ConfigurationParser::FileSeekg(ifstream& file, const string& line, int &currentLineNumber, bool retVal) {
+	file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
+	currentLineNumber--;
+	return retVal;
+}

@@ -17,6 +17,8 @@
 #include <fstream>
 #include <sstream>
 
+#include "includes.hpp"
+
 using namespace std;
 
 struct Location
@@ -30,8 +32,8 @@ struct Location
     vector<string> allow_methods;
     vector<string> index;
     map<string, string> cgi_path;
-	bool thereIsMethod(std::string &method);
-	bool thereIsCGI(std::string &cgi);
+	bool thereIsMethod(const std::string &method);
+	bool thereIsCGI(const std::string &cgi);
 };
 
 class ServerConfiguration
