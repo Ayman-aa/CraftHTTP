@@ -16,7 +16,7 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
-
+#include <algorithm>
 #include "includes.hpp"
 
 using namespace std;
@@ -55,6 +55,7 @@ class ServerConfiguration
         map<string, Location> locations;
         bool hasLocation(std::string &location);
         Location &getLocation(std::string &location);
+        std::string getErrorPage(int errn_);
 };
 
 #endif

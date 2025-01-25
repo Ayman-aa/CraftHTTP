@@ -8,11 +8,10 @@ server:
 		405: /mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/405.html
 
 	location: /
-		#autoindex: on
+		autoindex: on
 		allowed_methods: GET,POST,DELETE 
 		index: i.html,h,hello.py
-		return: http://google.com
-		root: /mnt/c/Users/Ayman/Desktop/crafthttp/assets/
+		root: /mnt/c/Users/Ayman/Desktop/crafthttp/assets
 		cgi_path:
 			php: /usr/bin/php
 
@@ -28,6 +27,5 @@ server:
 		#autoindex: on
 		allowed_methods: GET,POST,DELETE 
 		index: i.html,h,hello.py
-		return: http://google.com
 		root: /mnt/c/Users/Ayman/Desktop/crafthttp/assets/root
 			

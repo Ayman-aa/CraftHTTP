@@ -20,9 +20,10 @@ class ConfigurationParser : public ServerConfiguration
 {
 	public:
 		/* --------------- Constants & Constructor ----------------- */
-		static const ssize_t MAX_BODY_SIZE = 2147483648;
+		static const ssize_t maxBodySize = 2147483648;
 
 		ConfigurationParser(string& filePath);
+		ConfigurationParser() {}
 		~ConfigurationParser() {
 			for (size_t i = 0; i < servers.size(); i++) 
 				delete servers[i];
@@ -31,6 +32,7 @@ class ConfigurationParser : public ServerConfiguration
 		/* --------------- Main Config Data ----------------- */
 		vector<ServerConfiguration*>	servers;
 		ServerConfiguration				currentServer;
+		ServerConfiguration &getServerConfig(const std::string &host,const std::vector<std::string> &ports, const std::string &serverName);
 
 		/* --------------- Parsing Functions ----------------- */
 		void	load(ifstream& file);

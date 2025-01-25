@@ -79,3 +79,20 @@ bool ConfigurationParser::FileSeekg(ifstream& file, const string& line, int &cur
 	currentLineNumber--;
 	return retVal;
 }
+
+ServerConfiguration &ConfigurationParser::getServerConfig(const std::string &host, const std::vector<std::string> &ports, const std::string &serverName)
+{
+	std::vector<ServerConfiguration*> tmp;
+
+	for (std::vector<ServerConfiguration*>::iterator it = servers.begin(); it != servers.end(); it++) {
+		if ((*it)->host == host && (*it)->ports == ports) {
+			if (std::find((*it)->serverNames.begin(), (*it)->serverNames.end(), serverName) != (*it)->serverNames.end())
+				return **it;
+			if (tmp.empty())
+				tmp.push_back(*it);
+		}
+	}
+	if (!tmp.empty())
+		return *tmp[0];
+	throw runtime_error("Server not found");
+}

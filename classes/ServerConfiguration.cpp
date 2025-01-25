@@ -32,6 +32,14 @@ bool ServerConfiguration::hasLocation(std::string &location)
 	return false;
 }
 
+std::string ServerConfiguration::getErrorPage(int errn_)
+{
+	std::map<int, std::string>::iterator it = errorPages.find(errn_);
+	if (it == errorPages.end())
+		return "";
+	return it->second;
+}
+
 Location& ServerConfiguration::getLocation(std::string &location)
 {
 	Location *loc = NULL;

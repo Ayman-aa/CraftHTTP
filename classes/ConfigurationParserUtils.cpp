@@ -26,7 +26,7 @@ bool ConfigurationParser::extractClientMaxBodySizeValue(key_value& k_v) {
 	VALIDATE_KV("client_max_body_size");
 	
 	CHECK_ALL_DIGITS(k_v.value);
-	VALIDATE_NUMERIC_RANGE(k_v.value, 0, MAX_BODY_SIZE);
+	VALIDATE_NUMERIC_RANGE(k_v.value, 0, maxBodySize);
 	currentServer.maxBodySize = value;
 	return true;	
 }

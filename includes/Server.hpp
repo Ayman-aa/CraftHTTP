@@ -9,7 +9,7 @@ public:
     virtual ~Server();
     int getSocket() const;
     const map<int, string>& getFdToPort() const;
-    const ServerConfiguration& getConfig() const;
+    ServerConfiguration& getConfig();
     const vector<int>& getSockets() const;
 
 private:

@@ -54,7 +54,7 @@ void Cluster::initializeServers()
 void Cluster::addSocketToEpoll(int fd)
 {
 	struct epoll_event event;
-	event.events = EPOLLIN | EPOLLOUT | EPOLLHUP | EPOLLERR;
+	event.events = EPOLLIN | EPOLLOUT | EPOLLET;
 	event.data.fd = fd;
 
 	if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event) == -1)
@@ -94,7 +94,7 @@ void Cluster::processEvents(struct epoll_event *events)
 			if (isServerFd(eventFd))
 				acceptConnections(eventFd);
 			else
-				 handleClient(eventFd);
+				handleExistingConnection(eventFd, events[i].events);
 		} catch(const std::exception &e){
 			std::cerr << "Error handling event for fd: " << eventFd << ": " << e.what() << std::endl;
 			cleanupSocket(eventFd);
@@ -152,6 +152,40 @@ void Cluster::acceptConnections(int serverSocket)
 	}
 }
 
+void Cluster::handleExistingConnection(int eventFd, uint32_t eventsData) {
+    ServerConfiguration &ServerConfig = server_fd_to_server.at(client_to_server.at(eventFd))->getConfig();
+
+    std::map<int, ClientHandler*>::iterator it = clientsZone.find(eventFd);
+    if (it == clientsZone.end()) {
+        std::cerr << "Inserting new ClientHandler for eventFd: " << eventFd << std::endl;
+        ClientHandler* newClient = new ClientHandler(eventFd, epoll_fd, ServerConfig, config);
+        it = clientsZone.insert(std::make_pair(eventFd, newClient)).first;
+    } else {
+        std::cerr << "Found existing ClientHandler for eventFd: " << eventFd << std::endl;
+    }
+    ClientHandler& client = *(it->second);
+
+    std::cerr << "eventsData: " << eventsData << ", client.status: " << client.status << std::endl;
+
+    if (eventsData & EPOLLIN && client.status == Receiving) {
+        std::cerr << "Condition met: EPOLLIN and Receiving" << std::endl;
+        client.readyToReceive();
+        client.lastReceive = std::time(0);
+    } else if (eventsData & EPOLLOUT) {
+        client.readyToSend();
+    }
+
+    if (client.status == Closed || eventsData & EPOLLHUP || eventsData & EPOLLERR) {
+        std::cout << "Connection closed, removing client from the map" << std::endl;
+        epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client.clientFd, NULL);
+        close(client.clientFd);
+        if (client.monitorCGI)
+            kill(client.CGIpid, SIGKILL);
+        client_to_server.erase(eventFd);
+        delete it->second; // Free the memory
+        clientsZone.erase(it);
+    }
+}/*
 void Cluster::handleClient(int client_fd)
 {
     char buffer[1024];
@@ -265,5 +299,5 @@ void Cluster::serveErrorPage(int client_fd, int error_code, Server* server)
         }
     }
 }
-
+*/
 Cluster::~Cluster() { cleanup(); }

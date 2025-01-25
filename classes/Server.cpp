@@ -130,5 +130,5 @@ void Server::cleanup()
 
 int Server::getSocket() const { return main_socket; }
 const std::map<int, std::string>& Server::getFdToPort() const { return fd_to_port; }
-const ServerConfiguration& Server::getConfig() const { return config;  }
+ServerConfiguration& Server::getConfig() { return config;  }
 const std::vector<int>& Server::getSockets() const { return sockets;  }

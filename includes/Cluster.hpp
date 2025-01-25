@@ -3,6 +3,7 @@
 
 #include "Server.hpp"
 #include "ConfigurationParser.hpp"
+#include "ClientHandler.hpp"
 #include <sys/epoll.h>
 #include <fcntl.h>
 #include <exception>
@@ -23,6 +24,7 @@ private:
     vector<Server*> servers;
     map<int, int> client_to_server;
     map<int, Server*> server_fd_to_server;
+    std::map<int, ClientHandler*> clientsZone;
 
     // Initialization methods
     void createEpoll();
@@ -32,9 +34,9 @@ private:
     // Event handling methods
     void processEvents(struct epoll_event* events);
     void acceptConnections(int serverSocket);
-    void handleClient(int client_fd);
-    void serveErrorPage(int client_fd, int error_code, Server* server);
-
+   // void handleClient(int client_fd);
+    //void serveErrorPage(int client_fd, int error_code, Server* server);
+    void handleExistingConnection(int eventFd, uint32_t eventsData);
     // Helper methods
     bool isServerFd(int fd) const;
     void cleanupSocket(int fd);
