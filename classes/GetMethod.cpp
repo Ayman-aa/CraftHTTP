@@ -3,8 +3,8 @@
 void ClientHandler::GetMethod(){
     if (isDir)
     {
-        if (!location.index.empty()){ 
-            std::cout << "trying to get index" << std::endl;
+        if (!location.index.empty())
+        {
             if (GetIndex())
                 return ;
         }

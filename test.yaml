@@ -7,12 +7,14 @@ server:
 		404: errorPages/404.html
 		405: errorPages/405.html
 		302: errorPages/302.html
+		301: errorPages/301.html
 
 	location: /
 		autoindex: on
 		allowed_methods: GET,POST,DELETE 
 		index: index.html
 		root:./assets
+		#return: http://google.com
 		cgi_path:
 			php: /usr/bin/php
 

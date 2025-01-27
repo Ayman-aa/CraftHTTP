@@ -82,27 +82,10 @@ bool ConfigurationParser::FileSeekg(ifstream& file, const string& line, int &cur
 ServerConfiguration* ConfigurationParser::getServerConfig(const std::string& ip, const std::vector<std::string>& ports, const std::string& host) {
     std::vector<ServerConfiguration*> tmp;
 
-    std::cout << "Searching for server config with IP: " << ip << ", ports: ";
-    for (size_t i = 0; i < ports.size(); ++i) {
-        std::cout << ports[i] << " ";
-    }
-    std::cout << ", host: " << host << std::endl;
-
     for (std::vector<ServerConfiguration*>::iterator it = servers.begin(); it != servers.end(); it++) {
-        if (*it == nullptr) {
-            std::cerr << "Error: Null ServerConfiguration pointer found" << std::endl;
+        if (*it == NULL) {
             continue;
         }
-
-        std::cout << "Checking server config with IP: " << (*it)->host << ", ports: ";
-        for (size_t i = 0; i < (*it)->ports.size(); ++i) {
-            std::cout << (*it)->ports[i] << " ";
-        }
-        std::cout << ", server names: ";
-        for (size_t i = 0; i < (*it)->serverNames.size(); ++i) {
-            std::cout << (*it)->serverNames[i] << " ";
-        }
-        std::cout << std::endl;
 
         if (ip == (*it)->host) {
             for (size_t i = 0; i < ports.size(); ++i) {

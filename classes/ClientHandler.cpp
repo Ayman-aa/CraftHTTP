@@ -20,7 +20,6 @@ ClientHandler::ClientHandler(int clientFd, int epollFd, const ServerConfiguratio
 }
 
 ClientHandler::~ClientHandler(){
-    std::cerr << "Destroying ClientHandler, tmpFiles size: " << tmpFiles.size() << std::endl;
     std::vector<std::string>::iterator it = tmpFiles.begin();
     for (;it != tmpFiles.end(); it++){
         std::cerr << "Removing file: " << *it << std::endl;
@@ -101,7 +100,6 @@ void ClientHandler::readFromSocket(int bufferSize) {
 		return ;
 	}
 	this->readingBuffer.append(buffer, bytesRead);
-    std::cout << "what read: " << buffer << std::endl;
 }
 
 

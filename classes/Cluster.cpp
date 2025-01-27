@@ -19,7 +19,6 @@ void Cluster::createEpoll()
     epoll_fd = epoll_create(1024);
     if(epoll_fd == -1)
         throw std::runtime_error("Error creating epoll instance: " + std::string(strerror(errno)));
-    std::cout << "Epoll instance created with fd: " << epoll_fd << std::endl;
 }
 
 void Cluster::initializeServers()
@@ -44,7 +43,6 @@ void Cluster::initializeServers()
             {
                 addSocketToEpoll(serverSockets[j]);
                 server_fd_to_server[serverSockets[j]] = server;
-                std::cout << "Added server socket to epoll: " << serverSockets[j] << std::endl;
             }
         } catch (const std::exception &e){
             std::cerr << e.what() << std::endl;
@@ -61,7 +59,6 @@ void Cluster::addSocketToEpoll(int fd)
 
     if(epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event) == -1)
         throw std::runtime_error("Error adding socket to epoll: " + std::string(strerror(errno)));
-    std::cout << "Socket added to epoll: " << fd << std::endl;
 }
 
 void Cluster::run()
@@ -72,7 +69,6 @@ void Cluster::run()
     {
         try
         {
-            std::cout << "Waiting for events..." << std::endl;
             processEvents(events);
         } catch(const std::exception &e){
             std::cerr << "Error in event loop: " << e.what() << std::endl;
@@ -89,8 +85,6 @@ void Cluster::processEvents(struct epoll_event *events)
             return;
         throw std::runtime_error("Error in epoll_wait: " + std::string(strerror(errno)));
     }
-
-    std::cout << "Number of events: " << numEvents << std::endl;
 
     for (int i = 0; i < numEvents; ++i)
     {
@@ -167,34 +161,28 @@ void Cluster::handleExistingConnection(int eventFd, uint32_t eventsData) {
 
     std::map<int, ClientHandler*>::iterator it = clientsZone.find(eventFd);
     if (it == clientsZone.end()) {
-        std::cout << "Creating new ClientHandler for fd: " << eventFd << std::endl;
         it = clientsZone.insert(std::make_pair(eventFd, new ClientHandler(eventFd, epoll_fd, serverConfig, config))).first;
     }
     ClientHandler* client = it->second;
 
-    std::cout << "Handling existing connection for fd: " << eventFd << std::endl;
-
     if (eventsData & EPOLLIN && client->status == Receiving)
     {
-        std::cout << "Ready to receive data on fd: " << eventFd << std::endl;
         client->readyToReceive();
         client->lastReceive = std::time(0);
     }
     else if (eventsData & EPOLLOUT)
     {
-        std::cout << "Ready to send data on fd: " << eventFd << std::endl;
         client->readyToSend();
     }
 
     if (client->status == Closed || eventsData & EPOLLHUP || eventsData & EPOLLERR)
     {
-        std::cout << "Connection closed or error on fd: " << eventFd << std::endl;
         epoll_ctl(epoll_fd, EPOLL_CTL_DEL, client->clientFd, NULL);
         close(client->clientFd);
         if (client->monitorCGI)
             kill(client->CGIpid, SIGKILL);
         getServerByClientFd(eventFd).connectedClients.erase(eventFd);
-        delete client; // Properly delete the client
+        delete client; 
         clientsZone.erase(it);
     }
 }
