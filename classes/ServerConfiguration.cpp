@@ -32,12 +32,13 @@ bool ServerConfiguration::hasLocation(std::string &location)
 	return false;
 }
 
-std::string ServerConfiguration::getErrorPage(int errn_)
-{
-	std::map<int, std::string>::iterator it = errorPages.find(errn_);
-	if (it == errorPages.end())
-		return "";
-	return it->second;
+std::string ServerConfiguration::getErrorPage(int errn_) {
+    std::map<int, std::string>::iterator it = errorPages.find(errn_);
+    if (it == errorPages.end()) {
+        std::cout << "Error page not found for error code: " << errn_ << std::endl;
+        return "";
+    }
+    return it->second;
 }
 
 Location& ServerConfiguration::getLocation(std::string &location)

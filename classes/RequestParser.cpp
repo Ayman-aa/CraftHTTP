@@ -120,7 +120,7 @@ bool RequestParser::parseUri(const std::string& uriStr) {
 	}
 	location = ServerConfig.getLocation(message.uri.path);
 	if (this->location.upload_path.empty())
-		this->upload_path = "./www/UPLOADS";
+		this->upload_path = "./assets/ups";
 	else
 		this->upload_path = this->location.upload_path;
 	fullLocation = location.root + message.uri.path;

@@ -6,6 +6,7 @@ server:
 	error_pages:
 		404: errorPages/404.html
 		405: errorPages/405.html
+		302: errorPages/302.html
 
 	location: /
 		autoindex: on

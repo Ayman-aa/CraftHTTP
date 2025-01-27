@@ -15,7 +15,7 @@ bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumb
 		clear_kv(kv);
 		if (!verifyLineFormat(line, 1)) return false;
 		CHECK_ALL_DIGITS(kv.key);
-		VALIDATE_NUMERIC_RANGE(kv.key, 399, 600);
+		VALIDATE_NUMERIC_RANGE(kv.key, 300, 600);
 		currentServer.errorPages[value] = kv.value;
 		foundValidErrorPage = true;
 	}
