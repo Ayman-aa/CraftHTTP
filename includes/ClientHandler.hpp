@@ -67,7 +67,7 @@ class ClientHandler : public RequestParser {
 		Binary sendingBuffer;
 		int clientFd;
 		ServerConfiguration ServerConfig;
-		Configurations Configs;
+		Configurations &Configs;
 		std::time_t lastReceive;
 		std::time_t firstReceive;
 
@@ -83,7 +83,7 @@ class ClientHandler : public RequestParser {
 		MultiPartState state;
 
 	public :
-		ClientHandler(int clientFd, int epollFd ,const  ServerConfiguration &ServerConfig, const Configurations &Configs);
+		ClientHandler(int clientFd, int epollFd, const ServerConfiguration &ServerConfig, Configurations &Configs);
 		~ClientHandler();
 		void readyToReceive();
 		void readyToSend();

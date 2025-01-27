@@ -1,27 +1,22 @@
 #include "../includes/ClientHandler.hpp"
 
 
-ClientHandler::ClientHandler(int clientFd, int epollFd ,const ServerConfiguration &ServerConfig, const Configurations &Configs)
-{
-	this->epollFd = epollFd;
-	this->clientFd = clientFd;
-	this->ServerConfig = ServerConfig;
-	this->Configs = Configs;
-	this->status = Receiving;
+ClientHandler::ClientHandler(int clientFd, int epollFd, const ServerConfiguration &ServerConfig, Configurations &Configs)
+    : epollFd(epollFd), clientFd(clientFd), ServerConfig(ServerConfig), Configs(Configs) {
+    this->status = Receiving;
 
-	this->counter = 0;
-	this->isDir = 0;
-	this->isCGIfile = 0;
-	this->headersSent = 0;
-	this->offset = 0;
-	this->lastReceive = 0;
-	this->firstReceive = std::time(0);
-	this->chunkSize = 0;
-	this->in = false;
-	this->state = startBound;
-	// cgi
-	this->isCGI = 0;
-	this->monitorCGI = 0;
+    this->counter = 0;
+    this->isDir = 0;
+    this->isCGIfile = 0;
+    this->headersSent = 0;
+    this->offset = 0;
+    this->lastReceive = 0;
+    this->firstReceive = std::time(0);
+    this->chunkSize = 0;
+    this->in = false;
+    this->state = startBound;
+    this->isCGI = 0;
+    this->monitorCGI = 0;
 }
 
 ClientHandler::~ClientHandler(){
@@ -35,7 +30,6 @@ ClientHandler::~ClientHandler(){
 
 
 void ClientHandler::readyToReceive() {
-    // Client ready to receive data
     try {
         if (!headersLoaded) {
             readFromSocket();
@@ -68,7 +62,6 @@ void ClientHandler::readyToReceive() {
 
 
 void ClientHandler::readyToSend() {
-    // Client ready to send data
     try {
         if (!headersLoaded) {
             if (std::time(0) - firstReceive > 5) {
@@ -117,7 +110,6 @@ void ClientHandler::sendToSocket()
 	size_t totalBytesSent = 0;
 	while (totalBytesSent < sendingBuffer.toStr().size())
 	{
-		//write(open("log", O_RDWR | O_CREAT | O_APPEND, 0777), sendingBuffer.toStr().c_str() + totalBytesSent, sendingBuffer.toStr().size() - totalBytesSent);
 		ssize_t sendBytes = ::send(this->clientFd, sendingBuffer.toStr().c_str() + totalBytesSent, sendingBuffer.toStr().size() - totalBytesSent, MSG_NOSIGNAL);
 		if (sendBytes <= 0)
 		{

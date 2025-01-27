@@ -79,20 +79,43 @@ bool ConfigurationParser::FileSeekg(ifstream& file, const string& line, int &cur
 	currentLineNumber--;
 	return retVal;
 }
+ServerConfiguration* ConfigurationParser::getServerConfig(const std::string& ip, const std::vector<std::string>& ports, const std::string& host) {
+    std::vector<ServerConfiguration*> tmp;
 
-ServerConfiguration &ConfigurationParser::getServerConfig(const std::string &host, const std::vector<std::string> &ports, const std::string &serverName)
-{
-	std::vector<ServerConfiguration*> tmp;
+    std::cout << "Searching for server config with IP: " << ip << ", ports: ";
+    for (size_t i = 0; i < ports.size(); ++i) {
+        std::cout << ports[i] << " ";
+    }
+    std::cout << ", host: " << host << std::endl;
 
-	for (std::vector<ServerConfiguration*>::iterator it = servers.begin(); it != servers.end(); it++) {
-		if ((*it)->host == host && (*it)->ports == ports) {
-			if (std::find((*it)->serverNames.begin(), (*it)->serverNames.end(), serverName) != (*it)->serverNames.end())
-				return **it;
-			if (tmp.empty())
-				tmp.push_back(*it);
-		}
-	}
-	if (!tmp.empty())
-		return *tmp[0];
-	throw runtime_error("Server not found");
+    for (std::vector<ServerConfiguration*>::iterator it = servers.begin(); it != servers.end(); it++) {
+        if (*it == nullptr) {
+            std::cerr << "Error: Null ServerConfiguration pointer found" << std::endl;
+            continue;
+        }
+
+        std::cout << "Checking server config with IP: " << (*it)->host << ", ports: ";
+        for (size_t i = 0; i < (*it)->ports.size(); ++i) {
+            std::cout << (*it)->ports[i] << " ";
+        }
+        std::cout << ", server names: ";
+        for (size_t i = 0; i < (*it)->serverNames.size(); ++i) {
+            std::cout << (*it)->serverNames[i] << " ";
+        }
+        std::cout << std::endl;
+
+        if (ip == (*it)->host) {
+            for (size_t i = 0; i < ports.size(); ++i) {
+                if (std::find((*it)->ports.begin(), (*it)->ports.end(), ports[i]) != (*it)->ports.end()) {
+                    if (std::find((*it)->serverNames.begin(), (*it)->serverNames.end(), host) != (*it)->serverNames.end())
+                        return *it;
+                    if (tmp.empty())
+                        tmp.push_back(*it);
+                }
+            }
+        }
+    }
+    if (!tmp.empty())
+        return tmp[0];
+    throw std::runtime_error("Server not found");
 }

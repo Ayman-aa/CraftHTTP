@@ -32,7 +32,7 @@ class ConfigurationParser : public ServerConfiguration
 		/* --------------- Main Config Data ----------------- */
 		vector<ServerConfiguration*>	servers;
 		ServerConfiguration				currentServer;
-		ServerConfiguration &getServerConfig(const std::string &host,const std::vector<std::string> &ports, const std::string &serverName);
+		ServerConfiguration *getServerConfig(const std::string &host,const std::vector<std::string> &ports, const std::string &serverName);
 
 		/* --------------- Parsing Functions ----------------- */
 		void	load(ifstream& file);

@@ -14,7 +14,7 @@ void Binary::append(const unsigned char* newData, size_t size) {
 
 size_t Binary::find(const std::string& pattern) const {
 	if (pattern.empty()) {
-		return std::string::npos;  // Empty pattern cannot be found
+		return std::string::npos; 
 	}
 
 	std::vector<unsigned char>::const_iterator result = std::search(data.begin(), data.end(), pattern.begin(), pattern.end());
@@ -22,7 +22,7 @@ size_t Binary::find(const std::string& pattern) const {
 	if (result != data.end()) {
 		return std::distance(data.begin(), result);
 	} else {
-		return std::string::npos;  // Pattern not found
+		return std::string::npos;  
 	}
 }
 
@@ -60,14 +60,3 @@ void Binary::erase(size_t start, size_t length) {
 }
 
 size_t Binary::size() {return data.size();}
-
-
-
-// int main(int argc, char const *argv[])
-// {
-// 	const unsigned char s[11] = "0123456789";
-// 	const unsigned char *str = s;
-// 	Binary b(str, 10);
-// 	std::cout << b.find("23");
-// 	return 0;
-// }

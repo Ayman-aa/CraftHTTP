@@ -101,27 +101,15 @@ void RequestParser::parseRequest()
 		else if (!isValidBase(contentLength->second, this->contentLength, 10))
 			throw HttpError(BadRequest, "Bad Request");
 	}
-	// else
-	// {
-	// 	if (contentLength == message.headers.end())
-	// 		throw HttpError(LengthRequired, "Length Required");
-	// 	if (!isValidBase(contentLength->second, this->contentLength, 10))
-	// 		throw HttpError(BadRequest, "Bad Request");
-	// 	else if (this->contentLength > this->ServerConfiguration.maxBodySize)
-	// 		throw HttpError(PayloadTooLarge, "Payload Too Large");
-	// }
 	if (!allCharactersAllowed(message.uri.unparsedURI, URI_ALLOWED_CHARS))
 		throw HttpError(BadRequest, "Bad Request");
 
 	if (message.uri.unparsedURI.size() > 2048)
 		throw HttpError(RequestURIToLong, "Request-URI Too Long");
 		
-	
-	//413 error
 }
 
 
-// returns 1 if location has a redirect, 0 otherwise
 bool RequestParser::parseUri(const std::string& uriStr) {
 	Uri &uri = message.uri;
 

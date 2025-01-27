@@ -19,12 +19,12 @@ public:
 
 private:
     // Member variables
-    Configurations config;
+    Configurations &config;
     int epoll_fd;
-    vector<Server*> servers;
-    map<int, int> client_to_server;
-    map<int, Server*> server_fd_to_server;
+    std::vector<Server*> servers;
     std::map<int, ClientHandler*> clientsZone;
+    std::map<int, Server*> server_fd_to_server;
+    std::map<int, int> client_to_server;
 
     // Initialization methods
     void createEpoll();
@@ -41,7 +41,8 @@ private:
     bool isServerFd(int fd) const;
     void cleanupSocket(int fd);
     void cleanup();
-
+	Server& getServerByClientFd(int fd);
+	Server& getServerByFd(int fd);
 };
 
 #endif // CLUSTER_HPP

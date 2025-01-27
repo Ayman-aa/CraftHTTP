@@ -11,6 +11,7 @@ public:
     const map<int, string>& getFdToPort() const;
     ServerConfiguration& getConfig();
     const vector<int>& getSockets() const;
+    std::set<int> connectedClients;
 
 private:
     int main_socket; // Renamed from 'socket' to 'main_socket'

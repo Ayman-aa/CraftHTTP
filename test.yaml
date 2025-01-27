@@ -4,14 +4,14 @@ server:
 	host: 127.0.0.1
 	client_max_body_size: 2800000
 	error_pages:
-		404: /mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/404.html
-		405: /mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/405.html
+		404: errorPages/404.html
+		405: errorPages/405.html
 
 	location: /
 		autoindex: on
 		allowed_methods: GET,POST,DELETE 
-		index: i.html,h,hello.py
-		root: /mnt/c/Users/Ayman/Desktop/crafthttp/assets
+		index: index.html
+		root:./assets
 		cgi_path:
 			php: /usr/bin/php
 
