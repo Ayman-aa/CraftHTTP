@@ -25,28 +25,28 @@ int ClientHandler::GetIndex(){
     std::vector<std::string>::iterator it = location.index.begin();
     struct stat fileInfo;
 
-    for (;it != location.index.end(); it++)
+    for (; it != location.index.end(); it++)
     {
-        std::string indexName = location.root+"/"+(*it);
-        stat(indexName.c_str(), &fileInfo);
-        if (S_ISREG(fileInfo.st_mode)){
-            if (!access(indexName.c_str(), R_OK)){
-                std::string fileExtention = getFileExtention(indexName);
-	            if (location.cgi_path.find(fileExtention) != location.cgi_path.end()){
-	            	CGIpath = location.cgi_path[fileExtention];
-                    fullLocation = indexName;
-		            isCGIfile = true;
-                    execCGI();
-	            }
-                else
-                    setResponseParams("200", "OK", "", indexName);
-                return 1;
+        std::string indexName = location.root + location.path +"/" + (*it);
+        if (stat(indexName.c_str(), &fileInfo) == 0) {
+            if (S_ISREG(fileInfo.st_mode)) {
+                if (!access(indexName.c_str(), R_OK)) {
+                    std::string fileExtension = getFileExtension(indexName);
+                    if (location.cgi_path.find(fileExtension) != location.cgi_path.end()) {
+                        CGIpath = location.cgi_path[fileExtension];
+                        fullLocation = indexName;
+                        isCGIfile = true;
+                        execCGI();
+                    } else {
+                        setResponseParams("200", "OK", "", indexName);
+                    }
+                    return 1;
+                }
             }
         }
     }
     return 0;
 }
-
 void ClientHandler::GetAutoIndex(){
     std::string AIfile = generateUniqueFileName("/tmp", ".html");
     std::ofstream autoindexFile(AIfile.c_str());

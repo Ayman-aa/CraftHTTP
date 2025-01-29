@@ -10,7 +10,7 @@ RequestParser::RequestParser()
 }
 
 
-int RequestParser::loadHeaders(Binary &data)
+int RequestParser::loadHeaders(Content &data)
 {
 	while(data.toStr().length() && data.toStr()[0] == '\n')
 		data.erase(0,1);
@@ -80,7 +80,7 @@ void RequestParser::parseRequest()
 	if (message.method != "GET" && message.method != "POST" && message.method != "DELETE")
 		throw HttpError(NotImplemented, "Not Implemented");
 
-	if (parseUri(message.uri.fullUri)) // returns true if location has a redirect
+	if (parseUri(message.uri.fullUri)) 
 		return ;
 	if (ServerConfig.hasLocation(message.uri.path))
 	{
@@ -128,9 +128,9 @@ bool RequestParser::parseUri(const std::string& uriStr) {
 		return 1;
 	checkPath();
 
-	std::string fileExtention = getFileExtention(message.uri.path);
-	if (location.cgi_path.find(fileExtention) != location.cgi_path.end()){
-		CGIpath = location.cgi_path[fileExtention];
+	std::string fileExtension = getFileExtension(message.uri.path);
+	if (location.cgi_path.find(fileExtension) != location.cgi_path.end()){
+		CGIpath = location.cgi_path[fileExtension];
 		isCGIfile = true;
 	}
 

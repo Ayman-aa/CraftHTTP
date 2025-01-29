@@ -26,10 +26,10 @@
 #include <ctime>
 #include <vector>
 #include <map>
-#include "utils.hpp"
+#include "tools.hpp"
 #include "ConfigurationParser.hpp"
 #include "ServerConfiguration.hpp"
-#include "Binary.hpp"
+#include "Content.hpp"
 #include "HttpError.hpp"
 
 #define URI_ALLOWED_CHARS "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~:/?#[]@!$&'()*+,;=%"
@@ -66,7 +66,7 @@ class RequestParser
 		bool headersLoaded;
 		Location location;
 		// ~RequestParser();
-		int	loadHeaders(Binary &data);
+		int	loadHeaders(Content &data);
 		void parseRequest();
 		void checkRequestLine(std::string& requestLine);
 		void checkHeader(std::string &header);

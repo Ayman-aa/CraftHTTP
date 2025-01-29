@@ -27,10 +27,10 @@
 #include <vector>
 #include <map>
 #include "RequestParser.hpp"
-#include "utils.hpp"
+#include "tools.hpp"
 #include "ConfigurationParser.hpp"
 #include "ServerConfiguration.hpp"
-#include "Binary.hpp"
+#include "Content.hpp"
 
 
 const int BUFFER_SIZE = 1024;
@@ -63,8 +63,8 @@ class ClientHandler : public RequestParser {
 		std::vector<std::string> tmpFiles;
 	public:
 		ClientStatus status;
-		Binary readingBuffer;
-		Binary sendingBuffer;
+		Content readingBuffer;
+		Content sendingBuffer;
 		int clientFd;
 		ServerConfiguration ServerConfig;
 		Configurations &Configs;

@@ -1,4 +1,4 @@
-#include "../includes/utils.hpp"
+#include "../includes/tools.hpp"
 
 bool isValidBase(const std::string& number, unsigned int &size, const int base)
 {

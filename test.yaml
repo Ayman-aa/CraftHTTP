@@ -10,13 +10,22 @@ server:
 		301: errorPages/301.html
 
 	location: /
+		root: ./assets
 		autoindex: on
-		allowed_methods: GET,POST,DELETE 
+	location: /meteo
 		index: index.html
-		root:./assets
+		autoindex: on
 		#return: http://google.com
+		root: ./assets
+		allowed_methods: GET,POST,DELETE 
+	location: /ups
+		root: ./assets
+		autoindex: on
+		index: index.php
+		allowed_methods: GET,POST,DELETE
 		cgi_path:
 			php: /usr/bin/php
+
 
 server:
 	ports: 5050

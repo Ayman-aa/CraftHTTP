@@ -24,7 +24,7 @@ int main() {
     // config.servers[1].errorPages[405] = "/mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/405.html";
 
     cout << "Server host 1: " << config.servers[0]->host << endl;
-    cout << "Root of location 1 /: " << config.servers[0]->locations["/"].root << endl;
+    cout << "Second Root of location 1 /: " << config.servers[0]->locations["/meteo"].root << endl;
 
     cout << "Server host 2: " << config.servers[1]->host << endl;
     cout << "Root of location 2 /: " << config.servers[1]->locations["/"].root << endl;
