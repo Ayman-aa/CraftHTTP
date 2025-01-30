@@ -20,7 +20,6 @@ server:
 		index: i.html,h,hello.py
 		return: http://google.com
 		root: ./www
-			#root: ./wwwj
 		upload_path: /hello/zebi
 		cgi_path:
 			php: /usr/bin/php

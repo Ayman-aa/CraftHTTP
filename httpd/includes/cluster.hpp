@@ -3,7 +3,7 @@
 #ifndef CLUSTER_HPP
 # define CLUSTER_HPP
 
-class cluster {
+class Cluster {
 	public:
 		cluster(Configuration& config);
 		~cluster();
