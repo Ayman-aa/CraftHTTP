@@ -5,6 +5,7 @@
 #include <string>
 #include <vector>
 #include <map>
+#include <set>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <netdb.h>
@@ -15,6 +16,8 @@
 #include <cstring>
 #include <fstream>
 #include <sstream>
+#include <algorithm>
+#include "includes.hpp"
 
 using namespace std;
 
@@ -29,26 +32,30 @@ struct Location
     vector<string> allow_methods;
     vector<string> index;
     map<string, string> cgi_path;
+	bool thereIsMethod(const std::string &method);
+	bool thereIsCGI(const std::string &cgi);
 };
 
 class ServerConfiguration
 {
     public:
-        // Constructor
-        ServerConfiguration(){};
-        ServerConfiguration(string configFile);
+		// Default Constructor
+		ServerConfiguration();
+
+		// Copy Constructor
+		ServerConfiguration(ServerConfiguration* other);
+
         // parameters from server block
         vector<string> ports;
         string host;
         string bodySize;
-        size_t maxBodySize;
+        ssize_t maxBodySize;
         vector<string> serverNames;
-        map<string, string> errorPages;
+        map<int, string> errorPages;
         map<string, Location> locations;
-        // Getters
-        string getErrorPage(string code);
-        string getLocations(string path);
-        ServerConfiguration getServerConfiguration(const string &host, string &port, string &ip);
+        bool hasLocation(std::string &location);
+        Location &getLocation(std::string &location);
+        std::string getErrorPage(int errn_);
 };
 
 #endif

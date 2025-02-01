@@ -1,0 +1,43 @@
+server:
+	ports: 9090,9000
+	server_names: 48k483x .fr frost.fr
+	host: 127.0.0.1
+	client_max_body_size: 2800000
+	error_pages:
+		404: errorPages/404.html
+		405: errorPages/405.html
+		302: errorPages/302.html
+		301: errorPages/301.html
+
+	location: /
+		root: ./assets
+		autoindex: on
+	location: /meteo
+		index: index.html
+		autoindex: on
+		#return: http://google.com
+		root: ./assets
+		allowed_methods: GET,POST,DELETE 
+	location: /ups
+		root: ./assets
+		autoindex: on
+		index: index.php
+		allowed_methods: GET,POST,DELETE
+		cgi_path:
+			php: /usr/bin/php
+
+
+server:
+	ports: 5050
+	server_names: 48k483x .fr frost.fr
+	client_max_body_size: 2800000
+	error_pages:
+		404: /mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/404.html
+		405: /mnt/c/Users/Ayman/Desktop/crafthttp/errorPages/405.html
+	host: 127.0.0.2
+	location:	/
+		#autoindex: on
+		allowed_methods: GET,POST,DELETE 
+		index: i.html,h,hello.py
+		root: /mnt/c/Users/Ayman/Desktop/crafthttp/assets/root
+			

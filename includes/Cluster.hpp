@@ -3,27 +3,44 @@
 
 #include "Server.hpp"
 #include "ConfigurationParser.hpp"
+#include "ClientHandler.hpp"
+#include <sys/epoll.h>
+#include <fcntl.h>
+#include <exception>
+#include <map>
+#include <vector>
 
 class Cluster {
 public:
-    Cluster(ClusterConfiguration& config);
+    Cluster(Configurations &config);
     ~Cluster();
+
     void run();
 
 private:
+    Configurations &config;
     int epoll_fd;
-    ClusterConfiguration config;
     std::vector<Server*> servers;
+    std::map<int, ClientHandler*> clientsZone;
+    std::map<int, Server*> server_fd_to_server;
     std::map<int, int> client_to_server;
-    std::map<int, Server*> server_fd_to_server; // Add this line
 
     void createEpoll();
+    void initializeServers();
     void addSocketToEpoll(int fd);
-    void handleEvents(struct epoll_event* events, int numEvents);
+
+    void processEvents(struct epoll_event *events);
     void acceptConnections(int serverSocket);
-    void handleClient(int client_fd);
-    void serveErrorPage(int client_fd, const std::string& error_code, Server* server);
-    bool isServerFd(int fd);
+    void handleClientEvent(int fd, uint32_t eventsData);
+    void handleReadEvent(ClientHandler* client);
+    void handleWriteEvent(ClientHandler* client);
+    void cleanupClient(std::map<int, ClientHandler*>::iterator it);
+
+    bool isServerFd(int fd) const;
+    Server& getServerByClientFd(int fd);
+    Server& getServerByFd(int fd);
+
+    void cleanupSocket(int fd);
     void cleanup();
 };
 

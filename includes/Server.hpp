@@ -2,29 +2,27 @@
 #define SERVER_HPP
 
 #include "ServerConfiguration.hpp"
-#include <vector>
-#include <map>
-#include <string>
-#include <netdb.h>
 
 class Server {
 public:
-    Server(ServerConfiguration& config);
-    ~Server();
+    Server(ServerConfiguration* config);
+    virtual ~Server();
     int getSocket() const;
-    const std::map<int, std::string>& getFdToPort() const;
-    const ServerConfiguration& getConfig() const;
-    const std::vector<int>& getSockets() const;
+    const map<int, string>& getFdToPort() const;
+    ServerConfiguration& getConfig();
+    const vector<int>& getSockets() const;
+    std::set<int> connectedClients;
 
 private:
     int main_socket; // Renamed from 'socket' to 'main_socket'
     ServerConfiguration config;
-    std::vector<int> sockets;
-    std::map<int, std::string> fd_to_port;
+    vector<int> sockets;
+    map<int, string> fd_to_port;
 
-    struct addrinfo* serverInfo(const std::string& port);
-    void bindSocket(int sockfd, struct addrinfo* serverInfo, const std::string& port);
-    void listenSocket(int socketfd, const std::string& port);
+    struct addrinfo* serverInfo(const string& port);
+    void bindSocket(int sockFd, struct addrinfo *info, const std::string &port);
+    void listenSocket(int sockFd,const string& port, int backlog);
+    void setSocketOptions(int sockFd);
     void createSockets();
     void cleanup();
 };
