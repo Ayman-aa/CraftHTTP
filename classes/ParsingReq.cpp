@@ -99,7 +99,7 @@ void ParsingReq::parseHeaders(std::string &line)
         throw HttpError(BadRequest, "Bad Request");
     if(key == "Host" && msg.headers.find("Host") != msg.headers.end())
         throw HttpError(BadRequest, "Bad Request");
-    
+    msg.headers[strtrim(key)] = strtrim(value);
 }
 int ParsingReq::loadHeaders(Content &data)
 {
