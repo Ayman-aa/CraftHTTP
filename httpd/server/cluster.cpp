@@ -1,4 +1,5 @@
 #include <../includes/cluster.hpp>
+#include <../includes/server.hpp>
 
 static const int MAX_EVENTS = 1024;
 
@@ -14,7 +15,7 @@ Cluster:Cluster(Configurations& config): config(config), epoll_fd(-1)
 }
 
 void Cluster::createEpoll() {
-	epoll_fd = epoll_create1(0);
+	epoll_fd = epoll_create1(0); /* TODO: Rak 3aref ash khassek hna */
 	if (epoll_fd == -1)
 		throw std::runtime_error("Error creating epoll instance: " + std::string(strerror(errno)));
 }

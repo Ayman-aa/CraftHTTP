@@ -1,6 +1,8 @@
 /* -- main.cpp -- */
 
 #include "./includes/configParser.hpp"
+#include "./includes/cluster.hpp"
+#include "./includes/server.hpp"
 
 /* global var */
 const char *filePath;
@@ -133,6 +135,8 @@ void printAllServers(const vector<ServerConfiguration*>& servers) {
 
 
 
+
+
 int main(int ac, char *av[]) {
     std::string filePath;
 
@@ -143,9 +147,9 @@ int main(int ac, char *av[]) {
         }
         std::cerr << YELLOW << "[!] No config. Using default." << RESET << std::endl;
         filePath = "conf/test.yaml";
-    } else {
+    } else
         filePath = av[1];
-    }
+ 
 
     std::cout << CYAN << "[~] Config: " << filePath << RESET << std::endl;
 
