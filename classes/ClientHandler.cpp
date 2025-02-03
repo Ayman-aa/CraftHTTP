@@ -108,7 +108,7 @@ void ClientHandler::sendToSocket()
 	size_t totalBytesSent = 0;
 	while (totalBytesSent < sendingBuffer.toStr().size())
 	{
-		ssize_t sendBytes = ::send(this->clientFd, sendingBuffer.toStr().c_str() + totalBytesSent, sendingBuffer.toStr().size() - totalBytesSent, MSG_NOSIGNAL);
+		ssize_t sendBytes = send(this->clientFd, sendingBuffer.toStr().c_str() + totalBytesSent, sendingBuffer.toStr().size() - totalBytesSent, MSG_NOSIGNAL);
 		if (sendBytes <= 0)
 		{
 			status = Closed;

@@ -1,6 +1,7 @@
 #include "../includes/ClientHandler.hpp"
 
-void ClientHandler::GetMethod(){
+void ClientHandler::GetMethod()
+{
     if (isDir)
     {
         if (!location.index.empty())
@@ -13,15 +14,17 @@ void ClientHandler::GetMethod(){
         else
             GetAutoIndex();
     }
-    else{
+    else
+    {
         if (isCGIfile)
             execCGI();
         else
-            setResponseParams("200", "OK", "", fullLocation); // pass file to send
+            setResponseParams("200", "OK", "", fullLocation);
     }
 }
 
-int ClientHandler::GetIndex(){
+int ClientHandler::GetIndex()
+{
     std::vector<std::string>::iterator it = location.index.begin();
     struct stat fileInfo;
 
@@ -32,14 +35,16 @@ int ClientHandler::GetIndex(){
             if (S_ISREG(fileInfo.st_mode)) {
                 if (!access(indexName.c_str(), R_OK)) {
                     std::string fileExtension = getFileExtension(indexName);
-                    if (location.cgi_path.find(fileExtension) != location.cgi_path.end()) {
+                    if (location.cgi_path.find(fileExtension) != location.cgi_path.end())
+                    {
                         CGIpath = location.cgi_path[fileExtension];
                         fullLocation = indexName;
                         isCGIfile = true;
                         execCGI();
-                    } else {
-                        setResponseParams("200", "OK", "", indexName);
                     }
+                    else 
+                        setResponseParams("200", "OK", "", indexName);
+
                     return 1;
                 }
             }
@@ -47,7 +52,9 @@ int ClientHandler::GetIndex(){
     }
     return 0;
 }
-void ClientHandler::GetAutoIndex(){
+
+void ClientHandler::GetAutoIndex()
+{
     std::string AIfile = generateUniqueFileName("/tmp", ".html");
     std::ofstream autoindexFile(AIfile.c_str());
 
@@ -63,7 +70,7 @@ void ClientHandler::GetAutoIndex(){
     }
 
     // html header
-    autoindexFile << "<html>\n<head>\n<title>Autoindex</title>\n</head>\n<body>\n";
+    autoindexFile << "<html style=\"background:#1a1a1a; color:#dddddd; \">\n<head>\n<title>Autoindex</title>\n</head>\n<body>\n";
     autoindexFile << "<h1>Autoindex</h1>\n<ul>\n";
 
     // read directory
@@ -75,7 +82,7 @@ void ClientHandler::GetAutoIndex(){
             if (message.uri.path == "/")
                 tmpName.resize(1);
             // write a list item with a link to the file
-            autoindexFile << "<li><a href=\"" << tmpName + entry->d_name << "\">" << entry->d_name << "</a></li>\n";
+            autoindexFile << "<li><a style=\"text-decoration:none; color:wheat; \" href=\"" << tmpName + entry->d_name << "\">" << entry->d_name << "</a></li>\n";
         }
     }
 
@@ -86,7 +93,8 @@ void ClientHandler::GetAutoIndex(){
     closedir(dir);
 }
 
-void ClientHandler::redirect(){
+void ClientHandler::redirect()
+{
     if (!access(fullLocation.c_str(), F_OK)) // if file exists, temporary redirect
         setResponseParams("302", "Found", "Location: " + location.redirection_return + "\r\n", "");
     else

@@ -2,7 +2,6 @@
 
 void writeToFile(const std::string &data, const std::string& fileName)
 {
-    // std::cout << fileName << std::endl;
     std::cout << fileName.c_str() << std::endl;
     if (!freopen(fileName.c_str(), "ab", stdout))
         throw HttpError(InternalServerError, "Internal Server Error");
@@ -71,7 +70,6 @@ void ClientHandler::MutiplePartHandler()
     {
         std::string gigaStr;
         pos = this->readingBuffer.find("\r\n\r\n");
-        // std::cout << "hello: " << this->readingBuffer.substr(pos, readingBuffer.size()).toStr() << std::endl;
         if (pos == std::string::npos)
             return;
         if (isContentDispositionValid(this->readingBuffer.substr(0, pos).toStr(), gigaStr))
@@ -133,7 +131,7 @@ void ClientHandler::MutiplePartHandler()
             MutiplePartHandler();
         }
     }
-        // std::cout << "counter: " << counter << ", max body size: " << RequestParser::ServerConfiguration.maxBodySize << ", contentLength: " << this->contentLength << std::endl;
+    
     if (this->counter > RequestParser::ServerConfig.maxBodySize)
         throw HttpError(PayloadTooLarge, "Payload Too Large");
     if (this->counter > this->contentLength)

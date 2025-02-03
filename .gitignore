@@ -1,2 +1,5 @@
 .vscode
 .gitignore
+subject.txt
+*.txt
+obj

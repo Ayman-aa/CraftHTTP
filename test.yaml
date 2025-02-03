@@ -12,6 +12,7 @@ server:
 	location: /
 		root: ./assets
 		autoindex: on
+		allowed_methods: GET,POST,DELETE
 	location: /meteo
 		index: index.html
 		autoindex: on
