@@ -14,7 +14,7 @@ class Cluster {
 		Configuration config;
 		Vector<Server*> servers;
 		map<int, int> client_to_server;
-		map(int, Server*) server_fd_to_server;
+		map<int, Server*> server_fd_to_server;
 
 		void createEpoll();
 		void addSocketToEpoll(int fd);

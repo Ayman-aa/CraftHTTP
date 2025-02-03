@@ -20,6 +20,41 @@ void Cluster::createEpoll() {
 		throw std::runtime_error("Error creating epoll instance: " + std::string(strerror(errno)));
 }
 
+void Cluster::initializeServers() {
+	std::vector<ServerConfiguration*> serversConfigs = config.servers;
+
+	for (long unsigned int i = 0; i < serversConfigs.size(); i++) {
+		try {
+			Server *server = new Server(serverConfigs[i]);
+			const std::vector<int> &serverSockets = server->getSockets();
+
+			if (serverSockets.empty())
+			{
+				delete server;
+				throw std::runtime_error("Server: no valid sockets");
+			}
+			servers.push_back(server);
+			for (size_t j = 0; j < serverSockets.size(); j++)
+			{
+				addSocketToEpoll(serverSockets[j]);
+				server_fd_to_server[serverSockets[j]] = server;
+			}
+		} catch (const std::exception& e) {
+			std::cerr << e.what() << std::endl;
+			throw std::runtime_error("Server: Initialization failed");
+		}
+	}
+}
+
+void addSocketToEpoll(int fd) {
+	struct epoll_event event;
+	event.events = EPOLLIN | EPOLLOUT | EPOLLHUB | EPOLLERR;
+	even.data.fd = fd;
+
+	if (epoll_ctl(epoll_fd, EPOLL_CTL_ADD, fd, &event) == -1)
+		throw std::runtime_error("Error adding socket fd to epoll");
+}
+
 void cluster::run() {
 	struct epoll_event events[MAX_EVENTS];
 }
