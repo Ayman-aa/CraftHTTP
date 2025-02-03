@@ -154,10 +154,10 @@ int main(int ac, char *av[]) {
     std::cout << CYAN << "[~] Config: " << filePath << RESET << std::endl;
 
     try {
-        // Assuming ConfigurationParser and printAllServers are defined elsewhere
         ConfigurationParser fileParser(filePath);
         printAllServers(fileParser.servers);
-        // printAllLocations(fileParser);
+		Cluster cluster(fileParser);
+		cluster.run();
     } catch (const std::exception &e) {
         std::cerr << RED << "[X] Error: " << e.what() << RESET << std::endl;
         return 1;

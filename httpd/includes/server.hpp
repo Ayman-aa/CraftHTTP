@@ -3,12 +3,12 @@
 #ifndef SERVER_HPP
 # define SERVER_HPP
 
-#include
+#include "configParser.hpp"
 
 class Server {
 	private:
+		ServerConfiguration *config;
 		int main_socket;
-		ServerConfiguration config;
 		vector <int> sockets;
 		map<int, string> fd_to_port;
 

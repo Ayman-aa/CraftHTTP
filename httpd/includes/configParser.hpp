@@ -73,6 +73,6 @@ class ConfigurationParser : public ServerConfiguration
 		/* ---------- Helper method, bash nrje3 offset ---------- */
 		bool	FileSeekg(ifstream& file, const string& line, int &currentLineNumber, bool retVal);
 };
-		typedef ConfigurationParser Configurations;
+		typedef ConfigurationParser Configuration;
 
 #endif /* ayeh ayeh, configParser.hpp */

@@ -86,6 +86,7 @@
 
 /* ========================== STANDARD LIBRARY ========================= */
 #include <iostream>
+#include <ostream>
 #include <string>
 #include <fstream>
 #include <sstream>
@@ -99,6 +100,8 @@
 #include <cstring>
 #include <cctype>
 #include <cstddef> /* bnisba l size_t, (...) */
+#include <sys/epoll.h>
+#include <cerrno>
 /* SAFY 7BESS */
 
 

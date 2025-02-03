@@ -7,10 +7,7 @@ NC := \033[0m
 
 
 all:
-	@c++ -g3  -std=c++98 -Wall -Wextra -Werror main.cpp \
-		 ./config/*.cpp \
-		 -I/includes/     \
-		 -o srv
+	@c++ -g3  -std=c++98 -Wall -Wextra -Werror main.cpp ./config/*.cpp ./server/*.cpp -I/includes/ -o srv
 	@printf "$(GREEN)$(BOLD)Building is done!$(NC)\n"
 clean:
 	@rm -rf srv

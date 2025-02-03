@@ -1,6 +1,7 @@
 /* -- server.cpp -- */
 
-#include <../includes/server.hpp>
+#include "../includes/server.hpp"
+using namespace std;
 
 Server::Server(ServerConfiguration *config): config(config), main_socket(-1) {
 	try {
@@ -16,11 +17,11 @@ Server::Server(ServerConfiguration *config): config(config), main_socket(-1) {
 void Server::createSockets() {
 	const int LISTEN_BACKLOG = 128;
 
-	for (size_t i = 0; i < config.ports.size(); i++)
+	for (size_t i = 0; i < config->ports.size(); i++)
 	{
-		const std::string port& = config.ports[i];
+		const std::string &port = config->ports[i];
 		struct addrinfo* infoList = serverInfo(port); /* Get address info for this port */
-		if (!addrList) {
+		if (!infoList) {
 			std::cerr << "Failed to get address info for this port: " + port << std::endl;
 			continue;
 		}
@@ -52,27 +53,28 @@ void Server::createSockets() {
 		freeaddrinfo(infoList);
 		if (!success)
 			throw std::runtime_error("Faild to bind to port: " + port + ": " + " (tried all available addresses)");
-	if (sockets.empty())
-		throw std::runtime_error("No sockets were created succussefuly");
+		if (sockets.empty())
+			throw std::runtime_error("No sockets were created succussefuly");
+	}
 }
 
-struct addrinfo* serverInfo(const string& port) {
+struct addrinfo* Server::serverInfo(const string& port) {
 	struct addrinfo hints;
-	memset(&hints, 0, strlen(hints));
+	memset(&hints, 0, sizeof(hints));
 
 	hints.ai_family = AF_UNSPEC;
 	hints.ai_socktype = SOCK_STREAM;
-	hints.ai_type = AI_PASSIVE;
+	hints.ai_flags = AI_PASSIVE;
 
 	struct addrinfo *res;
-	int status = getaddrinfo(config.host.c_str(), port.c_str(), hints, &res);
+	int status = getaddrinfo(config->host.c_str(), port.c_str(), &hints, &res);
 	
 	if (status != 0)
 		throw std::runtime_error("getaddrinfo() error: " + std::string(gai_strerror(status)));
 	return res;
 }
 
-void setSocketOptions(int sockFD) {
+void Server::setSocketOptions(int sockFD) {
 	int on = 1;
 
 	if (setsockopt(sockFD, SOL_SOCKET, SO_REUSEADDR, &on, sizeof(int)) == -1)
@@ -81,18 +83,18 @@ void setSocketOptions(int sockFD) {
 		throw std::runtime_error("setsockopt SO_KEEPALIVE error: " + std::string(strerror(errno)));
 }
 
-void bindSocket(int sockFD, struct addrinfo *info, const std::string &port) {
-	if (bind(sockFd, info->ai_addr, info->ai_addrlen) == -1)
-		throw std::runtime("bind() error on port: " + port + ": " + std::string(strerror(errno)));
+void Server::bindSocket(int sockFD, struct addrinfo *info, const std::string &port) {
+	if (bind(sockFD, info->ai_addr, info->ai_addrlen) == -1)
+		throw std::runtime_error("bind() error on port: " + port + ": " + std::string(strerror(errno)));
 }
 
-void listenSockets(int sockFD, const string& port, int backlog) {
+void Server::listenSocket(int sockFD, const string& port, int backlog) {
 	if (listen(sockFD, backlog) == -1) 
 		throw std::runtime_error("listen() error on port: " + port + ": " + std::string(strerror(errno)));
 	std::cout << "Server is listening on port " << port << endl;
 }
 
-void cleanup() {
+void Server::cleanup() {
 	if (!sockets.empty()) {
 		for (size_t i = 0; i < sockets.size(); i++) {
 			if (sockets[i] >= 0)
@@ -113,5 +115,5 @@ Server::~Server() {
 
 int Server::getSocket() const { return main_socket; }
 const map<int, string>& Server::getFdToPort() const { return fd_to_port; }
-const ServerConfiguration& Server::getConfig() const { return config; }
+//const ServerConfiguration& Server::getConfig() const { return config; }
 const vector<int>& Server::getSockets() const { return sockets; }
