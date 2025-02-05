@@ -1,17 +1,19 @@
 #include "../includes/ClientHandler.hpp"
-char* createCString(const std::string& str) {
+char* createCString(const std::string& str)
+{
 	char* result = new char[str.length() + 1];
 	std::strcpy(result, str.c_str());
 	return result;
 }
 
-void deleteCStrings(std::vector<char*>& cStrings) {
-	for (size_t i = 0; i < cStrings.size(); ++i) {
+void deleteCStrings(std::vector<char*>& cStrings) 
+{
+	for (size_t i = 0; i < cStrings.size(); ++i)
 		delete[] cStrings[i];
-	}
 }
 
-void ClientHandler::execCGI(){
+void ClientHandler::execCGI()
+{
 	std::string cgioutput = generateUniqueFileName();
 	tmpFiles.push_back(cgioutput);
 
@@ -52,12 +54,15 @@ void ClientHandler::execCGI(){
 	}
 }
 
-void ClientHandler::checkCGI(){
+void ClientHandler::checkCGI()
+{
 	int status;
-	if (waitpid(CGIpid, &status, WNOHANG) == 0){
+	if (waitpid(CGIpid, &status, WNOHANG) == 0)
+	{
 		std::time_t endTime = std::time(0);
 		int elapsedTime = endTime - CGIstartTime;
-		if (elapsedTime > 5){
+		if (elapsedTime > 5)
+		{
 			kill(CGIpid, SIGKILL);
 			waitpid(CGIpid, &status, 0);
 			monitorCGI = 0;
@@ -67,7 +72,8 @@ void ClientHandler::checkCGI(){
 	else
 	{
 		monitorCGI = 0;
-		if (WIFEXITED(status)){
+		if (WIFEXITED(status))
+		{
 			if (!WEXITSTATUS(status))
 				setResponseParams("200", "OK", "", CGIoutput, true);
 			else

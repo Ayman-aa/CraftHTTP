@@ -1,24 +1,23 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="utf-8">
-  <meta name="robots" content="nofollow,noarchive,noindex">
-  <title>403 - Forbidden</title>
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>409 Conflict</title>
   <link rel="stylesheet" href="/common.css">
 </head>
 <body>
 <main>
   <article>
     <div id="error_text">
-      <h1 class="source">403 - <span data-l10n>Forbidden</span></h1>
+      <h1 class="source">409 - Conflict</h1>
       <h1 class="target"></h1>
     </div>
-
-  
+    <div id="details" class="hidden">
+      <p>WE ALREADY HAVE THAT, ehm sorry, you good..TO GO.</p>
+    </div>
   </article>
 </main>
-
 <script>
   'use strict';
 
@@ -26,7 +25,7 @@
    * @param {HTMLElement} $el
    */
   const Shuffle = function ($el) {
-    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=+<>,./?[{()}]!@#$%^&*~`\|'.split('');
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890-=+<>,./?[{()}]!@#$%^&*~`\\|'.split('');
     const $source = $el.querySelector('.source');
     const $target = $el.querySelector('.target');
 
@@ -98,15 +97,12 @@
 
   (new Shuffle(document.getElementById('error_text'))).start();
 
-  // {{ if show_details }}
   window.setTimeout(function () {
-    document.getElementById('details').classList.remove('hidden');
+    const detailsElement = document.getElementById('details');
+    if (detailsElement) {
+      detailsElement.classList.remove('hidden');
+    }
   }, 550);
-  // {{ end }}
 </script>
-
-<!-- {{- if l10n_enabled -}} -->
-<script>// {{ l10nScript }}</script>
-<!-- {{- end -}} -->
 </body>
 </html>

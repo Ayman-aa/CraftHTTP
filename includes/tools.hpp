@@ -29,10 +29,12 @@ std::string* split(std::string str, char sep);
 bool isAllSpaces(std::string& str);
 void trim_spaces(std::string& str, bool both);
 bool isAllDigit(std::string &str);
+
 bool allCharactersAllowed(const std::string& str, const std::string& allowedChars);
 std::string toString(int n);
 std::string generateUniqueFileName(const std::string& directory = "/tmp", const std::string& extension = "");
 std::string getFileExtension(const std::string& file_path);
+std::string sanitizeFilename(const std::string& filename);
 bool isValidBase(const std::string& number, unsigned int &size, const int base);
 std::string postHtmlResponseGenerator(std::vector<std::string>& filesNames);
 std::string replaceNewlineWithLiteral(const std::string &input) ;

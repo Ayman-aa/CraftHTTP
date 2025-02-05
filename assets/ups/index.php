@@ -4,18 +4,19 @@
 echo "Content-type: text/html\r\n\r\n";
 
 // Function to recursively list directory contents
-function listDirectory($dir) {
+function listDirectory($dir, $baseDir) {
     $result = "<ul>";
     $files = scandir($dir);
     foreach ($files as $file) {
         if ($file != "." && $file != "..") {
             $filePath = $dir . DIRECTORY_SEPARATOR . $file;
+            $relativePath = str_replace($baseDir, '', $filePath);
             if (is_dir($filePath)) {
-                $result .= "<li><strong><a href=\"$filePath\">$file</a></strong>";
-                $result .= listDirectory($filePath);
+                $result .= "<li><strong><a href=\"$relativePath\">$file</a></strong>";
+                $result .= listDirectory($filePath, $baseDir);
                 $result .= "</li>";
             } else {
-                $result .= "<li><a href=\"$filePath\">$file</a></li>";
+                $result .= "<li><a href=\"$relativePath\">$file</a></li>";
             }
         }
     }
@@ -25,6 +26,7 @@ function listDirectory($dir) {
 
 // Define the directory to list
 $directory = __DIR__;
+$baseDir = realpath(__DIR__ . '/..'); // Adjust the base directory to the 'assets' directory
 
 // Create an HTML page with the directory structure
 echo "<html>\n";
@@ -40,7 +42,7 @@ echo "</style>\n";
 echo "</head>\n";
 echo "<body>\n";
 echo "<h1>Directory Structure</h1>\n";
-echo listDirectory($directory);
+echo listDirectory($directory, $baseDir);
 echo "</body>\n";
 echo "</html>\n";
 ?>

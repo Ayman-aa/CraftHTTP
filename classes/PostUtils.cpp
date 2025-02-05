@@ -97,7 +97,7 @@ std::string replaceNewlineWithLiteral(const std::string &input)
     while ((pos = result.find("\r\n", pos)) != std::string::npos)
     {
         result.replace(pos, 2, "\\r\\n");
-        pos += 4; // Advance position (skip replaced string)
+        pos += 4; 
     }
 
     return result;

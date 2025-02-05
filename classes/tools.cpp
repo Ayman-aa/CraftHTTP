@@ -124,22 +124,25 @@ bool fileExists(const std::string& name) {
     return file.good();
 }
 
+std::string generateRandomString(size_t length) {
+    const char charset[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+    const size_t max_index = (sizeof(charset) - 1);
+    std::string randomString;
+    for (size_t i = 0; i < length; ++i) {
+        randomString += charset[rand() % max_index];
+    }
+    return randomString;
+}
+
 std::string generateUniqueFileName(const std::string& directory, const std::string& extension) {
     std::ostringstream ss;
-    unsigned int iter = 0;
     std::string fileName;
 
     do {
         ss.str("");
         ss.clear();
-        std::time_t currentTime = std::time(NULL);
-        struct std::tm* localTime = std::localtime(&currentTime);
-        std::srand(static_cast<unsigned int>(currentTime) + iter);
-        ss << std::rand() % 100;
-        char tmpname[100];
-        std::strftime(tmpname, sizeof(tmpname), "%Y%m%d%H%M%S", localTime);
-        fileName = directory + '/' + tmpname + ss.str() + extension;
-        iter++;
+        ss << directory << '/' << generateRandomString(12) << extension;
+        fileName = ss.str();
     } while (fileExists(fileName));
 
     return fileName;
@@ -167,3 +170,28 @@ std::string urlDecode(const std::string& input) {
 
     return result;
 }
+
+std::string sanitizeFilename(const std::string& filename) {
+    std::string sanitized = filename;
+    sanitized.erase(std::remove(sanitized.begin(), sanitized.end(), '/'), sanitized.end());
+    sanitized.erase(std::remove(sanitized.begin(), sanitized.end(), '\\'), sanitized.end());
+    return sanitized;
+}
+
+// std::string sanitizeFilename(const std::string& filename) {
+//     std::string sanitized = filename;
+    
+//     // Remove path traversal sequences
+//     size_t pos = 0;
+//     while ((pos = sanitized.find("../", pos)) != std::string::npos) {
+//         sanitized.replace(pos, 3, "");
+//     }
+    
+//     // Replace slashes with underscores
+//     pos = 0;
+//     while ((pos = sanitized.find('/', pos)) != std::string::npos) {
+//         sanitized.replace(pos, 1, "_");
+//     }
+    
+//     return sanitized;
+// }
