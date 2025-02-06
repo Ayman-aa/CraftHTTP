@@ -1,9 +1,6 @@
 #!/usr/bin/env php-cgi
 <?php
-// Set the content type of the response to HTML
- 
 
-// Function to recursively list directory contents
 function listDirectory($dir, $baseDir) {
     $result = "<ul>";
     $files = scandir($dir);
@@ -24,11 +21,10 @@ function listDirectory($dir, $baseDir) {
     return $result;
 }
 
-// Define the directory to list
-$directory = __DIR__;
-$baseDir = realpath(__DIR__ . '/..'); // Adjust the base directory to the 'assets' directory
 
-// Create an HTML page with the directory structure
+$directory = __DIR__;
+$baseDir = realpath(__DIR__ . '/..'); 
+
 echo "<html>\n";
 echo "<head>\n";
 echo "<title>Directory Structure</title>\n";

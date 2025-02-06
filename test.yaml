@@ -6,11 +6,15 @@ server:
 	error_pages:
 		301: errorPages/301.html
 		302: errorPages/302.html
+		400: errorPages/400.html
+		403: errorPages/403.html
 		404: errorPages/404.html
 		405: errorPages/405.html
 		408: errorPages/408.html
 		409: errorPages/409.html
+		411: errorPages/411.html
 		413: errorPages/413.html
+		414: errorPages/414.html
 		500: errorPages/500.html
 		501: errorPages/501.html
 
@@ -18,9 +22,17 @@ server:
 		root: ./assets
 		autoindex: on
 		index: index.html
+		allowed_methods: GET,POST
+		cgi_path:
+			php: /usr/bin/php-cgi
+			py: /usr/bin/python3
+			rb: /usr/bin/ruby
+	location: /ups
+		root: ./assets
+		autoindex: on
+		index: index.php
 		allowed_methods: GET,POST,DELETE
 		cgi_path:
 			php: /usr/bin/php-cgi
 			py: /usr/bin/python3
 			rb: /usr/bin/ruby
-			

@@ -31,9 +31,12 @@ int ClientHandler::GetIndex()
     for (; it != location.index.end(); it++)
     {
         std::string indexName = location.root + location.path +"/" + (*it);
-        if (stat(indexName.c_str(), &fileInfo) == 0) {
-            if (S_ISREG(fileInfo.st_mode)) {
-                if (!access(indexName.c_str(), R_OK)) {
+        if (stat(indexName.c_str(), &fileInfo) == 0) 
+        {
+            if (S_ISREG(fileInfo.st_mode))
+            {
+                if (!access(indexName.c_str(), R_OK))
+                {
                     std::string fileExtension = getFileExtension(indexName);
                     if (location.cgi_path.find(fileExtension) != location.cgi_path.end())
                     {
@@ -64,7 +67,8 @@ void ClientHandler::GetAutoIndex()
     
     DIR *dir = opendir(fullLocation.c_str());
 
-    if (dir == NULL){
+    if (dir == NULL)
+    {
         autoindexFile.close();
         throw HttpError(InternalServerError, "Internal Server Error");
     }
@@ -76,8 +80,10 @@ void ClientHandler::GetAutoIndex()
     // read directory
     struct dirent *entry;
 
-    while ((entry = readdir(dir)) != NULL){
-        if (entry->d_name[0] != '.'){
+    while ((entry = readdir(dir)) != NULL)
+    {
+        if (entry->d_name[0] != '.')
+        {
             std::string tmpName = message.uri.path + "/";
             if (message.uri.path == "/")
                 tmpName.resize(1);

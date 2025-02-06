@@ -20,40 +20,52 @@ ClientHandler::ClientHandler(int clientFd, int epollFd, const ServerConfiguratio
 	this->monitorCGI = 0;
 }
 
-ClientHandler::~ClientHandler(){
+ClientHandler::~ClientHandler()
+{
 	std::vector<std::string>::iterator it = tmpFiles.begin();
-	for (;it != tmpFiles.end(); it++){
+	for (;it != tmpFiles.end(); it++)
+	{
 		std::cerr << "Removing file: " << *it << std::endl;
 		std::remove(it->c_str());
 	}
 }
 
 
-void ClientHandler::readyToReceive() {
-	try {
-		if (!headersLoaded) {
+void ClientHandler::readyToReceive()
+{
+	try
+	{
+		if (!headersLoaded)
+		{
 			readFromSocket();
 			loadHeaders(readingBuffer);
 		}
-		if (headersLoaded) {
-			if (message.headers.find("Host") != message.headers.end()) {
+		if (headersLoaded)
+		{
+			if (message.headers.find("Host") != message.headers.end())
+			{
 				ServerConfig = Configs.getServerConfig(ServerConfig.host, ServerConfig.ports, message.headers["Host"].substr(0, message.headers["Host"].find(":")));
 				RequestParser::ServerConfig = ServerConfig;
-			} else {
+			} else 
 				throw HttpError(BadRequest, "Bad Request");
-			}
+
 			parseRequest();
-			if (!location.redirection_return.empty()) {
+			if (!location.redirection_return.empty())
+			{
 				redirect();
-			} else if (message.method == "GET") {
+			} else if (message.method == "GET")
+			{
 				GetMethod();
-			} else if (message.method == "DELETE") {
+			} else if (message.method == "DELETE")
+			{
 				DeleteMethod();
-			} else if (message.method == "POST") {
+			} else if (message.method == "POST") 
+			{
 				PostMethod();
 			}
 		}
-	} catch (const HttpError& e) {
+	} catch (const HttpError& e)
+	{
 		headersSent = 0;
 		std::cerr << "HTTP Error (" << e.getErrorCode() << "): " << e.what() << std::endl;
 		setResponseParams(toString(e.getErrorCode()), e.what(), "", "", false);
@@ -61,28 +73,37 @@ void ClientHandler::readyToReceive() {
 }
 
 
-void ClientHandler::readyToSend() {
-	try {
-		if (!headersLoaded) {
-			if (std::time(0) - firstReceive > 5) {
+void ClientHandler::readyToSend()
+{
+	try
+	{
+		if (!headersLoaded)
+		{
+			if (std::time(0) - firstReceive > 5)
+			{
 				headersLoaded = 1;
 				throw HttpError(RequestTimeOut, "Request Time Out 1");
 			}
 		}
-		if (status == Sending) {
-			if (monitorCGI) {
+		if (status == Sending)
+		{
+			if (monitorCGI) 
 				checkCGI();
-			} else {
+			else 
 				SendResponse();
-			}
-		} else if (status == Receiving && lastReceive) {
-			if (std::time(0) - lastReceive > 5) {
+			
+		}
+		else if (status == Receiving && lastReceive)
+		{
+			if (std::time(0) - lastReceive > 5)
+			{
 				std::cout << "time out" << std::endl;
 				status = Sending;
 				throw HttpError(RequestTimeOut, "Request Time Out");
 			}
 		}
-	} catch (const HttpError& e) {
+	} catch (const HttpError& e)
+	{
 		headersSent = 0;
 		int errorCode = static_cast<int>(e.getErrorCode());
 		std::cerr << "HTTP Error (" << errorCode << "): " << e.what() << std::endl;
@@ -90,12 +111,14 @@ void ClientHandler::readyToSend() {
 	}
 }
 
-void ClientHandler::readFromSocket(int bufferSize) {
+void ClientHandler::readFromSocket(int bufferSize)
+{
 	unsigned char buffer[bufferSize];
 	std::memset(buffer, 0, bufferSize);
 	ssize_t bytesRead = recv(this->clientFd, buffer, bufferSize - 1, 0);
 
-	if (bytesRead <= 0) {
+	if (bytesRead <= 0)
+	{
 		status = Closed;
 		std::cout << "Connection closed by client\n";
 		return ;

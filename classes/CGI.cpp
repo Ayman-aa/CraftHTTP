@@ -42,10 +42,8 @@ void ClientHandler::execCGI()
 		if (message.headers.find("Cookie") != message.headers.end())
 			cookie = message.headers["Cookie"];
 		const char *args[] = { CGIpath.c_str(), fullLocation.c_str(), postedFileName.c_str(), NULL };
-				// Replace your current environment block with something like this:
+
 		std::vector<char*> env;
-		
-		// Base environment from RequestParser
 		env.push_back(createCString("QUERY_STRING=" + query));
 		env.push_back(createCString("HTTP_COOKIE=" + cookie));
 		env.push_back(createCString("REQUEST_METHOD=" + message.method));
@@ -55,7 +53,7 @@ void ClientHandler::execCGI()
 		env.push_back(createCString("SCRIPT_FILENAME=" + fullLocation));
 		env.push_back(createCString("REDIRECT_STATUS="));
 		env.push_back(createCString("SERVER_SOFTWARE=Webserv 42 (1337)"));
-		env.push_back(createCString("DOCUMENT_ROOT=/mnt/c/Users/Ayman/Desktop/crafthttp/assets/dynamic/basic_login"));
+		env.push_back(createCString("DOCUMENT_ROOT=" + location.root + location.path));
 		env.push_back(createCString("REQUEST_URI=" + fullLocation));
 		env.push_back(createCString("SERVER_NAME=" + message.headers["Host"]));
 		env.push_back(createCString("GATEWAY_INTERFACE=CGI/1.1"));

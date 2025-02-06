@@ -16,7 +16,8 @@ int RequestParser::loadHeaders(Content &data)
 		data.erase(0,1);
 
 	size_t headerEnd = std::min(data.toStr().find("\r\n\r\n"), data.toStr().find("\n\n"));
-	if (headerEnd != std::string::npos) {
+	if (headerEnd != std::string::npos)
+	{
 		std::string headersStr = data.toStr().substr(0, headerEnd);
 		std::vector<std::string> delimiters;
 		delimiters.push_back("\n");
@@ -44,8 +45,10 @@ void RequestParser::checkHeader(std::string &header)
 	std::string value = (colonPos != std::string::npos) ? header.substr(colonPos + 1) : "";
 	if (key.find(' ') != std::string::npos)
 		throw HttpError(BadRequest, "Bad Request");
+
 	if (key == "Host" && message.headers.find("Host") != message.headers.end())
 		throw HttpError(BadRequest, "Bad Request");
+
 	message.headers[strtrim(key)] = strtrim(value);
 }
 
@@ -64,6 +67,7 @@ void RequestParser::checkRequestLine(std::string& requestLine)
 		words = strSplit(httpVersion, "/", 0);
 		if (words.size() != 2 || words[0] != "HTTP")
 			throw HttpError(BadRequest, "Bad Request");
+
 		if (words[1] != "1.1")
 			throw HttpError(HTTPVersionNotSupported ,"505 HTTP Version Not Supported");
 	}
@@ -110,14 +114,15 @@ void RequestParser::parseRequest()
 }
 
 
-bool RequestParser::parseUri(const std::string& uriStr) {
+bool RequestParser::parseUri(const std::string& uriStr) 
+{
 	Uri &uri = message.uri;
 
 	size_t queryPos = uriStr.find('?');
 	uri.path = uriStr.substr(0, queryPos);
-	if (queryPos != std::string::npos) {
+	if (queryPos != std::string::npos)
 		query = uriStr.substr(queryPos + 1);
-	}
+
 	location = ServerConfig.getLocation(message.uri.path);
 	if (this->location.upload_path.empty())
 		this->upload_path = "./assets/ups";
@@ -129,7 +134,8 @@ bool RequestParser::parseUri(const std::string& uriStr) {
 	checkPath();
 
 	std::string fileExtension = getFileExtension(message.uri.path);
-	if (location.cgi_path.find(fileExtension) != location.cgi_path.end()){
+	if (location.cgi_path.find(fileExtension) != location.cgi_path.end())
+	{
 		CGIpath = location.cgi_path[fileExtension];
 		isCGIfile = true;
 	}
@@ -140,7 +146,8 @@ bool RequestParser::parseUri(const std::string& uriStr) {
 void RequestParser::checkPath()
 {
 	struct stat fileInfo;
-	if (access(fullLocation.c_str(), F_OK) == 0){
+	if (access(fullLocation.c_str(), F_OK) == 0)
+	{
 		stat(fullLocation.c_str(), &fileInfo);
 		if (S_ISDIR(fileInfo.st_mode))
 			isDir = 1;
