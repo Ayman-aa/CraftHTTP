@@ -1,14 +1,13 @@
 #include "../includes/ClientHandler.hpp"
 
-void writeToFile(const std::string &data, const std::string& fileName) {
-    std::ofstream file(fileName.c_str(), std::ios::binary | std::ios::app);
-    if (!file.is_open()) {
+void writeToFile(const std::string &data, const std::string& fileName)
+{
+    std::cout << fileName.c_str() << std::endl;
+    if (!freopen(fileName.c_str(), "ab", stdout))
         throw HttpError(InternalServerError, "Internal Server Error");
-    }
-    file.write(data.c_str(), data.size());
-    if (file.fail()) {
+    std::cout << data;
+    if (!freopen("/dev/tty", "ab", stdout))
         throw HttpError(InternalServerError, "Internal Server Error");
-    }
 }
 
 bool checkMultipart(std::string& str, std::string& boundary)

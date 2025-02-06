@@ -17,17 +17,10 @@ server:
 	location: /
 		root: ./assets
 		autoindex: on
-		allowed_methods: GET,POST,DELETE
-		#return: http://google.com
-	location: /meteo
 		index: index.html
-		autoindex: on
-		root: ./assets
-		allowed_methods: GET,POST,DELETE 
-	location: /ups
-		root: ./assets
-		autoindex: on
-		index: index.php
 		allowed_methods: GET,POST,DELETE
 		cgi_path:
-			php: /usr/bin/php
+			php: /usr/bin/php-cgi
+			py: /usr/bin/python3
+			rb: /usr/bin/ruby
+			

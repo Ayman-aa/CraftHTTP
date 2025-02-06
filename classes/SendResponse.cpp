@@ -1,17 +1,21 @@
 #include "../includes/ClientHandler.hpp"
 
-// response
-void ClientHandler::SendResponse(){
-	if (!headersSent){
-		if (file.empty()){
+void ClientHandler::SendResponse()
+{
+	if (!headersSent)
+	{
+		if (file.empty())
+		{
 			std::istringstream ss;
 			int status;
 			ss.str(statusCode);
 			ss >> status;
 			file = ServerConfig.getErrorPage(status);
 		}
-		if (access(file.c_str(), R_OK)){
-			if (statusCode == "500"){
+		if (access(file.c_str(), R_OK))
+		{
+			if (statusCode == "500")
+			{
 				sendServerError();
 				return ;
 			}
@@ -26,9 +30,11 @@ void ClientHandler::SendResponse(){
 
 		headersSent = 1;
 	}
-	else{
+	else
+	{
 		std::ifstream fileToSend(file.c_str(), std::ios::binary);
-		if (!fileToSend.is_open()){
+		if (!fileToSend.is_open())
+		{
 			status = Closed;
 			return ;
 		}
@@ -50,7 +56,8 @@ void ClientHandler::SendResponse(){
 	}
 }
 
-std::string ClientHandler::generateHeaders(){
+std::string ClientHandler::generateHeaders()
+{
 	std::string re;
 
 	re = "HTTP/1.1 " + statusCode + " " + statusString + "\r\n";
@@ -63,14 +70,16 @@ std::string ClientHandler::generateHeaders(){
 	return re;
 }
 
-std::string ClientHandler::getExtension(){
+std::string ClientHandler::getExtension()
+{
 	if (file.find(".") == std::string::npos)
 		return "";
 	std::vector<std::string> splitted = strSplit(file, ".", 1);
 	return splitted[splitted.size() - 1];
 }
 
-std::string ClientHandler::getContentLength(){
+std::string ClientHandler::getContentLength()
+{
 	struct stat fileInfo;
 
 	stat(file.c_str(), &fileInfo);
@@ -81,7 +90,8 @@ std::string ClientHandler::getContentLength(){
 	return ss.str();
 }
 
-std::string ClientHandler::getMimeType(std::string ext){
+std::string ClientHandler::getMimeType(std::string ext)
+{
 	std::map<std::string, std::string> mimeTypes;
 
 	mimeTypes["txt"] = "text/plain";
@@ -115,7 +125,8 @@ std::string ClientHandler::getMimeType(std::string ext){
 	return "text/plain";
 }
 
-std::string ClientHandler::getExtensionPost(std::string mimeType){
+std::string ClientHandler::getExtensionPost(std::string mimeType)
+{
 	std::map<std::string, std::string> mimeTypes;
 
 	mimeTypes["text/plain"] = ".txt";
@@ -143,15 +154,14 @@ std::string ClientHandler::getExtensionPost(std::string mimeType){
 	mimeTypes["font/woff"] = ".woff";
 	mimeTypes["video/mpeg"] = ".mpg";
 
-
-
 	std::map<std::string,std::string>::iterator it = mimeTypes.find(mimeType);
 	if (it != mimeTypes.end())
 		return it->second;
 	return ".tmp";
 }
 
-void ClientHandler::setResponseParams(std::string statusCode, std::string statusString, std::string extraHeaders, std::string file, bool isCGI){
+void ClientHandler::setResponseParams(std::string statusCode, std::string statusString, std::string extraHeaders, std::string file, bool isCGI)
+{
 	this->file = file;
 	this->statusCode = statusCode;
 	this->extraHeaders += extraHeaders;
@@ -161,19 +171,18 @@ void ClientHandler::setResponseParams(std::string statusCode, std::string status
 }
 
 
-void ClientHandler::sendServerError(){ 
-	// Content to be sent in the HTTP response body
-const char* response =
+void ClientHandler::sendServerError()
+{
+	const char* response =
 		"HTTP/1.1 500 Internal Server Error\r\n"
 		"Content-Type: text/html\r\n"
-		"Content-Length: 1158\r\n\r\n"
+		"Content-Length: 233\r\n\r\n"
 		"<!DOCTYPE html>\n"
 		"<html lang=\"en\">\n"
 		"<head>\n"
 		"\t<meta charset=\"UTF-8\">\n"
 		"\t<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">\n"
 		"\t<title>500 Internal Server Error</title>\n"
-		"\t<link rel=\"stylesheet\" href=\"../assets/common.css\">\n"
 		"</head>\n"
 		"<body>\n"
 		"\t<main>\n"

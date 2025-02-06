@@ -1,7 +1,7 @@
 #!/usr/bin/env php-cgi
 <?php
 // Set the content type of the response to HTML
-echo "Content-type: text/html\r\n\r\n";
+ 
 
 // Function to recursively list directory contents
 function listDirectory($dir, $baseDir) {

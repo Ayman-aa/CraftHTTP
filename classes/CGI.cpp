@@ -18,7 +18,8 @@ void ClientHandler::execCGI()
 	tmpFiles.push_back(cgioutput);
 
 	pid_t pid = fork();
-	if (pid){
+	if (pid)
+	{
 		if (pid < 0)
 			throw HttpError(InternalServerError, "Internal Server Error");
 
@@ -40,14 +41,29 @@ void ClientHandler::execCGI()
 		std::string cookie = "";
 		if (message.headers.find("Cookie") != message.headers.end())
 			cookie = message.headers["Cookie"];
-		const char *args[] = {CGIpath.c_str(), fullLocation.c_str(), postedFileName.c_str(), NULL};
+		const char *args[] = { CGIpath.c_str(), fullLocation.c_str(), postedFileName.c_str(), NULL };
+				// Replace your current environment block with something like this:
 		std::vector<char*> env;
-
+		
+		// Base environment from RequestParser
 		env.push_back(createCString("QUERY_STRING=" + query));
 		env.push_back(createCString("HTTP_COOKIE=" + cookie));
 		env.push_back(createCString("REQUEST_METHOD=" + message.method));
+		env.push_back(createCString("CONTENT_TYPE=" + message.headers["Content-Type"]));
+		if (message.headers.find("Content-Length") != message.headers.end())
+			env.push_back(createCString("CONTENT_LENGTH=" + message.headers["Content-Length"]));
+		env.push_back(createCString("SCRIPT_FILENAME=" + fullLocation));
+		env.push_back(createCString("REDIRECT_STATUS="));
+		env.push_back(createCString("SERVER_SOFTWARE=Webserv 42 (1337)"));
+		env.push_back(createCString("DOCUMENT_ROOT=/mnt/c/Users/Ayman/Desktop/crafthttp/assets/dynamic/basic_login"));
+		env.push_back(createCString("REQUEST_URI=" + fullLocation));
+		env.push_back(createCString("SERVER_NAME=" + message.headers["Host"]));
+		env.push_back(createCString("GATEWAY_INTERFACE=CGI/1.1"));
+		env.push_back(createCString("SERVER_PROTOCOL=HTTP/1.1"));
+		env.push_back(createCString("PATH_TRANSLATED=" + fullLocation));
+		env.push_back(createCString("PATH_INFO="));
 		env.push_back(NULL);
-
+		
 		execve(CGIpath.c_str(), const_cast<char* const*>(args), const_cast<char* const*>(&env[0]));
 		deleteCStrings(env);
 		std::exit(1);

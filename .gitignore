@@ -5,3 +5,4 @@ subject.txt
 obj
 .o
 webserv
+*.tmp
