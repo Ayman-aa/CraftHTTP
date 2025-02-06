@@ -6,3 +6,4 @@ obj
 .o
 webserv
 *.tmp
+.env
