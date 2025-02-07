@@ -6,9 +6,9 @@
  * Extracts and Validates Location
  * 
  * Params:
- * 		file: config file stream
- * 		currentLineNumber: bayna ? (kit modifa)
- * 		location: struct li kan3mer fiha extracted values
+ * 		@param file: config file stream
+ * 		@param currentLineNumber: bayna ? (kit modifa)
+ * 		@param location: struct li kan3mer fiha extracted values
  *
  * 
  * Returns:
@@ -53,8 +53,8 @@ bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
  * Validate first location line key and value(path) example: [location: /root]
  * 
  * Params:
- * 		kv: key-value pairs containing location path
- * 		location: struct to store path
+ * 		@param kv: key-value pairs containing location path
+ * 		@param location: struct to store path
  */
 bool ConfigurationParser::servLocationLine(key_value& k_v, Location& location) {
 	/* TODO: 3AWED T2KD MN SPACE LAY RDI 3LIK, ZE3MA WASH 5ASSEK T CHECKI 3LA WASH VALUE FIHA ' ' WLA LA*/
@@ -88,9 +88,9 @@ bool ConfigurationParser::isValidCgiKey(const string& method) {
  * 		rb: /path/to
  * 
  * Params:
- * 		file: config file stream
- * 		loaction: struct fin anstori cgi path
- * 		currentLineNumber: ? (kaytmodifiya)
+ * 		@param file: config file stream
+ * 		@param loaction: struct fin anstori cgi path
+ * 		@param currentLineNumber: ? (kaytmodifiya)
  */
 bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int& currentLineNumber) {
 	string line;

@@ -10,9 +10,9 @@
  * 		404: path_to/404.htmt
  * 		error_code: fin kain
  * 	
- * 	Parameters:
- * 		file: Input file stream positioned at start of error_pages block.
- * 		currentLineNumber: zid ? (NB: modified by the function)
+ * 	Params:
+ * 		@param file: Input file stream positioned at start of error_pages block.
+ * 		@param currentLineNumber: zid ? (NB: modified by the function)
  * 	
  * 	Returns:
  * 		true if at least one error page was found
@@ -48,7 +48,7 @@ bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumb
  * client_max_body_size: 10485760 # 10MB in bytes
  * 	
  * 	Parameters:
- * 		kv: struct 3endha two members: key&value
+ * 		@param kv: struct 3endha two members: key&value
  * 		(FHAD LCASE: key == client_max_body_size && value == correct_number)
  * 	
  * 	Returns:
@@ -72,9 +72,10 @@ bool ConfigurationParser::extractClientMaxBodySizeValue(key_value& k_v) {
  * Extract and validates server_names from the config file.
  *
  * haka khassha tkun:
- * server_names: example.com example1.com localhost 	
- * 	Parameters:
- * 		kv: key-value pairs fiha server names
+ * server_names: example.com example1.com localhost
+ *
+ * Parameters:
+ * 		@param kv: key-value pairs fiha server names
  * 	
  * 	Returns:
  * 		true if <-if
@@ -101,8 +102,9 @@ bool ConfigurationParser::extractServerNamesValue(key_value& k_v) {
  *
  * haka khassha tkun:
  * ports: 8080,8081,...,...
- * 	Parameters:
- * 		kv: key-value pairs fiha ports
+ *
+ * Parameters:
+ * 		@param kv: key-value pairs fiha ports
  * 	
  * 	Returns:
  * 		true if the port is correct 🧐
@@ -140,13 +142,14 @@ bool ConfigurationParser::isValidPortSegment(const string& segment) {
  *
  * haka khassha tkun:
  * host: 127.0.0.1
- * 	Parameters:
- * 		kv: key-value pairs fiha host
+ *
+ * Parameters:
+ * 		@param kv: key-value pairs fiha host
  * 	 
- * 	Returns:
+ * Returns:
  * 		true if the host is correct 🧐
  *
- * 	Notes:
+ * Notes:
  * 		- Must be valid IPv4 address
  * 		- Each segment must be 0-255
  * 		- Must have exactly 4 segment
@@ -177,12 +180,12 @@ bool ConfigurationParser::isValidIPSegment(const string& segment) {
  * Determines if a line should be skipped during parsing.
  *
  * Params:
- * 		Line: Li ghadi yt checka.
+ * 		@param Line: Li ghadi yt checka.
  * 
  * Returns:
  * 		bool: true if the line is comment or empty, false otherwise
  *
- * 	Skips:
+ * Skips:
  * 		- Empty lines
  * 		- Lines starting by # (comments)
  * 		- Lines with only whitespaces
@@ -201,8 +204,8 @@ bool ConfigurationParser::LineIsCommentOrEmpty(string& line) {
  * Verify line format and exctract key-value pairs
  *
  * Params:
- * 		Line: Li ghadi yt checka.
- * 		indentLevel: dial Line (in tabs)
+ * 		@param Line: Li ghadi yt checka.
+ * 		@param indentLevel: dial Line (in tabs)
  * 
  * Returns:
  * 		bool: true if the line format is correct, false otherwise
@@ -227,12 +230,12 @@ bool ConfigurationParser::verifyLineFormat(string& line, int indentLevel) {
  * Validate Second-Level Lines (bime3na: currentIndentLevel == 2, ou kainin shi cases kan5dem biha)
  *
  * Params:
- * 		Line: Li ghadi yt valida
+ * 		@param Line: Li ghadi yt valida
  * 
  * Returns:
  * 		bool: true if the line format is valid, false otherwise
  *
- * 	Validation Rules:
+ * Validation Rules:
  * 		- Exactly colona (:) per line (except for special case like "return")
  * 		- key cannot be empty (no spaces or smth also)
  * 		- Value cannot be empty
@@ -269,8 +272,8 @@ bool ConfigurationParser::isValidSecondLevel(string& line) {
  * Generate an error message and throws an exception for parsing failures
  *
  * Params:
- * 		Current Line Number: no need right ? 
- * 		custom error message
+ * 		@param Current Line Number: no need right ? 
+ * 		@param custom error message
  */
 void ConfigurationParser::syntaxError(int currentLineNumber, const string& errorMessage) {
 	ostringstream oss;
@@ -282,7 +285,7 @@ void ConfigurationParser::syntaxError(int currentLineNumber, const string& error
  * Clears Key-Value pair
  *
  * Params:
- * 		kv: key-value pair to clear
+ * 		@param kv: key-value pair to clear
  */
 void ConfigurationParser::clear_kv(key_value& kv) {
 	kv.key.clear();
