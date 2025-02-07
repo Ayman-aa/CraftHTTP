@@ -11,7 +11,7 @@
 	if (!FIELD.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY) \
 
 #define CHECK_AND_EXTRACT(FIELD, CONTAINER, FUNC) \
-	if (line.find(FIELD) != string::npos) { \
+	if (line.find(FIELD) !=std::string::npos) { \
 		CHECK_DUPLICATE(CONTAINER); \
 		if (!verifyLineFormat(line, currentIndentLevel) || !FUNC(kv)) \
 			syntaxError(currentLineNumber, SYNTAX_ERROR); \
@@ -19,7 +19,7 @@
 	} \
 
 #define CHECK_AND_EXTRACT_MAX_BODY_SIZE(FIELD, CONTAINER, FUNC) \
-	if (line.find(FIELD) != string::npos) { \
+	if (line.find(FIELD) !=std::string::npos) { \
 		if (CONTAINER != -1) syntaxError(currentLineNumber, DUPLICATE_ENTRY); \
 		if (!verifyLineFormat(line, currentIndentLevel) || !FUNC(kv)) \
 			syntaxError(currentLineNumber, SYNTAX_ERROR); \
@@ -27,7 +27,7 @@
 	} \
 
 #define CHECK_AND_EXTRACT_LOCATION(FIELD, CONTAINER, FUNC) \
-	if (line.find(FIELD) != string::npos) { \
+	if (line.find(FIELD) !=std::string::npos) { \
 		CHECK_DUPLICATE(CONTAINER); \
 		if (!verifyLineFormat(line, 1) || !FUNC(kv, location)) \
 			syntaxError(currentLineNumber, SYNTAX_ERROR); \
@@ -36,7 +36,7 @@
 	} \
 
 #define CHECK_AND_EXTRACT_LOCATION_BOOL(FIELD, FUNC) \
-	if (line.find(FIELD) != string::npos) { \
+	if (line.find(FIELD) !=std::string::npos) { \
 		if (!verifyLineFormat(line, 1) || !FUNC(kv, location)) \
 			syntaxError(currentLineNumber, SYNTAX_ERROR); \
 		findLoc = true; \
@@ -54,16 +54,16 @@
     currentServer.locations[location.path] = location; \
 
 #define CHECK_STRING_FORMAT(STR, WHAT) \
-	if (STR.find(WHAT) != string::npos) return false; \
+	if (STR.find(WHAT) !=std::string::npos) return false; \
 
 #define VALIDATE_KV(KEY) \
 	if (k_v.value.empty() || k_v.key != KEY) return false; \
 
 #define CHECK_INVALID_CHARS(STR) \
-    if (STR.find('&') != string::npos || \
-        STR.find('|') != string::npos || \
-        STR.find(';') != string::npos || \
-        STR.find('$') != string::npos) return false; \
+    if (STR.find('&') !=std::string::npos || \
+        STR.find('|') !=std::string::npos || \
+        STR.find(';') !=std::string::npos || \
+        STR.find('$') !=std::string::npos) return false; \
 
 #define CHECK_ALL_DIGITS(STR) \
     for (size_t i = 0; i < STR.length(); i++) \

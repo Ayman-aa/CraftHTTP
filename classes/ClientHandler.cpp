@@ -132,6 +132,7 @@ void ClientHandler::sendToSocket()
 	size_t totalBytesSent = 0;
 	while (totalBytesSent < sendingBuffer.toStr().size())
 	{
+		//std::cout << "kansifet lek ola la, zid nshuf : " << sendingBuffer.toStr() << std::endl;
 		ssize_t sendBytes = send(this->clientFd, sendingBuffer.toStr().c_str() + totalBytesSent, sendingBuffer.toStr().size() - totalBytesSent, MSG_NOSIGNAL | MSG_DONTWAIT);
 		if (sendBytes <= 0)
 		{
@@ -143,3 +144,4 @@ void ClientHandler::sendToSocket()
 	}
 	this->sendingBuffer.erase(0, totalBytesSent);
 }
+

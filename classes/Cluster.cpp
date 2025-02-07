@@ -23,34 +23,42 @@ void Cluster::createEpoll()
 
 void Cluster::initializeServers()
 {
-	std::vector<ServerConfiguration*> serversConfigurations = config.servers;
+    std::vector<ServerConfiguration*> serversConfigurations = config.servers;
 
-	for(long unsigned int i = 0; i < serversConfigurations.size(); i++)
-	{
-		try
-		{
-			Server *server = new Server(serversConfigurations[i]);
-			const std::vector<int> &serverSockets = server->getSockets();
+    for (size_t i = 0; i < serversConfigurations.size(); i++)
+    {
+        try
+        {
+            Server *server = new Server(serversConfigurations[i]);
+            const std::vector<int>& serverSockets = server->getSockets();
 
-			if(serverSockets.empty())
-			{
-				delete server;
-				throw std::runtime_error("Server: no valid sockets");
-			}
+            if(serverSockets.empty())
+            {
+                std::cerr << "Server has no valid sockets. Skipping..." << std::endl;
+                delete server;
+                continue;
+            }
 
-			servers.push_back(server);
-			for(size_t j = 0; j < serverSockets.size(); j++)
-			{
-				addSocketToEpoll(serverSockets[j]);
-				server_fd_to_server[serverSockets[j]] = server;
-			}
-		} catch (const std::exception &e){
-			std::cerr << e.what() << std::endl;
-			throw std::runtime_error("Server: Initialization failed");
-		}
-	}
+            servers.push_back(server);
+            for (size_t j = 0; j < serverSockets.size(); j++)
+            {
+                try {
+                    addSocketToEpoll(serverSockets[j]);
+                    server_fd_to_server[serverSockets[j]] = server;
+                } catch(const std::exception &e){
+                    std::cerr << "Failed to add socket " << serverSockets[j] << " to epoll: " << e.what() << std::endl;
+                }
+            }
+        }
+        catch (const std::exception &e)
+        {
+            std::cerr << "Server initialization failed for one configuration: " << e.what() << std::endl;
+        }
+    }
+
+    if(servers.empty())
+        throw std::runtime_error("No valid servers available");
 }
-
 void Cluster::addSocketToEpoll(int fd)
 {
 	struct epoll_event event;
@@ -72,6 +80,7 @@ void Cluster::run()
 			processEvents(events);
 		} catch(const std::exception &e){
 			std::cerr << "Error in event loop: " << e.what() << std::endl;
+
 		}
 	}
 }

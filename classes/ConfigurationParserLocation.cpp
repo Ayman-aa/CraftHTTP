@@ -2,7 +2,7 @@
 
 #include "ConfigurationParser.hpp"
 
-bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineNumber, Location& location) {
+bool ConfigurationParser::extractLocationInfos(std::ifstream& file, int& currentLineNumber, Location& location) {
 	string line;
 	bool findLoc = false;
 
@@ -21,14 +21,14 @@ bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
 		CHECK_AND_EXTRACT_LOCATION("root:", location.root, extractRootValue);
 		CHECK_AND_EXTRACT_LOCATION("allowed_methods", location.allow_methods, extractAllowedMethods);
 
-		if (line.find("cgi_path:") != string::npos) {
+		if (line.find("cgi_path:") !=std::string::npos) {
 			if (!location.cgi_path.empty()) syntaxError(currentLineNumber, DUPLICATE_ENTRY);
 			if (!verifyLineFormat(line, 1)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			if (!extractCgiPath(file, location, currentLineNumber)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 			findLoc = true;
 			continue;
 		}
-		if (line.find("server:") != string::npos) continue ;
+		if (line.find("server:") !=std::string::npos) continue ;
 		else syntaxError(currentLineNumber, SYNTAX_ERROR); 
 	}
 	return findLoc;
@@ -51,12 +51,12 @@ bool ConfigurationParser::extractUploadPath(key_value& k_v, Location& location) 
 	return true;
 }
 
-bool ConfigurationParser::isValidCgiKey(const string& method) {
+bool ConfigurationParser::isValidCgiKey(const std::string& method) {
 	/* std++98 sir 4er t7awa */
 	return (method == "php" || method == "rb" || method == "py");
 }
 
-bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int& currentLineNumber) {
+bool ConfigurationParser::extractCgiPath(std::ifstream& file, Location& location, int& currentLineNumber) {
 	string line;
 	bool findPath = false;
 	set<string> cgi;
@@ -93,14 +93,14 @@ bool ConfigurationParser::extractReturnValue(key_value& k_v, Location& location)
 	return true;
 }
 
-bool ConfigurationParser::isValidIndex(const string& index) {
+bool ConfigurationParser::isValidIndex(const std::string& index) {
 	CHECK_STRING_FORMAT(index, ' ');
 	CHECK_INVALID_CHARS(index);
 	return true;
 
 	/*
-		*if (index.find("../") != string::npos) return false;
-		*if (index.find('/') != string::npos) return false;
+		*if (index.find("../") !=std::string::npos) return false;
+		*if (index.find('/') !=std::string::npos) return false;
 	*/
 }
 
@@ -117,7 +117,7 @@ bool ConfigurationParser::extractIndexValues(key_value& k_v, Location& location)
 	return true;
 }
 
-bool ConfigurationParser::isValidMethod(const string& method) {
+bool ConfigurationParser::isValidMethod(const std::string& method) {
 	/* std++98 sir 4er t7awa */
 	 return (method == "GET" || method == "POST" || method == "DELETE");
 }

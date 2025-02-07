@@ -4,15 +4,15 @@
 
 key_value kv;
 
-ConfigurationParser::ConfigurationParser(string& filePath) {
-	ifstream file(filePath.c_str());
+ConfigurationParser::ConfigurationParser(std::string& filePath) {
+	std::ifstream file(filePath.c_str());
 	if (!file.is_open())
 		throw runtime_error("failed to open file: " + filePath);
 	ConfigurationParser::load(file);
 	file.close();
 }
 
-void ConfigurationParser::load(ifstream& file) {
+void ConfigurationParser::load(std::ifstream& file) {
 	string line;
 	int currentLineNumber = 0;
 
@@ -42,11 +42,11 @@ void ConfigurationParser::load(ifstream& file) {
 			CHECK_AND_EXTRACT("server_names:", currentServer.serverNames, extractServerNamesValue);
 			CHECK_AND_EXTRACT_MAX_BODY_SIZE("client_max_body_size:", currentServer.maxBodySize, extractClientMaxBodySizeValue);
 
-			if (line.find("error_pages:") != string::npos) {
+			if (line.find("error_pages:") !=std::string::npos) {
 				if (!extractErrorPages(file, currentLineNumber)) syntaxError(currentLineNumber, SYNTAX_ERROR);
 				continue;
 			}
-			if (line.find("location:") != string::npos){
+			if (line.find("location:") !=std::string::npos){
 				HANDLE_LOCATION();
 				continue;
 			}
@@ -56,12 +56,12 @@ void ConfigurationParser::load(ifstream& file) {
 	servers.push_back(new ServerConfiguration(currentServer));
 }
 
-bool ConfigurationParser::isValidRootLevel(string& line) {
+bool ConfigurationParser::isValidRootLevel(std::string& line) {
 	int rootIndentLevel = getIndentLevel(line);
 		return rootIndentLevel == 0 && line == "server:";
 }
 
-int ConfigurationParser::getIndentLevel(const string& line) {
+int ConfigurationParser::getIndentLevel(const std::string& line) {
 	int IndentLevel = 0; /* must be tabs nor space */
 	char tab = '\t';
 	
@@ -74,7 +74,7 @@ int ConfigurationParser::getIndentLevel(const string& line) {
 	return IndentLevel;
 }
 
-bool ConfigurationParser::FileSeekg(ifstream& file, const string& line, int &currentLineNumber, bool retVal) {
+bool ConfigurationParser::FileSeekg(std::ifstream& file, const std::string& line, int &currentLineNumber, bool retVal) {
 	file.seekg(file.tellg() - static_cast<streamoff>(line.length() + 1));
 	currentLineNumber--;
 	return retVal;

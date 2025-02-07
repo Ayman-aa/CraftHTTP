@@ -177,6 +177,7 @@ void ClientHandler::sendServerError()
 		"HTTP/1.1 500 Internal Server Error\r\n"
 		"Content-Type: text/html\r\n"
 		"Content-Length: 233\r\n\r\n"
+		"Connection: close\r\n"
 		"<!DOCTYPE html>\n"
 		"<html lang=\"en\">\n"
 		"<head>\n"

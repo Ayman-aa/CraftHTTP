@@ -97,7 +97,7 @@ void Server::bindSocket(int sockFd, struct addrinfo *info, const std::string &po
 		throw std::runtime_error("bind error on port " + port + ": " + std::string(strerror(errno)));
 }
 
-void Server::listenSocket(int sockFd, const string& port, int backlog)
+void Server::listenSocket(int sockFd, const std::string& port, int backlog)
 {
 	if (listen(sockFd, backlog) == -1)
 		throw std::runtime_error("listen error on port " + port + ": " + std::string(strerror(errno)));

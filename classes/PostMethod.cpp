@@ -1,5 +1,4 @@
 #include "../includes/ClientHandler.hpp"
-
 void writeToFile(const std::string &data, const std::string& fileName)
 {
     std::cout << fileName.c_str() << std::endl;
