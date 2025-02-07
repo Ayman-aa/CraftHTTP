@@ -12,7 +12,7 @@
  *
  * 
  * Returns:
- * 		bool: true if the location config is valid, false otherwise
+ * 		@return bool: true if the location config is valid, false otherwise
  *
  * 	Supported directives:
  * 		chouf ../includes/config.hpp to see location struct

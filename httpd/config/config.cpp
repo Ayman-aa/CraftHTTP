@@ -15,7 +15,7 @@
  * 		@param currentLineNumber: zid ? (NB: modified by the function)
  * 	
  * 	Returns:
- * 		true if at least one error page was found
+ * 		@return true if at least one error page was found
  *
  * 	Notes:
  * 		- Error codes should be between 399-600
@@ -52,7 +52,7 @@ bool ConfigurationParser::extractErrorPages(ifstream& file, int& currentLineNumb
  * 		(FHAD LCASE: key == client_max_body_size && value == correct_number)
  * 	
  * 	Returns:
- * 		true if value is valid, false otherwise
+ * 		@return true if value is valid, false otherwise
  *
  * 	Notes:
  * 		- Must be numeric
@@ -78,7 +78,7 @@ bool ConfigurationParser::extractClientMaxBodySizeValue(key_value& k_v) {
  * 		@param kv: key-value pairs fiha server names
  * 	
  * 	Returns:
- * 		true if <-if
+ * 		@return true if <-if
  *
  * 	Notes:
  * 		- Multiple names are space separated
@@ -107,7 +107,7 @@ bool ConfigurationParser::extractServerNamesValue(key_value& k_v) {
  * 		@param kv: key-value pairs fiha ports
  * 	
  * 	Returns:
- * 		true if the port is correct 🧐
+ * 		@return true if the port is correct 🧐
  *
  * 	Notes:
  * 		- Multiple ports are ',' separated
@@ -147,7 +147,7 @@ bool ConfigurationParser::isValidPortSegment(const string& segment) {
  * 		@param kv: key-value pairs fiha host
  * 	 
  * Returns:
- * 		true if the host is correct 🧐
+ * 		@return true if the host is correct 🧐
  *
  * Notes:
  * 		- Must be valid IPv4 address
@@ -183,7 +183,7 @@ bool ConfigurationParser::isValidIPSegment(const string& segment) {
  * 		@param Line: Li ghadi yt checka.
  * 
  * Returns:
- * 		bool: true if the line is comment or empty, false otherwise
+ * 		@return bool: true if the line is comment or empty, false otherwise
  *
  * Skips:
  * 		- Empty lines
@@ -208,7 +208,7 @@ bool ConfigurationParser::LineIsCommentOrEmpty(string& line) {
  * 		@param indentLevel: dial Line (in tabs)
  * 
  * Returns:
- * 		bool: true if the line format is correct, false otherwise
+ * 		@return bool: true if the line format is correct, false otherwise
  */
 bool ConfigurationParser::verifyLineFormat(string& line, int indentLevel) {
 	if (line.empty()) return true;
@@ -233,7 +233,7 @@ bool ConfigurationParser::verifyLineFormat(string& line, int indentLevel) {
  * 		@param Line: Li ghadi yt valida
  * 
  * Returns:
- * 		bool: true if the line format is valid, false otherwise
+ * 		@return bool: true if the line format is valid, false otherwise
  *
  * Validation Rules:
  * 		- Exactly colona (:) per line (except for special case like "return")
