@@ -2,6 +2,21 @@
 
 #include "../includes/configParser.hpp"
 
+/* 
+ * Extracts and Validates Location
+ * 
+ * Params:
+ * 		file: config file stream
+ * 		currentLineNumber: bayna ? (kit modifa)
+ * 		location: struct li kan3mer fiha extracted values
+ *
+ * 
+ * Returns:
+ * 		bool: true if the location config is valid, false otherwise
+ *
+ * 	Supported directives:
+ * 		chouf ../includes/config.hpp to see location struct
+ */
 bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineNumber, Location& location) {
 	string line;
 	bool findLoc = false;
@@ -34,8 +49,15 @@ bool ConfigurationParser::extractLocationInfos(ifstream& file, int& currentLineN
 	return findLoc;
 }
 
-/* TODO: 3AWED T2KD MN SPACE LAY RDI 3LIK, ZE3MA WASH 5ASSEK T CHECKI 3LA WASH VALUE FIHA ' ' WLA LA*/
+/*
+ * Validate first location line key and value(path) example: [location: /root]
+ * 
+ * Params:
+ * 		kv: key-value pairs containing location path
+ * 		location: struct to store path
+ */
 bool ConfigurationParser::servLocationLine(key_value& k_v, Location& location) {
+	/* TODO: 3AWED T2KD MN SPACE LAY RDI 3LIK, ZE3MA WASH 5ASSEK T CHECKI 3LA WASH VALUE FIHA ' ' WLA LA*/
 	VALIDATE_KV("location");
 	CHECK_STRING_FORMAT(k_v.value, "..");
 	CHECK_STRING_FORMAT(k_v.value, "//");
@@ -44,6 +66,7 @@ bool ConfigurationParser::servLocationLine(key_value& k_v, Location& location) {
 	return true;	
 }
 
+/* ??????? ach baghi t3ref */
 bool ConfigurationParser::extractUploadPath(key_value& k_v, Location& location) {
 	VALIDATE_KV("upload_path");
 	CHECK_STRING_FORMAT(k_v.value, ' ');
@@ -51,11 +74,24 @@ bool ConfigurationParser::extractUploadPath(key_value& k_v, Location& location) 
 	return true;
 }
 
+/* ??????? ach baghi t3ref */
 bool ConfigurationParser::isValidCgiKey(const string& method) {
 	/* std++98 sir 4er t7awa */
 	return (method == "php" || method == "rb" || method == "py");
 }
 
+/*
+ * Extract cgi path.
+ * 
+ * cgi_path:
+ * 		php: /path/to
+ * 		rb: /path/to
+ * 
+ * Params:
+ * 		file: config file stream
+ * 		loaction: struct fin anstori cgi path
+ * 		currentLineNumber: ? (kaytmodifiya)
+ */
 bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int& currentLineNumber) {
 	string line;
 	bool findPath = false;
@@ -68,8 +104,7 @@ bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int
 		clear_kv(kv);
 		if (!verifyLineFormat(line, 1)) return false;
 		if (!isValidCgiKey(kv.key)) return false;
-		if (!cgi.insert(kv.key).second)
-			return false;
+		if (!cgi.insert(kv.key).second)return false;
 		if (kv.value.empty()) return false;
 
 		location.cgi_path[kv.key] = kv.value;
@@ -78,6 +113,7 @@ bool ConfigurationParser::extractCgiPath(ifstream& file, Location& location, int
 	return findPath;
 }
 
+/* ??????? ach baghi t3ref */
 bool ConfigurationParser::extractRootValue(key_value& k_v, Location& location) {
 	VALIDATE_KV("root");
 	CHECK_STRING_FORMAT(k_v.value, ' ');
@@ -85,6 +121,7 @@ bool ConfigurationParser::extractRootValue(key_value& k_v, Location& location) {
 	return true;
 }
 
+/* ??????? ach baghi t3ref */
 bool ConfigurationParser::extractReturnValue(key_value& k_v, Location& location) {
 	VALIDATE_KV("return");
 	CHECK_STRING_FORMAT(k_v.value, "..");
@@ -104,6 +141,7 @@ bool ConfigurationParser::isValidIndex(const string& index) {
 	*/
 }
 
+/* ??????? ach baghi t3ref */
 bool ConfigurationParser::extractIndexValues(key_value& k_v, Location& location) {
 	if (k_v.value.empty() || k_v.key != "index") return false;
 
@@ -117,11 +155,13 @@ bool ConfigurationParser::extractIndexValues(key_value& k_v, Location& location)
 	return true;
 }
 
+/* ??????? ach baghi t3ref */
 bool ConfigurationParser::isValidMethod(const string& method) {
 	/* std++98 sir 4er t7awa */
 	 return (method == "GET" || method == "POST" || method == "DELETE");
 }
 
+/* ??????? ach baghi t3ref */
 bool ConfigurationParser::extractAllowedMethods(key_value& k_v, Location& location) {
 	if (k_v.value.empty() || k_v.key != "allowed_methods") return false;
 	
@@ -139,6 +179,7 @@ bool ConfigurationParser::extractAllowedMethods(key_value& k_v, Location& locati
 	return true;
 }
 
+/* ??????? ach baghi t3ref */
 bool ConfigurationParser::extractAutoIndexValue(key_value& k_v, Location& location) {
 	VALIDATE_KV("autoindex");
 	if (k_v.value != "on" && k_v.value != "off") return false;

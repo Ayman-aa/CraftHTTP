@@ -3,7 +3,11 @@
 #include "../includes/configParser.hpp"
 
 key_value kv;
-
+/*
+ * Opens and parses a webserv config file
+ * throw exception if !file.isopen()
+ * and call the main parsing method [LOAD()]
+ */
 ConfigurationParser::ConfigurationParser(string& filePath) {
 	ifstream file(filePath.c_str());
 	if (!file.is_open())
@@ -12,6 +16,10 @@ ConfigurationParser::ConfigurationParser(string& filePath) {
 	file.close();
 }
 
+/*
+ * Main parsing method
+ * Reads through config file and create server configurations
+ */
 void ConfigurationParser::load(ifstream& file) {
 	string line;
 	int currentLineNumber = 0;
@@ -56,11 +64,13 @@ void ConfigurationParser::load(ifstream& file) {
 	servers.push_back(new ServerConfiguration(currentServer));
 }
 
+/* ash ba4i t3ref ??? */
 bool ConfigurationParser::isValidRootLevel(string& line) {
 	int rootIndentLevel = getIndentLevel(line);
 		return rootIndentLevel == 0 && line == "server:";
 }
 
+/* ash ba4i t3ref ??? */
 int ConfigurationParser::getIndentLevel(const string& line) {
 	int IndentLevel = 0; /* must be tabs nor space */
 	char tab = '\t';
