@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Webserv - Home</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: #f0f2f5;
+      color: #333;
+    }
+    .container {
+      max-width: 1200px;
+      margin: auto;
+      padding: 2em;
+    }
+    header {
+      text-align: center;
+      margin-bottom: 2em;
+    }
+    section {
+      background: #fff;
+      margin-bottom: 2em;
+      padding: 2em;
+      border-radius: 8px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    section h2 {
+      margin-top: 0;
+    }
+    .links ul {
+      list-style-type: none;
+      padding: 0;
+    }
+    .links li {
+      margin-bottom: 0.5em;
+    }
+    .links a {
+      text-decoration: none;
+      color: #3498db;
+      font-weight: bold;
+    }
+    .links a:hover {
+      text-decoration: underline;
+    }
+    @media (max-width: 768px) {
+      .container {
+        padding: 1em;
+      }
+      section {
+        padding: 1em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>Welcome to Webserv</h1>
+      <p>Your custom HTTP server with both static and dynamic content</p>
+    </header>
+    
+    <section>
+      <h2>Dynamic Content</h2>
+      <div class="links">
+        <ul>
+          <li><a href="/dynamic/nshufo.rb?action=time">Ruby - Current Time</a></li>
+          <li><a href="/dynamic/nshufo.rb?action=random">Ruby - Random Quote</a></li>
+          <li><a href="/dynamic/nshufo.rb?action=json">Ruby - JSON Response</a></li>
+          <li><a href="/dynamic/session.php">PHP - Session Example</a></li>
+          <li><a href="/dynamic/cuppcakes.php">PHP - Cupcackes</a></li>
+          <li><a href="/dynamic/biscuits.py">Python - Biscuits</a></li>
+        </ul>
+      </div>
+    </section>
+    
+    <section>
+      <h2>Static Content</h2>
+      <div class="links">
+        <ul>
+          <li><a href="/static/meteo/index.html">Météo App</a></li>
+          <li><a href="/static/post/post_file.html">File Upload Demo</a></li>
+          <li><a href="/static/post/post_3adia.html">Sign Up Form</a></li>
+        </ul>
+      </div>
+    </section>
+    <section>
+      <h2>Server Directory</h2>
+      <div class="links">
+        <ul>
+          <li><a href="/ups/index.php">Preview Your Uploads</a></li>
+        </ul>
+      </div>
+    </section>
+  </div>
+</body>
+</html>
