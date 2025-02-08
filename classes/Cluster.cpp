@@ -80,7 +80,7 @@ void Cluster::run()
 			processEvents(events);
 		} catch(const std::exception &e){
 			std::cerr << "Error in event loop: " << e.what() << std::endl;
-
+			break;
 		}
 	}
 }

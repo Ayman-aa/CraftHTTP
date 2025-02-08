@@ -73,11 +73,9 @@ void ClientHandler::GetAutoIndex()
         throw HttpError(InternalServerError, "Internal Server Error");
     }
 
-    // html header
     autoindexFile << "<html style=\"background:#1a1a1a; color:#dddddd; \">\n<head>\n<title>Autoindex</title>\n</head>\n<body>\n";
     autoindexFile << "<h1>Autoindex</h1>\n<ul>\n";
 
-    // read directory
     struct dirent *entry;
 
     while ((entry = readdir(dir)) != NULL)
@@ -87,12 +85,9 @@ void ClientHandler::GetAutoIndex()
             std::string tmpName = message.uri.path + "/";
             if (message.uri.path == "/")
                 tmpName.resize(1);
-            // write a list item with a link to the file
             autoindexFile << "<li><a style=\"text-decoration:none; color:wheat; \" href=\"" << tmpName + entry->d_name << "\">" << entry->d_name << "</a></li>\n";
         }
     }
-
-    // close html file
     autoindexFile << "</ul>\n</body>\n</html>";
     autoindexFile.close();
     setResponseParams("200", "OK", "", AIfile);
@@ -101,7 +96,8 @@ void ClientHandler::GetAutoIndex()
 
 void ClientHandler::redirect()
 {
-    if (!access(fullLocation.c_str(), F_OK)) // if file exists, temporary redirect
+    std::cout << "Redirecting client to: " << location.redirection_return << std::endl;
+    if (!access(fullLocation.c_str(), F_OK))
         setResponseParams("302", "Found", "Location: " + location.redirection_return + "\r\n", "");
     else
         setResponseParams("301", "Moved Permanently", "Location: " + location.redirection_return + "\r\n", "");

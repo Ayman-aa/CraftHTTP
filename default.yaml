@@ -55,3 +55,6 @@ server:
 			php: /usr/bin/php-cgi
 			py: /usr/bin/python3
 			rb: /usr/bin/ruby
+	location: /redirect
+		root: ./assets
+		return: https://google.com
