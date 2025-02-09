@@ -3,7 +3,6 @@
 key_value kv;
 
 bool ConfigurationParser::yaml(std::string& filePath) {
-	std::cout << filePath.substr(filePath.length() - 5) << std::endl;
 	return filePath.substr(filePath.length() - 5) == ".yaml";
 }
 
