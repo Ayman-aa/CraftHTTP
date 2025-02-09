@@ -2,7 +2,13 @@
 
 key_value kv;
 
+bool ConfigurationParser::yaml(std::string& filePath) {
+	std::cout << filePath.substr(filePath.length() - 5) << std::endl;
+	return filePath.substr(filePath.length() - 5) == ".yaml";
+}
+
 ConfigurationParser::ConfigurationParser(std::string& filePath) {
+	if (!yaml(filePath)) throw std::runtime_error("Configuration file must be a YAML file");
     std::ifstream file(filePath.c_str());
     if (!file.is_open())
         throw runtime_error("failed to open file: " + filePath);

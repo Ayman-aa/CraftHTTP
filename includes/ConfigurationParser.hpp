@@ -37,6 +37,14 @@ class ConfigurationParser : public ServerConfiguration
          */
         static const ssize_t maxBodySize = 2147483648;
 
+		/**
+         * @brief Checks if the given file path ends with .yaml extension.
+         *
+         * @param filePath Reference to the path of the configuration file.
+         * @return true if file ends with .yaml, false otherwise.
+         */
+        bool yaml(std::string& filePath);
+
         /**
          * @brief Constructs a ConfigurationParser with the specified configuration file path.
          *
