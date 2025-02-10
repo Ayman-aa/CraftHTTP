@@ -1,5 +1,5 @@
 services:
   webserver:
-    image: dahum/webserver:v1
+    build: ./webserv/
     ports:
-      - "8080:8080"
+      - "9010:9010"
