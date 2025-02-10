@@ -1,0 +1,26 @@
+#server_names (subject says "Setup the server_names or not")
+#error_pages (subject mentions "default error pages if none are provided")
+#index files (optional as directory listing or default files are extra features)
+#cgi_path (CGI is required but can be handled separately from the config)
+#return/redirects (optional feature)
+#autoindex (optional directory listing feature)
+
+server:
+	ports: 8080,8081
+	server_names: 48k483x .fr frost.fr
+	host: 127.0.0.1
+	client_max_body_size: 2800000
+	error_pages:
+		404: error_pages/404.html
+		404: error_p/404.html
+
+	location: /root
+		autoindex:   on
+		allowed_methods: GET,POST,DELETE 
+		index: i.html,h,hello.py
+		return: http://google.com
+		root: ./www
+		upload_path: /hello/ayehayeh
+		cgi_path:
+			php: /usr/bin/php
+
