@@ -4,6 +4,7 @@
 # define CLUSTER_HPP
 
 #include "server.hpp"
+#include "requestParser.hpp"
 
 class Cluster {
 	public:

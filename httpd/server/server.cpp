@@ -1,15 +1,16 @@
 /* -- server.cpp -- */
 
 #include "../includes/server.hpp"
+
 using namespace std;
 
 Server::Server(ServerConfiguration *config): config(config), main_socket(-1) {
 	try {
 		createSockets();
-		std::cout << "Server: Initialized successfuly";
+		std::cout << "Server: Initialized successfuly" << std::endl;;
 	}
 	catch (const std::exception& e) {
-		std::cerr << "Server: Initialized failed";
+		std::cerr << "Server: Initialized failed" << std::endl;
 		cleanup();
 	}
 }

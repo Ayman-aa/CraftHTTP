@@ -7,9 +7,9 @@ NC := \033[0m
 
 
 all:
-	@c++ -g3  -std=c++98 -Wall -Wextra -Werror main.cpp ./config/*.cpp ./server/*.cpp -I/includes/ -o srv
+	@c++ -g3  -std=c++98 -Wall -Wextra -Werror main.cpp ./config/*.cpp ./server/*.cpp ./request/*.cpp -I/includes/ -o webserv
 	@printf "$(GREEN)$(BOLD)Building is done!$(NC)\n"
 clean:
-	@rm -rf srv
+	@rm -rf webserv
 	@printf "$(YELLOW)$(BOLD)Cleaning up...$(NC)\n"
 re: clean all

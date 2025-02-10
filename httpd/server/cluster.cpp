@@ -4,6 +4,7 @@
 #include "../includes/server.hpp"
 using namespace std;
 
+const std::string YELLOW = "\033[33m";
 static const int MAX_EVENTS = 1024;
 
 Cluster::Cluster(Configuration& config): config(config), epoll_fd(-1)
@@ -119,6 +120,20 @@ void Cluster::handleClient(int client_fd) {
 		close(client_fd);
 		return;
 	}
+
+	std::vector<unsigned char> data(buffer, buffer + bytes_received);
+	Content content(data);
+
+	try {
+		RequestParser parser;
+		parser.loadHeaders(content);
+		
+		std::cout << YELLOW << content.toStr() << "\033[0m" <<  std::endl;		
+	}
+	catch (const HttpError& e) {
+		std::cout << "Error parsing request: " << e.what() << std::endl;
+	}
+
 	std::cout << "Received request: \n" << buffer << std::endl;
 	const char* response = "HTTP/1.1 200 OK\r\n"
                           "Content-Length: 13\r\n"
