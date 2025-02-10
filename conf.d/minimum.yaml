@@ -1,6 +1,0 @@
-#this is the minimum required of a config file to look like
-server:
-	ports: 9111
-	host: 127.0.0.1
-	location: /
-		root: ./assets
