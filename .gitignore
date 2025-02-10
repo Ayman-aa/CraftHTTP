@@ -1,9 +1,0 @@
-.vscode
-.gitignore
-subject.txt
-*.txt
-obj
-.o
-webserv
-*.tmp
-.env
