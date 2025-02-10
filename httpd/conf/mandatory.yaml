@@ -1,7 +1,0 @@
-# Mandatory things,
-
-
-# 
-server:
-	host: 127.0.0.1
-	ports: 8080,3000,8000
