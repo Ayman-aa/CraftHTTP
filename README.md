@@ -2,12 +2,7 @@
 const CraftHTTP = {
   "description": "A custom HTTP server implementation in C++98",
   "features": ["HTTP/1.1", "Non-blocking I/O", "CGI"],
-  "usage": {
-    "docker": [
-      "docker pull dahum/webserver:v1",
-      "docker-compose up"
-    ]
-  },
+  "usage": { "docker": ["docker pull dahum/webserver:v1", "docker-compose up"] }
 }
 ```
 
