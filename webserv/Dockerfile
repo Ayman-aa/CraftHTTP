@@ -1,4 +1,4 @@
-FROM dahum/webserver:v1
+FROM dahumii/webserver:v1
 RUN rm -rf default.yaml
 COPY ./thisConf.yaml ./default.yaml
 
